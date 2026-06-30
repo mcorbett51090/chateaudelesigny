@@ -304,6 +304,19 @@ const desc = isFr
       errorEl.hidden = false;
     };
 
+    // Error identification (WCAG 3.3.1): fields that fail validation get
+    // aria-invalid="true" and focus moves to the first one, in addition to
+    // the existing role="alert" message.
+    const requiredFields = {
+      name: document.getElementById('f-name') as HTMLInputElement | null,
+      email: document.getElementById('f-email') as HTMLInputElement | null,
+      message: document.getElementById('f-message') as HTMLTextAreaElement | null,
+      consent: form.querySelector('input[name="consent"]') as HTMLInputElement | null,
+    };
+    const clearInvalid = () => {
+      Object.values(requiredFields).forEach((el) => el?.removeAttribute('aria-invalid'));
+    };
+
     const buildBody = (d: Record<string, string>, stream: string) => {
       const lines = [
         `${TXT.stream}: ${TXT.streamLabel[stream] || stream}`,
@@ -361,14 +374,9 @@ const desc = isFr
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (errorEl) errorEl.hidden = true;
+      clearInvalid();
 
       const fd = new FormData(form);
-
-      // Spam: honeypot must be empty.
-      if ((fd.get('company') as string)?.trim()) { reveal('wedding'); return; }
-      // Spam: time-trap — humans take longer than 3s to fill this in.
-      if (Date.now() - loadedAt < 3000) { reveal('wedding'); return; }
-
       const stream = (fd.get('stream') as string) || 'wedding';
       const cc = ((fd.get('cc') as string) || '').trim();
       const rawPhone = ((fd.get('phone') as string) || '').trim();
@@ -381,15 +389,53 @@ const desc = isFr
         message: ((fd.get('message') as string) || '').trim(),
       };
 
-      if (!d.name || !d.email || !d.message || !fd.get('consent')) { showError(TXT.errRequired); return; }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)) { showError(TXT.errEmail); return; }
+      // Spam: honeypot must be empty. A bot that fills it gets a fake
+      // "success" (so it stops retrying), but nothing is actually sent.
+      // Build the real body/stream first so that IF a human ever trips this
+      // (should never happen — field is hidden from assistive tech and
+      // sighted users alike), the copy/mailto fallbacks aren't empty.
+      if ((fd.get('company') as string)?.trim()) {
+        lastBody = buildBody(d, stream);
+        reveal(stream);
+        return;
+      }
+      // Spam: time-trap — flags submissions faster than a human could
+      // plausibly fill the form. This can false-positive on browser
+      // autofill, so instead of hard-blocking we just skip straight to a
+      // real send below using the actual data/stream (no fake-success
+      // screen, no silently-dropped inquiry) rather than the old
+      // reveal('wedding') shortcut that discarded the message.
+      const isTooFast = Date.now() - loadedAt < 3000;
+
+      if (!d.name || !d.email || !d.message || !fd.get('consent')) {
+        const invalid = [
+          !d.name && requiredFields.name,
+          !d.email && requiredFields.email,
+          !d.message && requiredFields.message,
+          !fd.get('consent') && requiredFields.consent,
+        ].filter(Boolean) as HTMLElement[];
+        invalid.forEach((el) => el.setAttribute('aria-invalid', 'true'));
+        showError(TXT.errRequired);
+        invalid[0]?.focus();
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)) {
+        requiredFields.email?.setAttribute('aria-invalid', 'true');
+        showError(TXT.errEmail);
+        requiredFields.email?.focus();
+        return;
+      }
 
       lastBody = buildBody(d, stream);
       const subject = `${TXT.subjectBy[stream] || 'Inquiry'} — Château de Lésigny`;
 
       // UPGRADE: set PUBLIC_INQUIRY_ENDPOINT to POST instead of mailto.
+      // Skip the optional backend POST for suspiciously-fast submissions
+      // (likely bots) — but always continue to the mailto path below so a
+      // genuine fast/autofilled submission still reaches the visitor's own
+      // mail client instead of being silently dropped.
       const endpoint = (import.meta.env as Record<string, string | undefined>).PUBLIC_INQUIRY_ENDPOINT;
-      if (endpoint) {
+      if (endpoint && !isTooFast) {
         try {
           await fetch(endpoint, {
             method: 'POST',
@@ -476,16 +522,15 @@ const desc = isFr
     font-size: var(--step-0);
     color: var(--text);
     background: var(--calcaire-2);
-    border: var(--hairline) solid var(--rule);
+    border: var(--hairline) solid color-mix(in srgb, var(--encre-soft) 70%, transparent);
     border-radius: var(--radius-s);
     padding: 0.7em 0.85em;
     transition: border-color var(--dur-fast) var(--ease-soft), box-shadow var(--dur-fast) var(--ease-soft);
   }
   .c-form input::placeholder,
-  .c-form textarea::placeholder { color: color-mix(in srgb, var(--text-muted) 70%, transparent); }
+  .c-form textarea::placeholder { color: var(--text-muted); }
   .c-form input:focus,
   .c-form textarea:focus {
-    outline: none;
     border-color: var(--laiton);
     box-shadow: inset 0 0 0 1px var(--laiton);
   }
@@ -513,7 +558,7 @@ const desc = isFr
     font-family: var(--font-ui); font-size: var(--step--1);
     padding: 0.7em 0.5em;
     background: var(--calcaire-2);
-    border: var(--hairline) solid var(--rule);
+    border: var(--hairline) solid color-mix(in srgb, var(--encre-soft) 70%, transparent);
     border-radius: var(--radius-s);
     color: var(--text-muted);
     transition: all var(--dur-fast) var(--ease-soft);

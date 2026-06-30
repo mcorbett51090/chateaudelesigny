@@ -38,7 +38,32 @@
       "WebFetch(domain:en.wikipedia.org)",
       "Bash(perl -0pi -e \"s/\\\\QLe plan du château, avant la perte des tours · {\\\\/* VERIFY datation du plan *\\\\/}\\\\E/Le plan du château, avant la perte des tours/\" \"src/pages/[locale]/histoire.astro\")",
       "Bash(curl -fsSL -A \"Mozilla/5.0 \\(research\\) chateau-site\" \"https://upload.wikimedia.org/wikipedia/commons/f/fe/Blason_L%C3%A9signy.svg\" -o src/assets/brand/crest-lesigny.svg)",
-      "Bash(echo \"exit:$?\")"
+      "Bash(echo \"exit:$?\")",
+      "Bash(git push *)",
+      "Bash(gh run *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://mcorbett51090.github.io/chateaudelesigny/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://mcorbett51090.github.io/chateaudelesigny/fr/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://mcorbett51090.github.io/chateaudelesigny/en/mariages/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://mcorbett51090.github.io/chateaudelesigny/crest-lesigny.svg)",
+      "Bash(curl -s https://mcorbett51090.github.io/chateaudelesigny/)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "WebFetch(domain:ravenpower.net)",
+      "Bash(echo \"EXIT $?\")",
+      "Bash(grep -rn 'href=\"#\\\\|href={`#\\\\|href=`#' src/pages src/components)",
+      "Bash(awk 'NR>=900 && NR<=1010' src/pages/'[locale]'/photographes.astro)",
+      "Bash(sed -n '/<script/,/<\\\\/script>/p' src/components/domaine/DomaineIndex.astro)",
+      "Bash(sed -n '/<script/,/<\\\\/script>/p' src/pages/[locale]/photographes.astro)",
+      "Bash(sed -n '/<script/,/<\\\\/script>/p' src/pages/[locale]/histoire.astro)",
+      "Bash(awk 'NR>=100 && NR<=140' src/components/domaine/DomaineIndex.astro)",
+      "Bash(cd /workspaces/chateaudelesigny)",
+      "Bash(awk 'NR>=205 && NR<=240' src/components/domaine/DomaineIndex.astro)",
+      "Bash(node *)",
+      "Bash(curl -s -m 10 -o /dev/null -w \"%{http_code}\\\\n\" https://www.chateaudelesigny.com)",
+      "Bash(curl -s -m 20 -L https://www.chateaudelesigny.com -o /tmp/claude-1000/-workspaces-chateaudelesigny/f43830f5-3bfb-4e88-b7bd-517d856c992e/scratchpad/lesigny-home.html)",
+      "Bash(curl -s -m 15 https://www.chateaudelesigny.com/sitemap.xml)",
+      "Bash(curl *)",
+      "Bash(grep -o '\"text\":\"[^\"]\\\\{40,400\\\\}\"' /tmp/claude-1000/-workspaces-chateaudelesigny/f43830f5-3bfb-4e88-b7bd-517d856c992e/scratchpad/lesigny-home.html)"
     ]
   }
 }

@@ -9,6 +9,7 @@ interface Props {
   ratio?: string;          // e.g. "3/4", "16/9", "4/5" — ignored when fill
   fill?: boolean;          // absolutely fill the positioned parent
   loading?: 'lazy' | 'eager';
+  fetchpriority?: 'high' | 'low' | 'auto';  // set 'high' on the LCP/hero image only
   sizes?: string;
   widths?: number[];
   duotone?: boolean;       // restrained warm monochrome (secondary imagery)
@@ -16,7 +17,7 @@ interface Props {
 }
 const {
   name, alt, class: cls = '', ratio, fill = false,
-  loading = 'lazy', sizes = '(max-width: 800px) 100vw, 50vw',
+  loading = 'lazy', fetchpriority, sizes = '(max-width: 800px) 100vw, 50vw',
   widths = [480, 960, 1600], duotone = false, contain = false,
 } = Astro.props;
 
@@ -25,7 +26,15 @@ const style = !fill && ratio ? `aspect-ratio:${ratio}` : undefined;
 ---
 <figure class:list={['photo', cls, { 'photo--fill': fill, 'photo--duotone': duotone, 'photo--contain': contain }]} style={style}>
   {img ? (
-    <Image src={img} alt={alt} widths={widths} sizes={sizes} loading={loading} />
+    <Image
+      src={img}
+      widths={widths}
+      sizes={sizes}
+      alt={alt}
+      loading={loading}
+      decoding={loading === 'eager' ? 'sync' : 'async'}
+      fetchpriority={fetchpriority}
+    />
   ) : (
     <span class="photo__missing" aria-hidden="true">{name}</span>
   )}

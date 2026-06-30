@@ -7,6 +7,7 @@ import portraitMarie from '../../assets/history/marie-de-medicis.jpg';
 import portraitLouis from '../../assets/history/louis-xiii.jpg';
 import portraitCatherine from '../../assets/history/catherine-de-medicis.jpg';
 import portraitConcini from '../../assets/history/concino-concini.jpg';
+import carteHero from '../../assets/history/carte-isle-de-france-1746.jpg';
 import { site } from '../../config/site';
 import { locales, type Locale, useT, localeBase } from '../../i18n/ui';
 
@@ -83,6 +84,11 @@ const timelineEntries = [
     en: `The ${site.estate.hectares}-hectare estate continues its renaissance, hosting weddings, events, and film shoots across ${site.estate.decors}+ distinct décors, ${site.address.fromParisKm} km from Paris.`,
   },
 ];
+
+// The timeline runs as normal "beats"; its final point ("Today") is held back and
+// rendered as a minimal terminus that pops out into the present-day HGTV section.
+const beats = timelineEntries.slice(0, -1);
+const todayEntry = timelineEntries[timelineEntries.length - 1];
 ---
 
 <PageLayout
@@ -102,15 +108,16 @@ const timelineEntries = [
        ═══════════════════════════════════════════════ -->
   <section class="hero" aria-labelledby="hero-heading">
     <div class="hero__bg">
-      <Photo
-        fill
-        name="exterior-ivy-autumn"
-        loading="eager"
+      <Image
+        src={carteHero}
+        class="hero__bgimg"
+        widths={[768, 1280, 1920, 2200]}
         sizes="100vw"
-        widths={[768, 1280, 1920]}
+        loading="eager"
+        fetchpriority="high"
         alt={isFr
-          ? 'Façade du Château de Lésigny habillée de lierre aux teintes d’automne'
-          : 'Façade of Château de Lésigny clad in autumn-coloured ivy'}
+          ? 'Carte ancienne du Gouvernement de l’Isle de France (1746), Lésigny aux portes de Paris'
+          : 'Antique map of the Gouvernement de l’Isle de France (1746), Lésigny at the gates of Paris'}
       />
     </div>
     <div class="hero__scrim" aria-hidden="true"></div>
@@ -183,7 +190,7 @@ const timelineEntries = [
 
       <div class="timeline-grid">
         <ol class="timeline" role="list">
-          {timelineEntries.map((entry, i) => (
+          {beats.map((entry, i) => (
             <li class="timeline__entry" id={`tl-entry-${i}`} data-tl-index={i} data-reveal>
               <p class="timeline__year" aria-label={isFr ? `Année ${entry.year}` : `Year ${entry.year}`}>
                 {entry.year}
@@ -195,7 +202,7 @@ const timelineEntries = [
 
         <aside class="timeline-rail" aria-hidden="true">
           <ol class="rail">
-            {timelineEntries.map((entry, i) => (
+            {beats.map((entry, i) => (
               <li class="rail__item" data-tl-rail={i}>
                 <span class="rail__node"></span>
                 <span class="rail__year">{entry.year}</span>
@@ -204,6 +211,79 @@ const timelineEntries = [
           </ol>
         </aside>
       </div>
+    </div>
+
+    <!-- Today terminus: the timeline's final point — minimal until reached, then
+         it pops out into the present-day Castle Impossible / HGTV section. -->
+    <div class="today">
+      <div class="wrap today__marker" data-reveal>
+        <span class="today__node" aria-hidden="true"></span>
+        <p class="today__year">{todayEntry.year}</p>
+        <p class="today__lead">{isFr ? todayEntry.fr : todayEntry.en}</p>
+        <span class="today__cue slate" aria-hidden="true">{isFr ? 'La suite, aujourd’hui' : 'The story, today'}</span>
+      </div>
+
+      <section class="today__panel is-dark" aria-labelledby="feature-heading" data-reveal>
+        <div class="wrap feature-wrap">
+          <div class="feature__text">
+            <p class="eyebrow feature__eyebrow">
+              {isFr ? 'Castle Impossible · HGTV' : 'Castle Impossible · HGTV'}
+            </p>
+            <h2 id="feature-heading" class="feature__title">
+              {isFr
+                ? 'La renaissance d’un château, saison après saison'
+                : 'A château’s renaissance, season after season'}
+            </h2>
+            <p class="feature__body">
+              {isFr
+                ? `La restauration contemporaine du château est filmée pour HGTV dans « Castle Impossible ». Daphne Reckert et Ian Figueira — « the Figs » — y redonnent vie, pièce après pièce, au domaine que Daphne a hérité de son grand-père. La première saison a été diffusée d’avril à juin 2025.`
+                : `The château’s contemporary restoration is filmed for HGTV in “Castle Impossible”. Daphne Reckert and Ian Figueira — “the Figs” — revive, room by room, the estate Daphne inherited from her grandfather. The first season aired from April to June 2025.`}
+            </p>
+            <p class="feature__body">
+              {isFr
+                ? `La deuxième saison a été lancée le mardi 26 mai 2026 : huit épisodes, en streaming dès le lendemain sur HBO Max et discovery+. Au programme — une suite nuptiale dans la tour du colombier, un salon de thé, une taverne dans les souterrains, une bibliothèque, et la restauration de la maison de gardien.`
+                : `Season two premiered on Tuesday 26 May 2026: eight episodes, streaming the next day on HBO Max and discovery+. On the agenda — a honeymoon suite in the dovecote tower, a tea salon, a dungeon tavern, a library, and the restoration of the gatehouse.`}
+            </p>
+
+            <div class="feature__actions">
+              <a
+                class="btn btn--primary"
+                href={site.social.youtube}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={isFr ? 'Voir TheBeauChateau sur YouTube (nouvelle fenêtre)' : 'Watch TheBeauChateau on YouTube (opens in new tab)'}
+              >
+                {isFr ? 'Voir sur YouTube' : 'Watch on YouTube'}
+              </a>
+              <a
+                class="btn btn--ghost feature__cta"
+                href="https://www.hgtv.com/shows/castle-impossible"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={isFr ? 'Castle Impossible sur HGTV.com (nouvelle fenêtre)' : 'Castle Impossible on HGTV.com (opens in new tab)'}
+              >
+                {isFr ? 'La série sur HGTV' : 'The series on HGTV'}
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" focusable="false">
+                  <path d="M2 2h10M12 2v10M12 2L2 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <figure class="feature__media">
+            <Photo
+              name="exterior-evening"
+              ratio="4/5"
+              alt={isFr
+                ? 'Le Château de Lésigny illuminé à la tombée du jour'
+                : 'Château de Lésigny lit at dusk'}
+            />
+            <figcaption class="feature__media-cap slate">
+              {isFr ? 'Le château, au crépuscule' : 'The château at dusk'}
+            </figcaption>
+          </figure>
+        </div>
+      </section>
     </div>
   </section>
 
@@ -645,71 +725,6 @@ const timelineEntries = [
   </section>
 
 
-  <!-- ═══════════════════════════════════════════════
-       6. CASTLE IMPOSSIBLE · HGTV
-       ═══════════════════════════════════════════════ -->
-  <section class="section feature-section is-dark" aria-labelledby="feature-heading">
-    <div class="wrap feature-wrap">
-      <div class="feature__text" data-reveal>
-        <p class="eyebrow feature__eyebrow">
-          {isFr ? 'Castle Impossible · HGTV' : 'Castle Impossible · HGTV'}
-        </p>
-        <h2 id="feature-heading" class="feature__title">
-          {isFr
-            ? 'La renaissance d’un château, saison après saison'
-            : 'A château’s renaissance, season after season'}
-        </h2>
-        <p class="feature__body">
-          {isFr
-            ? `La restauration contemporaine du château est filmée pour HGTV dans « Castle Impossible ». Daphne Reckert et Ian Figueira — « the Figs » — y redonnent vie, pièce après pièce, au domaine que Daphne a hérité de son grand-père. La première saison a été diffusée d’avril à juin 2025.`
-            : `The château’s contemporary restoration is filmed for HGTV in “Castle Impossible”. Daphne Reckert and Ian Figueira — “the Figs” — revive, room by room, the estate Daphne inherited from her grandfather. The first season aired from April to June 2025.`}
-        </p>
-        <p class="feature__body">
-          {isFr
-            ? `La deuxième saison a été lancée le mardi 26 mai 2026 : huit épisodes, en streaming dès le lendemain sur HBO Max et discovery+. Au programme — une suite nuptiale dans la tour du colombier, un salon de thé, une taverne dans les souterrains, une bibliothèque, et la restauration de la maison de gardien.`
-            : `Season two premiered on Tuesday 26 May 2026: eight episodes, streaming the next day on HBO Max and discovery+. On the agenda — a honeymoon suite in the dovecote tower, a tea salon, a dungeon tavern, a library, and the restoration of the gatehouse.`}
-        </p>
-
-        <div class="feature__actions">
-          <a
-            class="btn btn--primary"
-            href={site.social.youtube}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={isFr ? 'Voir TheBeauChateau sur YouTube (nouvelle fenêtre)' : 'Watch TheBeauChateau on YouTube (opens in new tab)'}
-          >
-            {isFr ? 'Voir sur YouTube' : 'Watch on YouTube'}
-          </a>
-          <a
-            class="btn btn--ghost feature__cta"
-            href="https://www.hgtv.com/shows/castle-impossible"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={isFr ? 'Castle Impossible sur HGTV.com (nouvelle fenêtre)' : 'Castle Impossible on HGTV.com (opens in new tab)'}
-          >
-            {isFr ? 'La série sur HGTV' : 'The series on HGTV'}
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" focusable="false">
-              <path d="M2 2h10M12 2v10M12 2L2 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-          </a>
-        </div>
-      </div>
-
-      <figure class="feature__media" data-reveal>
-        <Photo
-          name="exterior-evening"
-          ratio="4/5"
-          alt={isFr
-            ? 'Le Château de Lésigny illuminé à la tombée du jour'
-            : 'Château de Lésigny lit at dusk'}
-        />
-        <figcaption class="feature__media-cap slate">
-          {isFr ? 'Le château, au crépuscule' : 'The château at dusk'}
-        </figcaption>
-      </figure>
-    </div>
-  </section>
-
 
   <!-- ═══════════════════════════════════════════════
        7. SOFT CTA → le-domaine
@@ -779,6 +794,7 @@ const timelineEntries = [
     color: var(--ivoire);
   }
   .hero__bg { position: absolute; inset: 0; z-index: -2; }
+  .hero__bgimg { width: 100%; height: 100%; object-fit: cover; object-position: center; }
   .hero__scrim {
     position: absolute;
     inset: 0;
@@ -990,6 +1006,50 @@ const timelineEntries = [
   @media (prefers-reduced-motion: reduce) {
     .rail__node, .rail__year { transition: none; }
   }
+
+  /* ── TODAY TERMINUS — the timeline's end pops out into the HGTV present ── */
+  .today { margin-top: var(--space-2xl); }
+  .today__marker {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: var(--space-2xs, 0.45rem);
+    padding-top: var(--space-l);
+    border-top: var(--hairline) solid var(--rule);
+  }
+  .today__node {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--sang);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--sang) 20%, transparent);
+    margin-bottom: var(--space-2xs, 0.45rem);
+  }
+  .today__year {
+    font-family: var(--font-display); font-size: var(--step-3);
+    color: var(--encre); line-height: 1;
+    font-variation-settings: 'SOFT' 20, 'WONK' 0, 'opsz' 96;
+  }
+  .today__lead {
+    color: var(--text-muted); font-size: var(--step-0);
+    line-height: 1.7; max-width: 54ch; margin-inline: auto;
+  }
+  .today__cue {
+    margin-top: var(--space-2xs, 0.45rem);
+    color: var(--laiton);
+  }
+  /* The present-day panel: same dark Castle Impossible block, now the terminus. */
+  .today__panel {
+    margin-top: var(--space-xl);
+    background: var(--suie);
+    color: var(--ivoire);
+    padding-block: clamp(3rem, 8vh, 6rem);
+  }
+  /* Pop-out: the panel scales up from the marker as it scrolls into view. */
+  .today__panel[data-reveal] {
+    transform: scale(0.96) translateY(30px);
+    transform-origin: top center;
+    transition: opacity var(--dur-slow) var(--ease-cut), transform var(--dur-slow) var(--ease-cut);
+  }
+  .today__panel[data-reveal].is-in { opacity: 1; transform: none; }
 
   /* ── ESTATE BAND (image + scrim) ──────────────────── */
   .estate-band {

@@ -353,65 +353,21 @@ const galleryPlates = [
       <p id="m-testi-label" class="eyebrow m-testimonials__eyebrow" data-reveal>
         {isFr ? 'Témoignages' : 'Testimonials'}
       </p>
-      <div class="m-testi__list">
-
-        <!-- SAMPLE testimonial — replace with real -->
-        <blockquote class="m-testi" data-reveal>
-          <p class="m-testi__quote">
-            {isFr
-              ? '« Le château a sublimé notre mariage d\'une élégance rare. Chaque détail de cette journée reste gravé dans nos mémoires. »'
-              : '"The château elevated our wedding with a rare elegance. Every detail of that day remains engraved in our memory."'}
-          </p>
-          <Photo
-            name="couple-portrait"
-            alt={isFr ? 'Couple dans les jardins du château' : 'Couple in the château gardens'}
-            ratio="3/2"
-            class="m-testi__img"
-          />
-          <footer class="m-testi__footer">
-            <cite class="m-testi__name">Sophie &amp; Julien</cite>
-            <span class="m-testi__date slate">{isFr ? 'Juin 2025' : 'June 2025'}</span>
-          </footer>
-        </blockquote>
-
-        <!-- SAMPLE testimonial — replace with real -->
-        <blockquote class="m-testi" data-reveal>
-          <p class="m-testi__quote">
-            {isFr
-              ? '« Une journée hors du temps. L\'équipe a tout orchestré avec une discrétion et un professionnalisme qui nous ont touchés. »'
-              : '"A day outside of time. The team orchestrated everything with a discretion and professionalism that moved us."'}
-          </p>
-          <Photo
-            name="couple-window"
-            alt={isFr ? 'Couple près d\'une fenêtre du château' : 'Couple by a château window'}
-            ratio="3/2"
-            class="m-testi__img"
-          />
-          <footer class="m-testi__footer">
-            <cite class="m-testi__name">Marie &amp; Thomas</cite>
-            <span class="m-testi__date slate">{isFr ? 'Septembre 2024' : 'September 2024'}</span>
-          </footer>
-        </blockquote>
-
-        <!-- SAMPLE testimonial — replace with real -->
-        <blockquote class="m-testi" data-reveal>
-          <p class="m-testi__quote">
-            {isFr
-              ? '« Nos invités parlent encore de cette réception. Trouver un cadre pareil, si proche de Paris, relevait du miracle. »'
-              : '"Our guests still speak of that reception. Finding a setting like this so close to Paris felt like a miracle."'}
-          </p>
-          <Photo
-            name="couple-kiss"
-            alt={isFr ? 'Mariés s’embrassant au château' : 'Newlyweds embracing at the château'}
-            ratio="3/2"
-            class="m-testi__img"
-          />
-          <footer class="m-testi__footer">
-            <cite class="m-testi__name">Emma &amp; Nicolas</cite>
-            <span class="m-testi__date slate">{isFr ? 'Mai 2025' : 'May 2025'}</span>
-          </footer>
-        </blockquote>
-
+      <!-- Real, attributed testimonials will live here. The live site has none to
+           seed yet, so we point couples to the venue's actual review channels
+           rather than ship fabricated quotes. -->
+      <p class="m-testi__lead" data-reveal style="max-width:58ch;color:var(--text-muted);line-height:1.7;">
+        {isFr
+          ? 'Les retours de nos couples vivent sur nos réseaux et nos plateformes partenaires. De véritables témoignages, attribués, seront mis à l’honneur ici prochainement.'
+          : 'Our couples’ words live on our social channels and partner platforms. Real, attributed testimonials will be featured here soon.'}
+      </p>
+      <div class="m-testi__actions" data-reveal style="display:flex;gap:var(--space-s);flex-wrap:wrap;margin-top:var(--space-m);">
+        <a class="btn btn--primary" href={site.social.instagram} target="_blank" rel="noopener noreferrer">
+          {isFr ? 'Nos mariages sur Instagram' : 'Our weddings on Instagram'}
+        </a>
+        <a class="btn btn--ghost" href={site.social.mariagesnet} target="_blank" rel="noopener noreferrer">
+          {isFr ? 'Avis · Mariages.net' : 'Reviews · Mariages.net'}
+        </a>
       </div>
     </div>
   </section>

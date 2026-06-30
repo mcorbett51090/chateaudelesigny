@@ -5,7 +5,7 @@ const t = useT(current);
 const target: Locale = current === 'fr' ? 'en' : 'fr';
 const href = withLocale(Astro.url.pathname, target);
 ---
-<a class="lang" href={href} hreflang={target} aria-label={t('lang.label')}>
+<a class="lang" href={href} hreflang={target}>
   <span aria-hidden="true" class="lang__code">{target.toUpperCase()}</span>
   <span class="visually-hidden">{t('lang.switch')}</span>
 </a>

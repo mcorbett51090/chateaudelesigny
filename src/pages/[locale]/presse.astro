@@ -360,6 +360,9 @@ const estateHighlights = [
     radial-gradient(110% 70% at 50% -5%, var(--calcaire-2), transparent 55%),
     linear-gradient(180deg, var(--calcaire-2), var(--pierre));
   padding-block: clamp(4rem, 11vh, 8rem) var(--space-xl);
+  min-height: auto; /* overrides global `main > section:first-of-type { min-height: 100svh }`:
+                        this hero is text-only with no background image, so it should size to
+                        its content instead of force-stretching to the full viewport. */
 }
 .presse-hero__eyebrow { margin-bottom: var(--space-m); }
 .presse-hero__title   { max-width: 24ch; }

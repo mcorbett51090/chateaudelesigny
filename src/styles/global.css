@@ -90,7 +90,7 @@ img, picture, svg, video { display: block; max-width: 100%; height: auto; }
 .btn--primary:hover { background: var(--sang-deep); }
 .btn--ghost {
   background: transparent; color: var(--text);
-  box-shadow: inset 0 0 0 1px var(--rule);
+  box-shadow: inset 0 0 0 1px var(--laiton-deep);
 }
 .btn--ghost:hover { box-shadow: inset 0 0 0 1px var(--laiton); }
 .btn:active { transform: translateY(1px); }

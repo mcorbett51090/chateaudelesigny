@@ -17,6 +17,8 @@
   --sang-deep: #561a26;     /* oxblood hover */
   --laiton: #a98b5d;        /* brass — hairline rules / dividers ONLY, never fills */
   --laiton-soft: #c7ad84;   /* brass on dark */
+  --laiton-deep: #886e51;   /* darker brass — resting border for actionable controls;
+                                ≥3:1 vs both --pierre (light canvas) and --suie (dark panel) */
   --ivoire: #f6f1e7;        /* ivory — text on oxblood / on suie */
 
   /* --- Semantic --- */
@@ -26,7 +28,7 @@
   --text-muted: var(--encre-soft);
   --accent: var(--sang);
   --rule: color-mix(in srgb, var(--laiton) 55%, transparent);
-  --focus: #2f6f7a;          /* teal focus ring — visible on stone & dark (AA) */
+  --focus: #3f8a97;          /* teal focus ring — visible on stone & dark (AA); ≥3:1 on --suie and --pierre */
 
   /* --- Type families (self-hosted via @fontsource) --- */
   --font-display: 'Fraunces Variable', 'Fraunces', Georgia, serif;

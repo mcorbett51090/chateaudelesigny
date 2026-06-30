@@ -57,6 +57,7 @@ export const ui = {
     'nav.photographes': 'Photography',
     'nav.histoire': 'History',
     'nav.presse': 'Press',
+    'nav.social': 'Social',
     'nav.contact': 'Contact',
     'cta.inquiry': 'Enquire',
     'cta.discover': 'Discover',

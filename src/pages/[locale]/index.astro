@@ -36,7 +36,7 @@ const desc = t('home.hero.sub');
   <!-- Hero -->
   <section class="hero">
     <div class="hero__media">
-      <Photo name="exterior-aerial" fill loading="eager" widths={[1100, 1700, 2400]} sizes="100vw"
+      <Photo name="exterior-aerial" fill loading="eager" fetchpriority="high" widths={[1100, 1700, 2400]} sizes="100vw"
         alt={isFr ? 'Vue aérienne du domaine de 54 hectares et du château' : 'Aerial view of the 54-hectare estate and château'} />
     </div>
     <div class="hero__scrim" aria-hidden="true"></div>
@@ -143,7 +143,7 @@ const desc = t('home.hero.sub');
   .plate__media { overflow: hidden; margin-bottom: var(--space-s); box-shadow: inset 0 0 0 1px var(--rule); }
   .plate__media :global(.photo :global(img)) { transition: transform var(--dur-slow) var(--ease-cut); }
   .plate:hover .plate__media :global(img) { transform: scale(1.04); }
-  .plate__n { color: var(--laiton); }
+  .plate__n { color: var(--text-muted); }
   .plate__title { font-size: var(--step-2); }
   .plate__line { color: var(--text-muted); margin-block: var(--space-3xs) var(--space-2xs); }
   .plate__more { font-family: var(--font-ui); font-size: var(--step--1); letter-spacing: 0.04em; }
