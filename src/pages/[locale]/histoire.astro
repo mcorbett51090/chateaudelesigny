@@ -3,6 +3,10 @@ import { Image } from 'astro:assets';
 import PageLayout from '../../layouts/PageLayout.astro';
 import Photo from '../../components/Photo.astro';
 import portraitGaligai from '../../assets/history/leonora-galigai.jpg';
+import portraitMarie from '../../assets/history/marie-de-medicis.jpg';
+import portraitLouis from '../../assets/history/louis-xiii.jpg';
+import portraitCatherine from '../../assets/history/catherine-de-medicis.jpg';
+import portraitConcini from '../../assets/history/concino-concini.jpg';
 import { site } from '../../config/site';
 import { locales, type Locale, useT, localeBase } from '../../i18n/ui';
 
@@ -130,21 +134,35 @@ const timelineEntries = [
         </p>
       </div>
 
-      <figure class="hero__portrait" data-reveal>
-        <div class="hero__frame">
-          <Image
-            src={portraitGaligai}
-            alt={isFr
-              ? 'Portrait de Léonora Galigaï, maîtresse du château et figure de son âge d’or, peint vers 1614'
-              : 'Portrait of Léonora Galigaï, mistress of the château and figure of its golden age, painted around 1614'}
-            widths={[320, 457]}
-            sizes="(max-width: 860px) 60vw, 22rem"
-          />
+      <figure class="hero__collage" data-reveal>
+        <div class="hero__collage-stack">
+          <div class="pcard pcard--marie">
+            <Image src={portraitMarie} widths={[180, 360]} sizes="(max-width: 860px) 26vw, 9rem"
+              alt={isFr ? 'Portrait de Marie de Médicis, reine de France' : 'Portrait of Marie de’ Medici, Queen of France'} />
+          </div>
+          <div class="pcard pcard--louis">
+            <Image src={portraitLouis} widths={[180, 360]} sizes="(max-width: 860px) 26vw, 9rem"
+              alt={isFr ? 'Portrait du roi Louis XIII' : 'Portrait of King Louis XIII'} />
+          </div>
+          <div class="pcard pcard--catherine">
+            <Image src={portraitCatherine} widths={[160, 320]} sizes="(max-width: 860px) 22vw, 8rem"
+              alt={isFr ? 'Portrait de Catherine de Médicis' : 'Portrait of Catherine de’ Medici'} />
+          </div>
+          <div class="pcard pcard--concini">
+            <Image src={portraitConcini} widths={[160, 320]} sizes="(max-width: 860px) 22vw, 8rem"
+              alt={isFr ? 'Portrait de Concino Concini, maréchal d’Ancre' : 'Portrait of Concino Concini, Maréchal d’Ancre'} />
+          </div>
+          <div class="pcard pcard--galigai">
+            <Image src={portraitGaligai} widths={[260, 457]} sizes="(max-width: 860px) 34vw, 12rem"
+              alt={isFr
+                ? 'Portrait de Léonora Galigaï, maîtresse du château et figure de son âge d’or, peint vers 1614'
+                : 'Portrait of Léonora Galigaï, mistress of the château and figure of its golden age, painted around 1614'} />
+          </div>
         </div>
         <figcaption class="hero__portrait-cap slate">
           {isFr
-            ? 'Léonora Galigaï · v.1614 · domaine public'
-            : 'Léonora Galigaï · c.1614 · public domain'}
+            ? 'Figures de Lésigny — Galigaï, Concini, Louis XIII, Marie & Catherine de Médicis · XVIᵉ–XVIIᵉ s. · domaine public'
+            : 'Figures of Lésigny — Galigaï, Concini, Louis XIII, Marie & Catherine de’ Medici · 16th–17th c. · public domain'}
         </figcaption>
       </figure>
     </div>
@@ -779,26 +797,47 @@ const timelineEntries = [
   .hero__title { display: grid; gap: var(--space-m); }
   .hero__eyebrow { color: var(--laiton-soft); }
 
-  /* Featured historical portrait — museum title-wall framing */
-  .hero__portrait {
+  /* Featured historical collage — scattered archival portraits, brass-framed */
+  .hero__collage {
     margin: 0;
     justify-self: end;
-    width: clamp(13rem, 24vw, 22rem);
+    width: clamp(16rem, 30vw, 26rem);
     max-width: 100%;
   }
-  .hero__frame {
-    padding: clamp(0.4rem, 0.8vw, 0.7rem);
+  .hero__collage-stack {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+  }
+  .pcard {
+    position: absolute;
+    padding: clamp(0.25rem, 0.5vw, 0.4rem);
     border: 1px solid var(--laiton);
     background: linear-gradient(135deg,
-      color-mix(in srgb, var(--laiton) 22%, transparent),
+      color-mix(in srgb, var(--laiton) 24%, transparent),
       color-mix(in srgb, var(--laiton-soft) 10%, transparent));
-    box-shadow: 0 24px 60px -28px rgba(0, 0, 0, 0.85);
+    box-shadow: 0 22px 46px -26px rgba(0, 0, 0, 0.9);
+    transition: transform var(--dur-mid) var(--ease-soft), box-shadow var(--dur-mid) var(--ease-soft);
   }
-  .hero__frame :global(img) {
+  .pcard :global(img) {
     display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
     border: 1px solid color-mix(in srgb, var(--laiton-soft) 55%, transparent);
+  }
+  /* positions are % of the square stack; the anchor (Galigaï) sits front & centre */
+  .pcard--galigai   { width: 46%; left: 27%; top: 19%; aspect-ratio: 3/4; z-index: 5; transform: rotate(-2deg); }
+  .pcard--marie     { width: 38%; left: 1%;  top: 2%;  aspect-ratio: 3/4; z-index: 3; transform: rotate(-7deg); }
+  .pcard--louis     { width: 38%; left: 60%; top: 3%;  aspect-ratio: 3/4; z-index: 4; transform: rotate(6deg); }
+  .pcard--catherine { width: 33%; left: 5%;  top: 51%; aspect-ratio: 3/4; z-index: 3; transform: rotate(5deg); }
+  .pcard--concini   { width: 31%; left: 62%; top: 55%; aspect-ratio: 3/4; z-index: 2; transform: rotate(-6deg); }
+  /* gentle lift of the anchor on hover (pointer devices only) */
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .hero__collage:hover .pcard--galigai { transform: rotate(-2deg) translateY(-4px) scale(1.02); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pcard { transform: none !important; }
   }
   .hero__portrait-cap {
     display: block;
@@ -1083,25 +1122,47 @@ const timelineEntries = [
 
   /* ── RESPONSIVE ──────────────────────────────────── */
   @media (max-width: 860px) {
-    /* Collapse to a single column; rail moves above as an inline overview */
+    /* Single column. Drop the redundant condensed rail — the entries below ARE
+       the timeline — and connect them with a real vertical timeline line. */
     .timeline-grid {
       grid-template-columns: 1fr;
-      gap: var(--space-xl);
+      gap: 0;
     }
-    .timeline-rail {
-      position: static;
-      order: -1;
-      padding-bottom: var(--space-m);
-      border-bottom: var(--hairline) solid var(--rule);
+    .timeline-rail { display: none; }
+
+    .timeline {
+      position: relative;
+      gap: 0;
+      padding-left: 1.9rem;
     }
-    .rail {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-s) var(--space-m);
+    .timeline::before {                 /* connecting line */
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: calc(var(--space-l) + 0.35rem);
+      bottom: calc(var(--space-l) + 0.35rem);
+      width: var(--hairline);
+      background: color-mix(in srgb, var(--laiton) 45%, transparent);
     }
-    .rail::before { content: none; }
-    .rail__item { padding-left: 1rem; }
-    .rail__node { left: 0; }
+    .timeline__entry {
+      position: relative;
+      padding-block: var(--space-l);
+      gap: var(--space-2xs, 0.45rem);
+    }
+    .timeline__entry::before {          /* node, aligned to the year */
+      content: '';
+      position: absolute;
+      left: -1.9rem;
+      top: calc(var(--space-l) + 0.35rem);
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--calcaire);
+      border: var(--hairline) solid var(--laiton);
+    }
+    .timeline__entry + .timeline__entry {
+      border-top: var(--hairline) solid var(--rule);
+    }
 
     .feature-wrap { grid-template-columns: 1fr; gap: var(--space-xl); }
     .treasure-wrap { grid-template-columns: 1fr; gap: var(--space-xl); }
@@ -1113,12 +1174,12 @@ const timelineEntries = [
       justify-items: start;
       gap: var(--space-xl);
     }
-    .hero__portrait {
+    .hero__collage {
       order: -1;
-      justify-self: start;
-      width: clamp(11rem, 42vw, 16rem);
+      justify-self: center;
+      width: min(82vw, 22rem);
     }
-    .hero__portrait-cap { text-align: left; }
+    .hero__portrait-cap { text-align: center; }
   }
 
   @media (max-width: 540px) {
