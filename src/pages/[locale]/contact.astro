@@ -1,0 +1,610 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import Photo from '../../components/Photo.astro';
+import { site } from '../../config/site';
+import { locales, type Locale, useT } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return locales.map((locale) => ({ params: { locale } }));
+}
+
+const { locale } = Astro.params as { locale: Locale };
+const t = useT(locale);
+const isFr = locale === 'fr';
+
+const { lat, lng } = site.address;
+const maps = {
+  google: `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`,
+  waze: `https://waze.com/ul?ll=${lat},${lng}&navigate=yes`,
+  apple: `https://maps.apple.com/?ll=${lat},${lng}&q=${encodeURIComponent(site.name)}`,
+};
+
+const streams = [
+  { value: 'wedding', label: isFr ? 'Mariage · Événement' : 'Wedding · Event' },
+  { value: 'film', label: isFr ? 'Tournage' : 'Filming' },
+  { value: 'photo', label: isFr ? 'Séance photo' : 'Photo shoot' },
+];
+
+const title = `${site.name} — ${isFr ? 'Contact & demande de projet' : 'Contact & project inquiry'}`;
+const desc = isFr
+  ? 'Parlons de votre projet : mariage, tournage ou séance photo. Contact direct, ligne événements et cinéma, plan d’accès — à 24 km de Paris.'
+  : 'Let’s talk about your project: wedding, film or photo shoot. Direct contact, events and film lines, how to find us — 24 km from Paris.';
+---
+<PageLayout title={title} description={desc} locale={locale} path="contact/">
+  <section class="c-head">
+    <Photo
+      name="exterior-facade"
+      alt={isFr
+        ? 'La façade du Château de Lésigny entourée de sa verdure'
+        : 'The façade of Château de Lésigny surrounded by its grounds'}
+      fill
+      duotone
+      loading="eager"
+      sizes="100vw"
+      widths={[800, 1400, 1920]}
+    />
+    <div class="c-head__scrim" aria-hidden="true"></div>
+    <div class="wrap-wide c-head__content">
+      <p class="eyebrow" data-reveal>{isFr ? 'Contact' : 'Contact'}</p>
+      <h1 class="c-head__title" data-reveal>{t('contact.title')}</h1>
+      <p class="c-head__sub" data-reveal>
+        {isFr
+          ? 'Une demande, une visite, une question de production : écrivez-nous quelques lignes. Nous vous répondons sous 48 heures ouvrées.'
+          : 'An inquiry, a visit, a production question: send us a few lines. We reply within 48 working hours.'}
+      </p>
+    </div>
+    <div class="wrap-wide c-head__content"><hr class="rule c-head__rule" /></div>
+  </section>
+
+  <section class="section c-body">
+    <div class="wrap-wide c-grid">
+      <!-- LEFT: single-step inquiry form -->
+      <div class="c-form-col" data-reveal>
+        <h2 class="c-form__h">{isFr ? 'Votre demande' : 'Your inquiry'}</h2>
+
+        <form
+          id="inquiry"
+          class="c-form flow"
+          novalidate
+          data-email={site.contact.email}
+          data-phone-events={site.contact.phoneEvents}
+          data-phone-cinema={site.contact.phoneCinema}
+        >
+          <!-- Segmented stream selector (native radios, keyboard-operable) -->
+          <fieldset class="c-seg">
+            <legend class="c-label">{isFr ? 'Nature du projet' : 'Type of project'}</legend>
+            <div class="c-seg__group" role="radiogroup">
+              {streams.map((s, i) => (
+                <label class="c-seg__opt">
+                  <input type="radio" name="stream" value={s.value} required checked={i === 0} />
+                  <span class="c-seg__pill">{s.label}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <div class="c-field">
+            <label class="c-label" for="f-name">{isFr ? 'Nom complet' : 'Full name'}</label>
+            <input id="f-name" name="name" type="text" autocomplete="name" required
+              placeholder={isFr ? 'Prénom et nom' : 'First and last name'} />
+          </div>
+
+          <div class="c-row">
+            <div class="c-field">
+              <label class="c-label" for="f-email">{isFr ? 'Adresse e-mail' : 'Email address'}</label>
+              <input id="f-email" name="email" type="email" autocomplete="email" required
+                placeholder={isFr ? 'vous@exemple.com' : 'you@example.com'} />
+            </div>
+            <div class="c-field">
+              <label class="c-label" for="f-phone">{isFr ? 'Téléphone' : 'Phone'}</label>
+              <div class="c-phone">
+                <input id="f-cc" name="cc" type="text" inputmode="tel" class="c-phone__cc"
+                  value="+33" aria-label={isFr ? 'Indicatif pays' : 'Country code'} />
+                <input id="f-phone" name="phone" type="tel" autocomplete="tel" class="c-phone__num"
+                  placeholder={isFr ? '6 12 34 56 78' : '6 12 34 56 78'} />
+              </div>
+            </div>
+          </div>
+
+          <div class="c-row">
+            <div class="c-field">
+              <label class="c-label" for="f-date">{isFr ? 'Date souhaitée' : 'Preferred date'}</label>
+              <input id="f-date" name="date" type="date" class="c-date" />
+            </div>
+            <div class="c-field" id="f-guests-wrap" hidden>
+              <label class="c-label" for="f-guests">{isFr ? 'Nombre d’invités' : 'Guest count'}</label>
+              <input id="f-guests" name="guests" type="number" min="1" max="400" inputmode="numeric"
+                placeholder={isFr ? 'ex. 120' : 'e.g. 120'} />
+            </div>
+          </div>
+
+          <div class="c-field">
+            <label class="c-label" for="f-message">{isFr ? 'Votre projet' : 'Your project'}</label>
+            <textarea id="f-message" name="message" rows="5" required
+              placeholder={isFr
+                ? 'Décrivez votre projet en quelques mots : dates, format, nombre de personnes…'
+                : 'Tell us about your project in a few words: dates, format, number of people…'}></textarea>
+          </div>
+
+          <!-- Honeypot: hidden from humans, tempting to bots. Never filled legitimately. -->
+          <div class="c-hp" aria-hidden="true">
+            <label for="f-company">Company</label>
+            <input id="f-company" name="company" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <label class="c-consent">
+            <input type="checkbox" name="consent" required />
+            <span>
+              {isFr
+                ? 'J’accepte que mes données soient utilisées pour traiter ma demande, conformément à la politique de confidentialité. Elles ne seront jamais cédées à des tiers.'
+                : 'I agree that my data may be used to handle my request, in accordance with the privacy policy. It will never be shared with third parties.'}
+            </span>
+          </label>
+
+          <div class="c-actions">
+            <button type="submit" class="btn btn--primary">
+              {isFr ? 'Envoyer la demande' : 'Send inquiry'}
+            </button>
+            <p class="c-actions__note slate">
+              {isFr ? 'Ouvre votre messagerie · réponse sous 48 h' : 'Opens your mail app · reply within 48 h'}
+            </p>
+          </div>
+
+          <p class="c-error slate" id="c-error" role="alert" hidden></p>
+        </form>
+
+        <!-- Inline confirmation (no redirect) -->
+        <div class="c-confirm" id="c-confirm" role="status" aria-live="polite" tabindex="-1" hidden>
+          <p class="eyebrow c-confirm__eyebrow">{isFr ? 'Demande prête' : 'Inquiry ready'}</p>
+          <h2 class="c-confirm__h">{isFr ? 'Merci — votre message est prêt à partir.' : 'Thank you — your message is ready to send.'}</h2>
+          <p class="c-confirm__p">
+            {isFr
+              ? 'Votre logiciel de messagerie devrait s’être ouvert avec le message pré-rempli. S’il ne s’est pas ouvert, copiez le message ci-dessous ou écrivez-nous directement.'
+              : 'Your mail app should have opened with the message pre-filled. If it didn’t, copy the message below or write to us directly.'}
+          </p>
+          <div class="c-confirm__actions">
+            <button type="button" class="btn btn--ghost" id="c-copy" data-default={isFr ? 'Copier le message' : 'Copy message'} data-done={isFr ? 'Copié ✓' : 'Copied ✓'}>
+              {isFr ? 'Copier le message' : 'Copy message'}
+            </button>
+            <a class="btn btn--ghost" id="c-mailto" href={`mailto:${site.contact.email}`}>
+              {isFr ? 'Ré-ouvrir l’e-mail' : 'Re-open email'}
+            </a>
+          </div>
+          <p class="c-confirm__direct slate">
+            {isFr ? 'Ou écrivez-nous : ' : 'Or email us: '}
+            <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
+            <span class="c-confirm__phone" id="c-confirm-phone"></span>
+          </p>
+        </div>
+      </div>
+
+      <!-- RIGHT: always-visible direct contact + location -->
+      <aside class="c-aside" data-reveal>
+        <div class="c-card">
+          <p class="eyebrow">{t('contact.direct')}</p>
+
+          <ul class="c-lines">
+            <li class="c-line">
+              <span class="c-line__k slate">{isFr ? 'Ligne événements' : 'Events line'}</span>
+              <a class="c-line__v" href={`tel:${site.contact.phoneEvents.replace(/\s+/g, '')}`}>{site.contact.phoneEvents}</a>
+            </li>
+            <li class="c-line">
+              <span class="c-line__k slate">{isFr ? 'Ligne cinéma' : 'Film line'}</span>
+              <a class="c-line__v" href={`tel:${site.contact.phoneCinema.replace(/\s+/g, '')}`}>{site.contact.phoneCinema}</a>
+            </li>
+            <li class="c-line">
+              <span class="c-line__k slate">{isFr ? 'E-mail' : 'Email'}</span>
+              <a class="c-line__v" href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
+            </li>
+            <li class="c-line">
+              <span class="c-line__k slate">{isFr ? 'Interlocutrice' : 'Your contact'}</span>
+              <span class="c-line__v c-line__v--plain">{site.contact.manager}</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Static branded location panel (no map tiles, no accounts) -->
+        <div class="c-card c-loc">
+          <p class="eyebrow">{isFr ? 'Accès' : 'Getting here'}</p>
+
+          <svg class="c-plan" viewBox="0 0 320 200" role="img"
+            aria-label={isFr ? 'Plan stylisé situant le château' : 'Stylised plan locating the château'}>
+            <rect class="c-plan__bg" x="0" y="0" width="320" height="200" />
+            <g class="c-plan__grid">
+              <path d="M0 60 H320 M0 130 H320 M90 0 V200 M210 0 V200" />
+              <rect x="14" y="14" width="62" height="32" />
+              <rect x="232" y="146" width="70" height="40" />
+              <rect x="104" y="150" width="40" height="36" />
+            </g>
+            <path class="c-plan__allee" d="M30 200 C 110 150, 150 120, 160 96" />
+            <circle class="c-plan__halo" cx="160" cy="92" r="30" />
+            <g transform="translate(160 92)">
+              <path class="c-plan__pin" d="M0 14 C 9 2, 11 -2, 11 -7 A 11 11 0 1 0 -11 -7 C -11 -2, -9 2, 0 14 Z" />
+              <circle class="c-plan__pin-dot" cx="0" cy="-7" r="4" />
+            </g>
+            <text class="c-plan__label" x="160" y="132" text-anchor="middle">{site.name.toUpperCase()}</text>
+          </svg>
+
+          <address class="c-addr">
+            {site.address.street}<br />
+            {site.address.postalCode} {site.address.city}, {site.address.region}<br />
+            <span class="slate c-addr__note">{isFr ? '24 km au sud-est de Paris' : '24 km south-east of Paris'}</span>
+          </address>
+
+          <div class="c-loc__links">
+            <a class="btn btn--ghost c-loc__btn" href={maps.google} target="_blank" rel="noopener noreferrer">{isFr ? 'Ouvrir dans Google Maps' : 'Open in Google Maps'}</a>
+            <a class="btn btn--ghost c-loc__btn" href={maps.waze} target="_blank" rel="noopener noreferrer">Waze</a>
+            <a class="btn btn--ghost c-loc__btn" href={maps.apple} target="_blank" rel="noopener noreferrer">{isFr ? 'Apple Plans' : 'Apple Maps'}</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+</PageLayout>
+
+<script>
+  // ── Inquiry form: dependency-free, account-free submit adapter ───────────────
+  // Default path = mailto: (works with zero backend). Optional POST upgrade below.
+  const form = document.getElementById('inquiry') as HTMLFormElement | null;
+  const confirmEl = document.getElementById('c-confirm');
+  const errorEl = document.getElementById('c-error');
+  const guestsWrap = document.getElementById('f-guests-wrap');
+  const copyBtn = document.getElementById('c-copy') as HTMLButtonElement | null;
+  const mailtoLink = document.getElementById('c-mailto') as HTMLAnchorElement | null;
+  const confirmPhone = document.getElementById('c-confirm-phone');
+
+  if (form) {
+    const isFr = document.documentElement.lang === 'fr';
+    const loadedAt = Date.now();
+    let lastBody = '';
+
+    const TXT = isFr
+      ? {
+          stream: 'Nature du projet', name: 'Nom', email: 'E-mail', phone: 'Téléphone',
+          date: 'Date souhaitée', guests: 'Nombre d’invités', message: 'Message',
+          subjectBy: { wedding: 'Demande mariage / événement', film: 'Demande tournage', photo: 'Demande séance photo' } as Record<string, string>,
+          streamLabel: { wedding: 'Mariage · Événement', film: 'Tournage', photo: 'Séance photo' } as Record<string, string>,
+          errRequired: 'Merci de remplir tous les champs requis et d’accepter la politique de confidentialité.',
+          errEmail: 'Merci de saisir une adresse e-mail valide.',
+          phoneNote: ' · ou par téléphone : ',
+        }
+      : {
+          stream: 'Type of project', name: 'Name', email: 'Email', phone: 'Phone',
+          date: 'Preferred date', guests: 'Guest count', message: 'Message',
+          subjectBy: { wedding: 'Wedding / event inquiry', film: 'Filming inquiry', photo: 'Photo shoot inquiry' } as Record<string, string>,
+          streamLabel: { wedding: 'Wedding · Event', film: 'Filming', photo: 'Photo shoot' } as Record<string, string>,
+          errRequired: 'Please complete all required fields and accept the privacy policy.',
+          errEmail: 'Please enter a valid email address.',
+          phoneNote: ' · or by phone: ',
+        };
+
+    const phoneEvents = form.dataset.phoneEvents || '';
+    const phoneCinema = form.dataset.phoneCinema || '';
+    const toEmail = form.dataset.email || '';
+    const phoneFor = (stream: string) => (stream === 'film' ? phoneCinema : phoneEvents);
+
+    // Progressive disclosure: guest count only for weddings/events.
+    const syncGuests = () => {
+      const stream = (form.querySelector('input[name="stream"]:checked') as HTMLInputElement | null)?.value;
+      if (guestsWrap) guestsWrap.hidden = stream !== 'wedding';
+    };
+    form.querySelectorAll('input[name="stream"]').forEach((r) => r.addEventListener('change', syncGuests));
+
+    // Pre-select stream from ?stream=wedding|film|photo (read client-side).
+    const qsStream = new URLSearchParams(location.search).get('stream');
+    if (qsStream && ['wedding', 'film', 'photo'].includes(qsStream)) {
+      const radio = form.querySelector(`input[name="stream"][value="${qsStream}"]`) as HTMLInputElement | null;
+      if (radio) radio.checked = true;
+    }
+    syncGuests();
+
+    const showError = (msg: string) => {
+      if (!errorEl) return;
+      errorEl.textContent = msg;
+      errorEl.hidden = false;
+    };
+
+    const buildBody = (d: Record<string, string>, stream: string) => {
+      const lines = [
+        `${TXT.stream}: ${TXT.streamLabel[stream] || stream}`,
+        `${TXT.name}: ${d.name}`,
+        `${TXT.email}: ${d.email}`,
+        `${TXT.phone}: ${d.phone || '—'}`,
+        `${TXT.date}: ${d.date || '—'}`,
+      ];
+      if (stream === 'wedding') lines.push(`${TXT.guests}: ${d.guests || '—'}`);
+      lines.push('', `${TXT.message}:`, d.message || '—');
+      return lines.join('\n');
+    };
+
+    const copyToClipboard = async (text: string) => {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        let ok = false;
+        try { ok = document.execCommand('copy'); } catch { ok = false; }
+        document.body.removeChild(ta);
+        return ok;
+      }
+    };
+
+    if (copyBtn) {
+      copyBtn.addEventListener('click', async () => {
+        const ok = await copyToClipboard(lastBody);
+        if (ok) {
+          copyBtn.textContent = copyBtn.dataset.done || 'Copied';
+          setTimeout(() => { copyBtn.textContent = copyBtn.dataset.default || 'Copy'; }, 2200);
+        }
+      });
+    }
+
+    const reveal = (stream: string) => {
+      if (mailtoLink) {
+        const subject = `${TXT.subjectBy[stream] || 'Inquiry'} — Château de Lésigny`;
+        mailtoLink.href = `mailto:${toEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lastBody)}`;
+      }
+      if (confirmPhone) confirmPhone.textContent = `${TXT.phoneNote}${phoneFor(stream)}`;
+      if (confirmEl) {
+        confirmEl.hidden = false;
+        form.hidden = true;
+        (confirmEl as HTMLElement).focus();
+      }
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (errorEl) errorEl.hidden = true;
+
+      const fd = new FormData(form);
+
+      // Spam: honeypot must be empty.
+      if ((fd.get('company') as string)?.trim()) { reveal('wedding'); return; }
+      // Spam: time-trap — humans take longer than 3s to fill this in.
+      if (Date.now() - loadedAt < 3000) { reveal('wedding'); return; }
+
+      const stream = (fd.get('stream') as string) || 'wedding';
+      const cc = ((fd.get('cc') as string) || '').trim();
+      const rawPhone = ((fd.get('phone') as string) || '').trim();
+      const d = {
+        name: ((fd.get('name') as string) || '').trim(),
+        email: ((fd.get('email') as string) || '').trim(),
+        phone: rawPhone ? `${cc} ${rawPhone}`.trim() : '',
+        date: (fd.get('date') as string) || '',
+        guests: (fd.get('guests') as string) || '',
+        message: ((fd.get('message') as string) || '').trim(),
+      };
+
+      if (!d.name || !d.email || !d.message || !fd.get('consent')) { showError(TXT.errRequired); return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)) { showError(TXT.errEmail); return; }
+
+      lastBody = buildBody(d, stream);
+      const subject = `${TXT.subjectBy[stream] || 'Inquiry'} — Château de Lésigny`;
+
+      // UPGRADE: set PUBLIC_INQUIRY_ENDPOINT to POST instead of mailto.
+      const endpoint = (import.meta.env as Record<string, string | undefined>).PUBLIC_INQUIRY_ENDPOINT;
+      if (endpoint) {
+        try {
+          await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ stream, subject, ...d }),
+          });
+        } catch { /* fall through to mailto so the user is never stuck */ }
+      }
+
+      // Default, account-free path: open the user’s mail client, pre-filled.
+      const href = `mailto:${toEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lastBody)}`;
+      window.location.href = href;
+
+      // Always show the confirmation + copy fallback (mailto can’t be detected reliably).
+      reveal(stream);
+    });
+  }
+</script>
+
+<style>
+  .c-head {
+    position: relative;
+    overflow: hidden;
+    min-height: clamp(18rem, 40vh, 28rem);
+    padding-block: clamp(3rem, 9vh, 6rem) 0;
+  }
+  /* Dark gradient scrim — keeps text legible at any viewport */
+  .c-head__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(8, 6, 4, 0.58) 0%,
+      rgba(8, 6, 4, 0.44) 50%,
+      rgba(8, 6, 4, 0.68) 100%
+    );
+    pointer-events: none;
+  }
+  /* Lift text content above photo + scrim */
+  .c-head__content {
+    position: relative;
+    z-index: 1;
+  }
+  /* Ivory text over the photo */
+  .c-head .eyebrow { color: rgba(245, 238, 218, 0.72); }
+  .c-head__title { max-width: 18ch; margin-top: var(--space-m); color: var(--ivoire); }
+  .c-head__sub {
+    font-size: var(--step-1); color: rgba(245, 238, 218, 0.80);
+    max-width: 52ch; margin-top: var(--space-m);
+  }
+  .c-head__rule {
+    margin-top: var(--space-l);
+    border-color: rgba(245, 238, 218, 0.18);
+  }
+
+  .c-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.85fr);
+    gap: clamp(var(--space-l), 5vw, var(--space-2xl));
+    align-items: start;
+  }
+
+  /* ── Form ─────────────────────────────────────────────────────────────── */
+  .c-form__h { font-size: var(--step-2); margin-bottom: var(--space-m); }
+  .c-label {
+    display: block;
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    margin-bottom: var(--space-2xs);
+  }
+  .c-field { display: block; }
+  .c-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-m); }
+
+  .c-form input[type='text'],
+  .c-form input[type='email'],
+  .c-form input[type='tel'],
+  .c-form input[type='number'],
+  .c-form input[type='date'],
+  .c-form textarea {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: var(--step-0);
+    color: var(--text);
+    background: var(--calcaire-2);
+    border: var(--hairline) solid var(--rule);
+    border-radius: var(--radius-s);
+    padding: 0.7em 0.85em;
+    transition: border-color var(--dur-fast) var(--ease-soft), box-shadow var(--dur-fast) var(--ease-soft);
+  }
+  .c-form input::placeholder,
+  .c-form textarea::placeholder { color: color-mix(in srgb, var(--text-muted) 70%, transparent); }
+  .c-form input:focus,
+  .c-form textarea:focus {
+    outline: none;
+    border-color: var(--laiton);
+    box-shadow: inset 0 0 0 1px var(--laiton);
+  }
+  .c-form textarea { resize: vertical; min-height: 7rem; line-height: 1.5; }
+  .c-date { color-scheme: light; }
+
+  .c-phone { display: grid; grid-template-columns: 4.5rem 1fr; gap: var(--space-2xs); }
+  .c-phone__cc { text-align: center; }
+
+  /* Segmented stream control */
+  .c-seg { border: 0; padding: 0; margin: 0; }
+  .c-seg__group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2xs);
+    margin-top: var(--space-3xs);
+  }
+  .c-seg__opt { position: relative; display: block; }
+  .c-seg__opt input {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    margin: 0; opacity: 0; cursor: pointer;
+  }
+  .c-seg__pill {
+    display: block; text-align: center;
+    font-family: var(--font-ui); font-size: var(--step--1);
+    padding: 0.7em 0.5em;
+    background: var(--calcaire-2);
+    border: var(--hairline) solid var(--rule);
+    border-radius: var(--radius-s);
+    color: var(--text-muted);
+    transition: all var(--dur-fast) var(--ease-soft);
+  }
+  .c-seg__opt input:hover + .c-seg__pill { border-color: var(--laiton); }
+  .c-seg__opt input:checked + .c-seg__pill {
+    background: var(--encre); color: var(--ivoire); border-color: var(--encre);
+  }
+  .c-seg__opt input:focus-visible + .c-seg__pill {
+    outline: 3px solid var(--focus); outline-offset: 2px;
+  }
+
+  /* Honeypot — kept out of the layout & assistive tech, present in DOM for bots. */
+  .c-hp {
+    position: absolute !important;
+    left: -9999px; width: 1px; height: 1px; overflow: hidden;
+  }
+
+  .c-consent {
+    display: grid; grid-template-columns: auto 1fr; gap: var(--space-2xs);
+    align-items: start;
+    font-size: var(--step--1); color: var(--text-muted); line-height: 1.45;
+  }
+  .c-consent input { margin-top: 0.2em; width: 1.05rem; height: 1.05rem; accent-color: var(--sang); }
+  .c-consent span { max-width: 60ch; }
+
+  .c-actions { display: flex; align-items: center; gap: var(--space-m); flex-wrap: wrap; }
+  .c-actions__note { margin: 0; }
+  .c-error { color: var(--sang); margin: 0; }
+
+  /* Confirmation */
+  .c-confirm {
+    background: var(--calcaire);
+    border: var(--hairline) solid var(--rule);
+    border-top: 2px solid var(--sang);
+    border-radius: var(--radius-m);
+    padding: var(--space-l);
+  }
+  .c-confirm:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+  .c-confirm__eyebrow { color: var(--sang); }
+  .c-confirm__h { font-size: var(--step-2); margin-block: var(--space-2xs) var(--space-s); }
+  .c-confirm__p { color: var(--text-muted); }
+  .c-confirm__actions { display: flex; gap: var(--space-s); flex-wrap: wrap; margin-block: var(--space-m); }
+  .c-confirm__direct { margin: 0; }
+  .c-confirm__direct a { color: var(--text); }
+
+  /* ── Aside ────────────────────────────────────────────────────────────── */
+  .c-aside { display: flex; flex-direction: column; gap: var(--space-m); position: sticky; top: var(--space-m); }
+  .c-card {
+    background: var(--calcaire);
+    border: var(--hairline) solid var(--rule);
+    border-radius: var(--radius-m);
+    padding: var(--space-l);
+  }
+  .c-lines { list-style: none; padding: 0; margin: var(--space-m) 0 0; display: grid; gap: var(--space-m); }
+  .c-line { display: flex; flex-direction: column; gap: 0.15rem; }
+  .c-line + .c-line { border-top: var(--hairline) solid var(--rule); padding-top: var(--space-m); }
+  .c-line__k { margin: 0; }
+  .c-line__v {
+    font-family: var(--font-display); font-size: var(--step-1);
+    text-decoration: none; color: var(--text); width: max-content; max-width: 100%;
+  }
+  .c-line__v:not(.c-line__v--plain):hover { color: var(--sang); }
+  .c-line__v--plain { cursor: default; }
+
+  /* Location panel */
+  .c-plan {
+    width: 100%; height: auto; margin: var(--space-m) 0 var(--space-s);
+    border: var(--hairline) solid var(--rule); border-radius: var(--radius-s);
+  }
+  .c-plan__bg { fill: var(--calcaire-2); }
+  .c-plan__grid { fill: none; stroke: var(--rule); stroke-width: 1; }
+  .c-plan__allee { fill: none; stroke: var(--laiton); stroke-width: 1.5; stroke-dasharray: 4 4; }
+  .c-plan__halo { fill: none; stroke: var(--sang); stroke-width: 1; opacity: 0.45; }
+  .c-plan__pin { fill: var(--sang); }
+  .c-plan__pin-dot { fill: var(--ivoire); }
+  .c-plan__label {
+    fill: var(--text-muted); font-family: var(--font-slate);
+    font-size: 10px; letter-spacing: 1.5px;
+  }
+  .c-addr { font-style: normal; line-height: 1.6; color: var(--text); }
+  .c-addr__note { display: inline-block; margin-top: var(--space-2xs); }
+  .c-loc__links { display: flex; flex-direction: column; gap: var(--space-2xs); margin-top: var(--space-m); }
+  .c-loc__btn { justify-content: center; width: 100%; }
+
+  @media (max-width: 900px) {
+    .c-grid { grid-template-columns: 1fr; }
+    .c-aside { position: static; }
+  }
+  @media (max-width: 560px) {
+    .c-row { grid-template-columns: 1fr; }
+    .c-seg__group { grid-template-columns: 1fr; }
+  }
+</style>

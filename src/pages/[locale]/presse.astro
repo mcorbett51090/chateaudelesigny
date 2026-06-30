@@ -1,0 +1,810 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import Photo from '../../components/Photo.astro';
+import { site } from '../../config/site';
+import { locales, type Locale, useT } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return locales.map((locale) => ({ params: { locale } }));
+}
+
+const { locale } = Astro.params as { locale: Locale };
+const t = useT(locale);
+const base = `/${locale}`;
+const isFr = locale === 'fr';
+
+const awards = [
+  {
+    platform: 'Mariages.net',
+    badge: 'badge-awards-2024',
+    badgeAlt: isFr ? 'Badge Prix Mariages.net 2024' : 'Mariages.net Award Badge 2024',
+    label: isFr ? 'Coup de Cœur 2024' : "Editors' Choice 2024",
+    detail: isFr
+      ? "Primé parmi les meilleures salles de réception d’Île-de-France."
+      : 'Awarded among the finest reception venues in Île-de-France.',
+    href: site.social.mariagesnet,
+    cta: isFr ? 'Voir le profil' : 'View profile',
+    isAlt: false,
+  },
+  {
+    platform: 'Mariages.net',
+    badge: 'badge-awards-2026',
+    badgeAlt: isFr ? 'Badge Prix Mariages.net 2026' : 'Mariages.net Award Badge 2026',
+    label: isFr ? "Prix d’excellence 2026" : 'Excellence Award 2026',
+    detail: isFr
+      ? "Deux années de suite parmi les lieux d’exception d’Île-de-France."
+      : 'Two years running among the prestige venues of Île-de-France.',
+    href: site.social.mariagesnet,
+    cta: isFr ? 'Voir le profil' : 'View profile',
+    isAlt: false,
+  },
+  {
+    platform: 'Zankyou',
+    badge: 'badge-zankyou',
+    badgeAlt: isFr ? 'Badge Prix Zankyou' : 'Zankyou Award Badge',
+    label: isFr ? "Prix d’excellence" : 'Excellence Award',
+    detail: isFr
+      ? "Sélectionné parmi les lieux de prestige de la région parisienne."
+      : "Selected among Paris region’s prestige venues.",
+    href: site.social.zankyou,
+    cta: isFr ? 'Voir le profil' : 'View profile',
+    isAlt: true,
+  },
+];
+
+const s2Projects: string[] = isFr
+  ? [
+      'Suite nuptiale dans la tour aux colombes',
+      'Salon de thé',
+      'Taverne du donjon',
+      'Bibliothèque',
+      "Restauration du châtelet d’entrée",
+    ]
+  : [
+      'Honeymoon suite in the dove tower',
+      'Tea salon',
+      'Dungeon tavern',
+      'Library',
+      'Restoring the gatehouse',
+    ];
+
+const estateHighlights = [
+  {
+    photo: 'exterior-facade',
+    photoAlt: isFr
+      ? 'Façade du Château de Lésigny, domaine du XVIe siècle'
+      : 'Château de Lésigny façade, 16th-century estate',
+    label: isFr ? 'Patrimoine' : 'Heritage',
+    fact: isFr
+      ? `Fondé en ${site.founded} — 500 ans d’histoire`
+      : `Founded in ${site.founded} — 500 years of history`,
+    desc: isFr
+      ? `${site.estate.hectares} hectares de domaine privé à ${site.address.fromParisKm} km de Paris, avec ${site.estate.decors} décors uniques.`
+      : `${site.estate.hectares}-hectare private estate ${site.address.fromParisKm} km from Paris, with ${site.estate.decors} unique décors.`,
+  },
+  {
+    photo: 'cinema-costumed-actors',
+    photoAlt: isFr
+      ? 'Acteurs en costumes dans les décors de tournage du château'
+      : 'Costumed actors in the château film décors',
+    label: isFr ? 'Cinéma & télévision' : 'Film & television',
+    fact: isFr
+      ? `Plus de ${site.cinema.productions} productions`
+      : `Over ${site.cinema.productions} productions`,
+    desc: isFr
+      ? `${site.cinema.yearsAsLocation} ans de présence sur les écrans — dont Castle Impossible sur HGTV.`
+      : `${site.cinema.yearsAsLocation} years on screen — including Castle Impossible on HGTV.`,
+  },
+  {
+    photo: 'int-ballroom-red',
+    photoAlt: isFr
+      ? 'Grande salle de réception drapée de rouge'
+      : 'Grand reception room draped in red',
+    label: isFr ? 'Réceptions & mariages' : 'Receptions & weddings',
+    fact: isFr
+      ? `Jusqu’à ${site.weddings.capacityCocktail} convives`
+      : `Up to ${site.weddings.capacityCocktail} guests`,
+    desc: isFr
+      ? `Mariages, galas, événements d’entreprise — à partir de ${site.weddings.priceFromEUR} €.`
+      : `Weddings, galas, corporate events — from €${site.weddings.priceFromEUR}.`,
+  },
+];
+---
+
+<PageLayout
+  title={isFr
+    ? 'Presse & distinctions — Château de Lésigny'
+    : 'Press & awards — Château de Lésigny'}
+  description={isFr
+    ? 'Distinctions, couvertures presse et présences télévisées du Château de Lésigny, domaine privé en Île-de-France.'
+    : 'Awards, press coverage and television features of Château de Lésigny, a private estate in Île-de-France.'}
+  locale={locale}
+  path="presse/"
+>
+
+  <!-- ① Hero ─────────────────────────────────────────── -->
+  <section class="presse-hero section" aria-labelledby="presse-h1">
+    <div class="wrap">
+      <p class="eyebrow presse-hero__eyebrow" data-reveal>
+        {isFr ? 'Reconnaissance & médias' : 'Recognition & media'}
+      </p>
+      <h1 id="presse-h1" class="presse-hero__title" data-reveal>
+        {isFr ? 'Presse & distinctions' : 'Press & awards'}
+      </h1>
+      <p class="presse-hero__lead" data-reveal>
+        {isFr
+          ? `Depuis ${site.founded}, le Château de Lésigny inspire les artistes, les cinéastes et les journalistes du monde entier.`
+          : `Since ${site.founded}, Château de Lésigny has inspired artists, filmmakers and journalists from around the world.`}
+      </p>
+    </div>
+  </section>
+
+  <div class="wrap-wide"><hr class="rule" /></div>
+
+  <!-- ② Awards ────────────────────────────────────────── -->
+  <section class="section awards" aria-labelledby="awards-h2">
+    <div class="wrap-wide">
+      <p class="eyebrow awards__eyebrow" data-reveal>
+        {isFr ? 'Distinctions mariages' : 'Wedding awards'}
+      </p>
+      <h2 id="awards-h2" class="awards__heading" data-reveal>
+        {isFr ? 'Reconnus par les meilleurs' : 'Recognised by the best'}
+      </h2>
+
+      <div class="awards__grid" role="list">
+        {awards.map((award) => (
+          <article class:list={['award-card', award.isAlt && 'award-card--alt']} role="listitem" data-reveal>
+            <div class="award-card__badge">
+              <Photo
+                name={award.badge}
+                alt={award.badgeAlt}
+                ratio="1/1"
+                sizes="150px"
+                widths={[150, 300]}
+              />
+            </div>
+            <div class="award-card__body">
+              <p class="award-card__platform">{award.platform}</p>
+              <p class="award-card__label">{award.label}</p>
+              <p class="award-card__detail">{award.detail}</p>
+              <a
+                class="award-card__cta"
+                href={award.href}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {award.cta} →
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap-wide"><hr class="rule" /></div>
+
+  <!-- ③ Television — Castle Impossible ────────────────── -->
+  <section class="section television is-dark" aria-labelledby="tv-h2">
+    <div class="wrap-wide">
+      <p class="eyebrow tv__eyebrow" data-reveal>
+        {isFr ? 'Télévision · HGTV' : 'Television · HGTV'}
+      </p>
+      <h2 id="tv-h2" class="tv__heading" data-reveal>
+        Castle Impossible
+      </h2>
+
+      <div class="tv-card" data-reveal>
+
+        <!-- Visual: real château photo with gradient scrim -->
+        <div class="tv-card__visual">
+          <Photo
+            name="exterior-ivy-autumn"
+            alt={isFr
+              ? 'Façade du Château de Lésigny en automne — décor de Castle Impossible sur HGTV'
+              : 'Château de Lésigny façade in autumn — Castle Impossible on HGTV'}
+            fill
+          />
+          <div class="tv-card__scrim" aria-hidden="true"></div>
+          <div class="tv-card__overlay">
+            <p class="tv-card__show">Castle Impossible</p>
+            <p class="tv-card__network">HGTV · TheBeauChateau</p>
+          </div>
+        </div>
+
+        <!-- Body: verified facts, bilingual -->
+        <div class="tv-card__body">
+          <p class="tv-card__owners">
+            {isFr
+              ? 'Daphne Reckert & Ian Figueira (« the Figs »)'
+              : 'Daphne Reckert & Ian Figueira ("the Figs")'}
+          </p>
+          <p class="tv-card__desc">
+            {isFr
+              ? "Castle Impossible suit Daphne Reckert et son mari Ian Figueira dans la restauration du Château de Lésigny — un domaine de 500 ans que Daphne a hérité de son grand-père, disparu en 2020. Leur défi : financer la restauration en développant une activité mariage, événements et cinéma."
+              : "Castle Impossible follows Daphne Reckert and her husband Ian Figueira as they renovate the 500-year-old Château de Lésigny — a property Daphne inherited from her grandfather, who passed away in 2020. Their challenge: fund the restoration by building a wedding, events and film business."}
+          </p>
+
+          <div class="tv-card__seasons">
+            <div class="tv-season">
+              <p class="tv-season__label">
+                {isFr ? 'Saison 1' : 'Season 1'}
+                <span class="tv-season__dates">{isFr ? 'Avril – Juin 2025' : 'April – June 2025'}</span>
+              </p>
+              <p class="tv-season__desc">
+                {isFr
+                  ? 'Première saison diffusée sur HGTV.'
+                  : 'Premiered on HGTV.'}
+              </p>
+            </div>
+            <div class="tv-season tv-season--new">
+              <p class="tv-season__label">
+                {isFr ? 'Saison 2' : 'Season 2'}
+                <span class="tv-season__badge">{isFr ? 'Nouveau' : 'New'}</span>
+                <span class="tv-season__dates">{isFr ? 'Depuis le 26 mai 2026' : 'From 26 May 2026'}</span>
+              </p>
+              <p class="tv-season__desc">
+                {isFr
+                  ? '8 épisodes — en streaming dès le lendemain sur HBO Max et discovery+.'
+                  : '8 episodes — streaming the next day on HBO Max and discovery+.'}
+              </p>
+              <p class="tv-season__projects-label">
+                {isFr ? 'Projets de la saison :' : 'Season projects:'}
+              </p>
+              <ul class="tv-card__projects">
+                {s2Projects.map((p) => <li>{p}</li>)}
+              </ul>
+            </div>
+          </div>
+
+          <div class="tv-card__links">
+            <a
+              class="btn btn--ghost"
+              href={site.social.youtube}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {isFr ? 'Voir sur YouTube' : 'Watch on YouTube'} →
+            </a>
+            <a
+              class="tv-card__hgtv-link"
+              href="https://www.hgtv.com/shows/castle-impossible"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {isFr ? 'Fiche HGTV' : 'HGTV show page'} →
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap-wide"><hr class="rule" /></div>
+
+  <!-- ④ Estate in pictures ────────────────────────────── -->
+  <section class="section evidence-section" aria-labelledby="evidence-h2">
+    <div class="wrap-wide">
+      <p class="eyebrow evidence__eyebrow" data-reveal>
+        {isFr ? 'Le domaine en images' : 'The estate in pictures'}
+      </p>
+      <h2 id="evidence-h2" class="evidence__heading" data-reveal>
+        {isFr ? 'Un patrimoine vivant' : 'A living heritage'}
+      </h2>
+
+      <ul class="evidence-cards" role="list">
+        {estateHighlights.map((item) => (
+          <li class="evidence-card" role="listitem" data-reveal>
+            <div class="evidence-card__visual">
+              <Photo
+                name={item.photo}
+                alt={item.photoAlt}
+                ratio="16/9"
+                sizes="(max-width: 900px) 100vw, 33vw"
+                widths={[480, 800, 1200]}
+              />
+            </div>
+            <div class="evidence-card__body">
+              <p class="evidence-card__label">{item.label}</p>
+              <p class="evidence-card__fact">{item.fact}</p>
+              <p class="evidence-card__desc">{item.desc}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <div class="wrap-wide"><hr class="rule" /></div>
+
+
+  <!-- ⑥ Press contact ──────────────────────────────────── -->
+  <section class="section contact-section" aria-labelledby="contact-h2">
+    <div class="wrap">
+      <p class="eyebrow contact__eyebrow" data-reveal>
+        {isFr ? 'Contact presse' : 'Press contact'}
+      </p>
+      <h2 id="contact-h2" class="contact__heading" data-reveal>
+        {isFr
+          ? "Demande d’accréditation ou d’affiliation"
+          : 'Accreditation or affiliation request'}
+      </h2>
+      <p class="contact__lead" data-reveal>
+        {isFr
+          ? "Pour toute demande presse, partenariat éditorial ou affiliation, contactez-nous directement."
+          : "For press enquiries, editorial partnerships or affiliations, contact us directly."}
+      </p>
+      <a
+        class="contact-chip"
+        href={`mailto:${site.contact.emailAffiliations}`}
+        data-reveal
+      >
+        <span class="contact-chip__icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+            <polyline points="22,6 12,13 2,6" />
+          </svg>
+        </span>
+        {site.contact.emailAffiliations}
+      </a>
+    </div>
+  </section>
+
+</PageLayout>
+
+<style>
+/* ── Hero ───────────────────────────────────────────── */
+.presse-hero {
+  background:
+    radial-gradient(110% 70% at 50% -5%, var(--calcaire-2), transparent 55%),
+    linear-gradient(180deg, var(--calcaire-2), var(--pierre));
+  padding-block: clamp(4rem, 11vh, 8rem) var(--space-xl);
+}
+.presse-hero__eyebrow { margin-bottom: var(--space-m); }
+.presse-hero__title   { max-width: 24ch; }
+.presse-hero__lead {
+  font-size: var(--step-1);
+  color: var(--text-muted);
+  max-width: 50ch;
+  margin-top: var(--space-m);
+}
+
+/* ── Awards ─────────────────────────────────────────── */
+.awards__eyebrow  { margin-bottom: var(--space-xs); }
+.awards__heading  { margin-bottom: var(--space-l); }
+
+.awards__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-l);
+}
+
+.award-card {
+  position: relative;
+  background: var(--calcaire);
+  border: var(--hairline) solid var(--rule);
+  padding: var(--space-l);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-m);
+  box-shadow: var(--shadow-s);
+  border-top: 2px solid var(--laiton);
+}
+.award-card--alt {
+  border-top-color: var(--sang);
+}
+
+/* Badge: constrain Photo to ~150px, transparent bg for PNG */
+.award-card__badge {
+  max-width: 150px;
+  width: 100%;
+  background: transparent;
+}
+
+.award-card__body { display: flex; flex-direction: column; gap: var(--space-2xs); }
+
+.award-card__platform {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  font-weight: 460;
+  line-height: 1.1;
+  color: var(--text);
+}
+.award-card__label {
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--laiton);
+  margin-top: var(--space-3xs);
+}
+.award-card--alt .award-card__label { color: var(--sang); }
+.award-card__detail {
+  color: var(--text-muted);
+  margin-top: var(--space-2xs);
+  max-width: 36ch;
+}
+.award-card__cta {
+  display: inline-block;
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--text);
+  text-decoration: none;
+  margin-top: var(--space-s);
+  padding-bottom: 2px;
+  border-bottom: var(--hairline) solid var(--laiton);
+  transition:
+    color var(--dur-fast) var(--ease-soft),
+    border-color var(--dur-fast) var(--ease-soft);
+}
+.award-card__cta:hover { color: var(--sang); border-color: var(--sang); }
+
+/* ── Television ─────────────────────────────────────── */
+.television { background: var(--suie); }
+.tv__eyebrow  { margin-bottom: var(--space-xs); }
+.tv__heading  { font-size: var(--step-3); margin-bottom: var(--space-l); }
+
+.tv-card {
+  display: grid;
+  grid-template-columns: 5fr 8fr;
+  border: var(--hairline) solid var(--rule);
+  overflow: hidden;
+}
+
+/* Visual panel: château photo with gradient scrim */
+.tv-card__visual {
+  position: relative;
+  overflow: hidden;
+  min-height: 320px;
+  border-right: var(--hairline) solid var(--rule);
+}
+.tv-card__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.82) 0%,
+    rgba(0, 0, 0, 0.38) 52%,
+    rgba(0, 0, 0, 0.06) 100%
+  );
+  z-index: 1;
+}
+.tv-card__overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--space-2xl) var(--space-l) var(--space-l);
+  z-index: 2;
+}
+
+.tv-card__show {
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  font-weight: 420;
+  color: var(--ivoire);
+  line-height: 1.1;
+  font-variation-settings: 'SOFT' 30, 'WONK' 0, 'opsz' 144;
+}
+.tv-card__network {
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--laiton-soft);
+  margin-top: var(--space-3xs);
+}
+
+/* Body panel */
+.tv-card__body {
+  padding: var(--space-l) var(--space-l) var(--space-l) var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-m);
+}
+
+.tv-card__owners {
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--laiton);
+}
+
+.tv-card__desc {
+  color: var(--ivoire);
+  max-width: 46ch;
+}
+
+/* Season grid */
+.tv-card__seasons {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--space-l);
+  padding-block: var(--space-m);
+  border-top: var(--hairline) solid rgba(255, 255, 255, 0.1);
+  border-bottom: var(--hairline) solid rgba(255, 255, 255, 0.1);
+}
+
+.tv-season__label {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  font-weight: 460;
+  color: var(--ivoire);
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  margin-bottom: var(--space-2xs);
+  line-height: 1.2;
+}
+
+.tv-season__dates {
+  font-family: var(--font-ui);
+  font-size: var(--step--2);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--laiton-soft);
+}
+
+.tv-season__badge {
+  font-family: var(--font-ui);
+  font-size: var(--step--2);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ivoire);
+  background: var(--sang);
+  padding: 0.15em 0.5em;
+  border-radius: 2px;
+  line-height: 1.4;
+}
+
+.tv-season__desc {
+  font-size: var(--step-0);
+  color: var(--ivoire);
+  opacity: 0.75;
+  margin-bottom: var(--space-xs);
+}
+
+.tv-season__projects-label {
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--laiton);
+  margin-bottom: var(--space-3xs);
+}
+
+.tv-card__projects {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+}
+.tv-card__projects li {
+  font-size: var(--step--1);
+  color: var(--ivoire);
+  opacity: 0.8;
+  padding-left: 1.25em;
+  position: relative;
+}
+.tv-card__projects li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--laiton);
+  opacity: 1;
+}
+
+/* CTA row */
+.tv-card__links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-m);
+}
+
+/* override btn--ghost on dark background */
+.television .btn--ghost {
+  color: var(--ivoire);
+  align-self: flex-start;
+}
+
+.tv-card__hgtv-link {
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--laiton-soft);
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease-soft);
+}
+.tv-card__hgtv-link:hover { color: var(--ivoire); }
+
+/* ── Estate in pictures ──────────────────────────────── */
+.evidence__eyebrow { margin-bottom: var(--space-xs); }
+.evidence__heading { margin-bottom: var(--space-l); }
+
+.evidence-cards {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-l);
+}
+
+.evidence-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.evidence-card__visual {
+  overflow: hidden;
+}
+
+.evidence-card__body {
+  padding-top: var(--space-m);
+  padding-bottom: var(--space-m);
+  border-top: var(--hairline) solid var(--laiton);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  flex: 1;
+}
+
+.evidence-card__label {
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--laiton);
+}
+
+.evidence-card__fact {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  font-weight: 460;
+  color: var(--text);
+  line-height: 1.15;
+  margin-top: var(--space-3xs);
+}
+
+.evidence-card__desc {
+  font-size: var(--step-0);
+  color: var(--text-muted);
+  margin-top: var(--space-3xs);
+}
+
+/* ── Social chips ────────────────────────────────────── */
+.social__eyebrow  { margin-bottom: var(--space-xs); }
+.social__heading  { margin-bottom: var(--space-l); }
+
+.social-chips {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-s);
+}
+
+.social-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65em;
+  font-family: var(--font-ui);
+  font-size: var(--step-0);
+  font-weight: 500;
+  color: var(--text);
+  text-decoration: none;
+  padding: 0.8em 1.4em;
+  border: var(--hairline) solid var(--rule);
+  border-radius: var(--radius-s);
+  transition:
+    border-color var(--dur-fast) var(--ease-soft),
+    background var(--dur-fast) var(--ease-soft);
+}
+.social-chip:hover {
+  border-color: var(--laiton);
+  background: var(--calcaire);
+}
+.social-chip__icon {
+  display: flex;
+  align-items: center;
+  color: var(--laiton);
+  flex-shrink: 0;
+}
+
+/* ── Press contact ───────────────────────────────────── */
+.contact__eyebrow { margin-bottom: var(--space-xs); }
+.contact__heading {
+  max-width: 36ch;
+  margin-bottom: var(--space-m);
+}
+.contact__lead {
+  color: var(--text-muted);
+  max-width: 44ch;
+  margin-bottom: var(--space-l);
+}
+
+.contact-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7em;
+  font-family: var(--font-ui);
+  font-size: var(--step-0);
+  font-weight: 500;
+  color: var(--text);
+  text-decoration: none;
+  padding: 0.85em 1.5em;
+  border: var(--hairline) solid var(--laiton);
+  border-radius: var(--radius-s);
+  transition:
+    background var(--dur-fast) var(--ease-soft),
+    color var(--dur-fast) var(--ease-soft),
+    border-color var(--dur-fast) var(--ease-soft);
+}
+.contact-chip:hover {
+  background: var(--sang);
+  color: var(--ivoire);
+  border-color: var(--sang);
+}
+.contact-chip__icon {
+  display: flex;
+  align-items: center;
+  color: var(--laiton);
+  flex-shrink: 0;
+  transition: color var(--dur-fast) var(--ease-soft);
+}
+.contact-chip:hover .contact-chip__icon { color: var(--ivoire); }
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 900px) {
+  .awards__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .tv-card {
+    grid-template-columns: 1fr;
+  }
+  .tv-card__visual {
+    min-height: 240px;
+    border-right: none;
+    border-bottom: var(--hairline) solid var(--rule);
+  }
+  .tv-card__seasons {
+    grid-template-columns: 1fr;
+    gap: var(--space-m);
+  }
+  .evidence-cards {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .awards__grid {
+    grid-template-columns: 1fr;
+  }
+  .evidence-cards {
+    grid-template-columns: 1fr;
+  }
+  .social-chips {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .tv-card__body {
+    padding: var(--space-m);
+  }
+  .tv-card__links {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+</style>

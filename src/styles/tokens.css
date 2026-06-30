@@ -1,0 +1,91 @@
+/* ============================================================================
+   Château de Lésigny — Design Tokens
+   "The Location Scout's Monograph" — heritage editorial × film-location bible.
+   Palette is WCAG-AA checked: --sang (oxblood) is ACCENT ONLY (buttons w/ ivory
+   text), never body text on stone. Warm limestone canvas, never pure white/black.
+   ============================================================================ */
+:root {
+  /* --- Color: material palette --- */
+  --pierre: #eae4d8;        /* warm limestone — primary canvas */
+  --calcaire: #f4efe6;      /* lighter stone — raised surfaces / cards */
+  --calcaire-2: #fbf8f2;    /* lightest — input fields */
+  --encre: #1a1714;         /* primary ink (AA on --pierre & --calcaire) */
+  --encre-soft: #4b443c;    /* secondary text (AA on --calcaire) */
+  --suie: #211f1c;          /* cinematic dark panel surface (sparingly) */
+  --suie-2: #15130f;        /* deepest dark */
+  --sang: #6e2230;          /* OXBLOOD — signature accent; button bg w/ ivory text */
+  --sang-deep: #561a26;     /* oxblood hover */
+  --laiton: #a98b5d;        /* brass — hairline rules / dividers ONLY, never fills */
+  --laiton-soft: #c7ad84;   /* brass on dark */
+  --ivoire: #f6f1e7;        /* ivory — text on oxblood / on suie */
+
+  /* --- Semantic --- */
+  --bg: var(--pierre);
+  --surface: var(--calcaire);
+  --text: var(--encre);
+  --text-muted: var(--encre-soft);
+  --accent: var(--sang);
+  --rule: color-mix(in srgb, var(--laiton) 55%, transparent);
+  --focus: #2f6f7a;          /* teal focus ring — visible on stone & dark (AA) */
+
+  /* --- Type families (self-hosted via @fontsource) --- */
+  --font-display: 'Fraunces Variable', 'Fraunces', Georgia, serif;
+  --font-body: 'Source Serif 4 Variable', 'Source Serif 4', Georgia, serif;
+  --font-ui: 'Instrument Sans Variable', 'Instrument Sans', system-ui, sans-serif;
+  --font-slate: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  /* --- Type scale (fluid; 1.250 major-third base) --- */
+  --step--1: clamp(0.83rem, 0.80rem + 0.15vw, 0.91rem);
+  --step-0:  clamp(1.02rem, 0.98rem + 0.22vw, 1.15rem);
+  --step-1:  clamp(1.28rem, 1.20rem + 0.40vw, 1.55rem);
+  --step-2:  clamp(1.60rem, 1.46rem + 0.70vw, 2.10rem);
+  --step-3:  clamp(2.00rem, 1.76rem + 1.20vw, 2.95rem);
+  --step-4:  clamp(2.50rem, 2.10rem + 2.00vw, 4.10rem);
+  --step-5:  clamp(3.10rem, 2.40rem + 3.40vw, 5.80rem);
+
+  /* --- Spacing scale --- */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-s: 1rem;
+  --space-m: 1.5rem;
+  --space-l: 2.5rem;
+  --space-xl: 4rem;
+  --space-2xl: 6rem;
+  --space-3xl: 9rem;
+
+  /* --- Layout --- */
+  --measure: 68ch;           /* readable line length */
+  --width-content: 1180px;
+  --width-wide: 1480px;
+  --gutter: clamp(1.25rem, 5vw, 4rem);
+
+  /* --- Radii / lines --- */
+  --radius-s: 2px;
+  --radius-m: 4px;
+  --hairline: 1px;
+
+  /* --- Elevation (warm, low) --- */
+  --shadow-s: 0 1px 2px rgba(33, 31, 28, 0.06), 0 2px 6px rgba(33, 31, 28, 0.05);
+  --shadow-m: 0 8px 30px rgba(33, 31, 28, 0.10);
+  --shadow-l: 0 24px 60px rgba(33, 31, 28, 0.16);
+
+  /* --- Motion --- */
+  --ease-cut: cubic-bezier(0.16, 1, 0.3, 1);     /* film cut / iris */
+  --ease-soft: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --dur-fast: 180ms;
+  --dur-mid: 420ms;
+  --dur-slow: 900ms;
+
+  /* --- Imagery art-direction knobs (one-line tunable; R2 mitigation) --- */
+  --img-duotone-amount: 0.10;  /* restraint: subtle warm monochrome on SECONDARY imagery */
+}
+
+/* Dark cinematic panels invert the semantic tokens */
+.is-dark {
+  --bg: var(--suie);
+  --surface: var(--suie-2);
+  --text: var(--ivoire);
+  --text-muted: color-mix(in srgb, var(--ivoire) 70%, transparent);
+  --rule: color-mix(in srgb, var(--laiton) 45%, transparent);
+}

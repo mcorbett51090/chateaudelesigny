@@ -1,0 +1,48 @@
+---
+import { Image } from 'astro:assets';
+import { photos } from '../assets/images';
+
+interface Props {
+  name: string;            // key from src/assets/images.ts
+  alt: string;
+  class?: string;
+  ratio?: string;          // e.g. "3/4", "16/9", "4/5" — ignored when fill
+  fill?: boolean;          // absolutely fill the positioned parent
+  loading?: 'lazy' | 'eager';
+  sizes?: string;
+  widths?: number[];
+  duotone?: boolean;       // restrained warm monochrome (secondary imagery)
+  contain?: boolean;       // object-fit:contain (logos/badges — no crop), height from consumer
+}
+const {
+  name, alt, class: cls = '', ratio, fill = false,
+  loading = 'lazy', sizes = '(max-width: 800px) 100vw, 50vw',
+  widths = [480, 960, 1600], duotone = false, contain = false,
+} = Astro.props;
+
+const img = photos[name];
+const style = !fill && ratio ? `aspect-ratio:${ratio}` : undefined;
+---
+<figure class:list={['photo', cls, { 'photo--fill': fill, 'photo--duotone': duotone, 'photo--contain': contain }]} style={style}>
+  {img ? (
+    <Image src={img} alt={alt} widths={widths} sizes={sizes} loading={loading} />
+  ) : (
+    <span class="photo__missing" aria-hidden="true">{name}</span>
+  )}
+</figure>
+
+<style>
+  .photo { position: relative; overflow: hidden; margin: 0; background: var(--calcaire); }
+  .photo :global(img) { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .photo--fill { position: absolute; inset: 0; }
+  .photo--fill :global(img) { height: 100%; }
+  .photo--contain { background: transparent; }
+  .photo--contain :global(img) { object-fit: contain; width: auto; height: 100%; }
+  /* Restraint: subtle warm monochrome, one-line tunable (R2 mitigation) */
+  .photo--duotone :global(img) { filter: grayscale(0.5) sepia(0.16) contrast(1.02) brightness(0.99); }
+  .photo__missing {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    font-family: var(--font-slate); font-size: var(--step--1); color: var(--text-muted);
+    text-align: center; padding: 1rem;
+  }
+</style>

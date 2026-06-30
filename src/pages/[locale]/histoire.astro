@@ -1,0 +1,1182 @@
+---
+import { Image } from 'astro:assets';
+import PageLayout from '../../layouts/PageLayout.astro';
+import Photo from '../../components/Photo.astro';
+import portraitGaligai from '../../assets/history/leonora-galigai.jpg';
+import { site } from '../../config/site';
+import { locales, type Locale, useT } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return locales.map((locale) => ({ params: { locale } }));
+}
+
+const { locale } = Astro.params as { locale: Locale };
+const t = useT(locale);
+const base = `/${locale}`;
+const isFr = locale === 'fr';
+
+const yearsOld = 2026 - site.founded;
+
+// Chronology grounded in primary/heritage sources (montjoye.net, ABC Salles,
+// fr.wikipedia, local histories). Well-documented beats only; uncertain or
+// single-source specifics are kept general or flagged /* VERIFY */.
+const timelineEntries = [
+  {
+    year: '1508',
+    fr: 'La famille de Poncher, proche du pouvoir royal sous François Iᵉʳ, acquiert la terre de Lésigny et y élève un premier château, délaissant l’ancienne demeure médiévale. L’église du village est bâtie dans la foulée.',
+    en: 'The Poncher family, close to royal power under Francis I, acquires the Lésigny estate and raises a first château, leaving the old medieval dwelling behind. The village church follows soon after.',
+  },
+  {
+    year: 'v. 1550',
+    fr: 'Charles de Pierrevive et Charlotte Briçonnet font reconstruire la demeure dans le goût de la Renaissance : c’est, pour l’essentiel, le château que vous découvrez aujourd’hui. En 1573, Catherine de Médicis y séjourne quelques jours.',
+    en: 'Charles de Pierrevive and Charlotte Briçonnet rebuild the residence in the Renaissance taste — in essence the château you see today. In 1573, Catherine de’ Medici stays here for several days.',
+  },
+  {
+    year: '1613',
+    fr: 'Léonora Dori, dite « la Galigaï » — épouse de Concini, futur maréchal d’Ancre, et confidente de Marie de Médicis — achète Lésigny pour 95 000 livres. Elle y mène de grands travaux : orangerie, jardins et une chapelle consacrée en 1615. La reine mère s’y rend la même année.',
+    en: 'Léonora Dori, known as “la Galigaï” — wife of Concini, the future Maréchal d’Ancre, and confidante of Marie de’ Medici — buys Lésigny for 95,000 livres. She undertakes major works: an orangery, gardens, and a chapel consecrated in 1615. The Queen Mother visits that same year.',
+  },
+  {
+    year: '1617',
+    fr: 'La disgrâce est brutale : Concini est assassiné au Louvre, la Galigaï exécutée. Le domaine échoit à Charles d’Albert de Luynes, favori de Louis XIII. Le roi et Anne d’Autriche y séjournent en 1618 ; Marie de Rohan s’y marie dans la chapelle du château.',
+    en: 'The fall is brutal: Concini is assassinated at the Louvre and la Galigaï executed. The estate passes to Charles d’Albert de Luynes, favourite of Louis XIII. The king and Anne of Austria lodge here in 1618; Marie de Rohan is married in the château’s chapel.',
+  },
+  {
+    year: 'XVIIIᵉ s.',
+    fr: 'Après les familles de Boislevé et d’Armaillé, Lésigny entre dans le patrimoine de la maison de Bourbon-Penthièvre, descendance légitimée de Louis XIV. Le pont de bois cède alors la place à un pont de pierre.',
+    en: 'After the Boislevé and d’Armaillé families, Lésigny enters the holdings of the House of Bourbon-Penthièvre, a legitimised line of Louis XIV. The wooden bridge gives way to one of stone.',
+  },
+  {
+    year: '1794',
+    fr: 'La Révolution frappe le domaine du duc de Penthièvre : les quatre tours d’angle du château sont abattues sur ordre du district et les pièces d’eau asséchées. Le château perd alors sa silhouette défensive.',
+    en: 'The Revolution strikes the Duke of Penthièvre’s estate: the château’s four corner towers are pulled down by order of the district and the ponds drained. The château loses its defensive silhouette.',
+  },
+  {
+    year: 'XIXᵉ s.',
+    fr: 'Sous une succession de propriétaires — le vicomte de la Brosse, l’agent de change Archdéacon, puis la famille de Pérignon — le château est restauré et ses intérieurs reconfigurés, tout en préservant l’ossature Renaissance.',
+    en: 'Under a succession of owners — the Vicomte de la Brosse, the stockbroker Archdéacon, then the Pérignon family — the château is restored and its interiors reworked, while the Renaissance bones are preserved.',
+  },
+  {
+    year: 'XXᵉ s.',
+    fr: 'Le château connaît de nouvelles vies — dont, à partir de 1958, celle de Jacques Lacroix, cofondateur du Studio Harcourt, qui le restaure. Ses décors authentiques attirent peu à peu les productions de cinéma et de télévision.',
+    /* VERIFY: Jacques Lacroix / Studio Harcourt 1958–1973 — single heritage source (montjoye.net) */
+    en: 'The château lives several new lives — including, from 1958, that of Jacques Lacroix, co-founder of Studio Harcourt, who restores it. Its authentic settings gradually draw film and television productions.',
+    /* VERIFY: Jacques Lacroix / Studio Harcourt 1958–1973 — single heritage source (montjoye.net) */
+  },
+  {
+    year: '2020',
+    fr: 'Daphne Reckert hérite du château cinq fois centenaire de son grand-père. Avec Ian Figueira, elle entreprend de redonner vie au domaine, finançant sa restauration par une activité de mariages, d’événements et de tournages.',
+    en: 'Daphne Reckert inherits the five-century-old château from her grandfather. With Ian Figueira, she sets out to revive the estate, funding its restoration through a business of weddings, events, and film shoots.',
+  },
+  {
+    year: '2025',
+    fr: 'La restauration est filmée pour HGTV : l’émission « Castle Impossible » suit Daphne et Ian, « the Figs », pièce après pièce. La première saison est diffusée d’avril à juin.',
+    en: 'The restoration is filmed for HGTV: the series “Castle Impossible” follows Daphne and Ian, “the Figs”, room by room. The first season airs from April to June.',
+  },
+  {
+    year: isFr ? 'Aujourd’hui' : 'Today',
+    fr: `Le domaine de ${site.estate.hectares} hectares poursuit sa renaissance et accueille mariages, événements et tournages à travers ${site.estate.decors}+ décors distincts, à ${site.address.fromParisKm} km de Paris.`,
+    en: `The ${site.estate.hectares}-hectare estate continues its renaissance, hosting weddings, events, and film shoots across ${site.estate.decors}+ distinct décors, ${site.address.fromParisKm} km from Paris.`,
+  },
+];
+---
+
+<PageLayout
+  title={isFr
+    ? `Histoire du Château de Lésigny — Depuis ${site.founded}`
+    : `History of Château de Lésigny — Since ${site.founded}`}
+  description={isFr
+    ? `Plus de ${yearsOld} ans d’histoire : de la Renaissance à la Galigaï, des Luynes aux Bourbon-Penthièvre, jusqu’à la restauration filmée pour « Castle Impossible » (HGTV).`
+    : `Over ${yearsOld} years of history: from the Renaissance to la Galigaï, the Luynes to the Bourbon-Penthièvre, up to the restoration filmed for HGTV’s “Castle Impossible”.`}
+  locale={locale}
+  path="histoire/"
+>
+
+  <!-- ═══════════════════════════════════════════════
+       1. EDITORIAL HERO — typographic "1508" over a
+          real photograph behind a dark scrim.
+       ═══════════════════════════════════════════════ -->
+  <section class="hero" aria-labelledby="hero-heading">
+    <div class="hero__bg">
+      <Photo
+        fill
+        name="exterior-ivy-autumn"
+        loading="eager"
+        sizes="100vw"
+        widths={[768, 1280, 1920]}
+        alt={isFr
+          ? 'Façade du Château de Lésigny habillée de lierre aux teintes d’automne'
+          : 'Façade of Château de Lésigny clad in autumn-coloured ivy'}
+      />
+    </div>
+    <div class="hero__scrim" aria-hidden="true"></div>
+
+    <div class="wrap hero__inner">
+      <div class="hero__title">
+        <p class="eyebrow hero__eyebrow" data-reveal>
+          {`${site.name} · Lésigny, Île-de-France`}
+        </p>
+
+        <div class="hero__numeral" aria-hidden="true" data-reveal>1508</div>
+
+        <h1 id="hero-heading" class="hero__h1" data-reveal>
+          {isFr ? 'Histoire & Patrimoine' : 'History & Heritage'}
+        </h1>
+
+        <p class="hero__deck" data-reveal>
+          {isFr
+            ? `Cinq siècles séparent la pose de la première pierre de notre présent. Un château Renaissance, des reines et des favoris de cour, une Révolution, puis une renaissance — l’histoire continue de s’écrire à ${site.address.fromParisKm} km de Paris.`
+            : `Five centuries separate the laying of the first stone from our present. A Renaissance château, queens and royal favourites, a Revolution, then a renaissance — a history still being written ${site.address.fromParisKm} km from Paris.`}
+        </p>
+      </div>
+
+      <figure class="hero__portrait" data-reveal>
+        <div class="hero__frame">
+          <Image
+            src={portraitGaligai}
+            alt={isFr
+              ? 'Portrait de Léonora Galigaï, maîtresse du château et figure de son âge d’or, peint vers 1614'
+              : 'Portrait of Léonora Galigaï, mistress of the château and figure of its golden age, painted around 1614'}
+            widths={[320, 457]}
+            sizes="(max-width: 860px) 60vw, 22rem"
+          />
+        </div>
+        <figcaption class="hero__portrait-cap slate">
+          {isFr
+            ? 'Léonora Galigaï · v.1614 · domaine public'
+            : 'Léonora Galigaï · c.1614 · public domain'}
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="wrap"><hr class="rule hero__rule" /></div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════
+       2. TIMELINE — alternating left / right
+       ═══════════════════════════════════════════════ -->
+  <section class="section timeline-section" aria-labelledby="timeline-heading">
+    <div class="wrap">
+      <p class="eyebrow" data-reveal>{isFr ? 'Chronologie' : 'Timeline'}</p>
+      <h2 id="timeline-heading" class="section-h2" data-reveal>
+        {isFr ? `${yearsOld} ans en quelques jalons` : `${yearsOld} years in a few milestones`}
+      </h2>
+
+      <div class="timeline-grid">
+        <ol class="timeline" role="list">
+          {timelineEntries.map((entry, i) => (
+            <li class="timeline__entry" id={`tl-entry-${i}`} data-tl-index={i} data-reveal>
+              <p class="timeline__year" aria-label={isFr ? `Année ${entry.year}` : `Year ${entry.year}`}>
+                {entry.year}
+              </p>
+              <p class="timeline__prose">{isFr ? entry.fr : entry.en}</p>
+            </li>
+          ))}
+        </ol>
+
+        <aside class="timeline-rail" aria-hidden="true">
+          <ol class="rail">
+            {timelineEntries.map((entry, i) => (
+              <li class="rail__item" data-tl-rail={i}>
+                <span class="rail__node"></span>
+                <span class="rail__year">{entry.year}</span>
+              </li>
+            ))}
+          </ol>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════
+       3. ESTATE BAND — full-bleed aerial behind scrim
+       ═══════════════════════════════════════════════ -->
+  <section class="estate-band" aria-labelledby="estate-band-heading">
+    <div class="estate-band__media">
+      <Photo
+        fill
+        name="exterior-aerial"
+        sizes="100vw"
+        widths={[768, 1280, 1920]}
+        alt={isFr
+          ? 'Vue aérienne du Château de Lésigny et de son parc boisé entouré de douves'
+          : 'Aerial view of Château de Lésigny and its wooded park encircled by moats'}
+      />
+    </div>
+    <div class="estate-band__scrim" aria-hidden="true"></div>
+
+    <div class="wrap estate-band__inner" data-reveal>
+      <p class="eyebrow estate-band__eyebrow">{isFr ? 'Le domaine' : 'The estate'}</p>
+      <p id="estate-band-heading" class="estate-band__caption">
+        {isFr
+          ? `${site.estate.hectares} hectares de parc, de douves et de terrasses`
+          : `${site.estate.hectares} hectares of park, moats, and terraces`}
+      </p>
+      <p class="estate-band__sub">
+        {isFr
+          ? `Parc boisé, pièces d’eau, communs, ferme et une cour d’un hectare : chaque espace forme un décor autonome.`
+          : `Wooded park, water features, outbuildings, a working farm, and a one-hectare courtyard: each space forms a self-contained set.`}
+      </p>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════
+       4. ARCHITECTURE ESSAY — narrow column
+       ═══════════════════════════════════════════════ -->
+  <section class="section essay-section" aria-labelledby="essay-heading">
+    <div class="wrap essay-wrap">
+      <div class="essay__meta" data-reveal>
+        <hr class="rule" />
+        <p class="eyebrow essay__eyebrow">
+          {isFr ? 'Architecture & Matériaux' : 'Architecture & Materials'}
+        </p>
+      </div>
+
+      <h2 id="essay-heading" class="essay__title" data-reveal>
+        {isFr
+          ? 'Le premier Renaissance français — pierre de taille, douves et colombier'
+          : 'The first French Renaissance — ashlar, moat, and dovecote'}
+      </h2>
+
+      <figure class="essay__plate" data-reveal>
+        <Photo
+          name="int-ballroom-red"
+          ratio="16/9"
+          alt={isFr
+            ? 'Plafond à poutres et caissons peints de la grande salle de réception rouge du château'
+            : 'Painted beamed and coffered ceiling of the château’s red reception hall'}
+        />
+        <figcaption class="essay__caption slate">
+          {isFr
+            ? 'Plafonds peints et cheminées des salles de réception · Renaissance'
+            : 'Painted ceilings and fireplaces of the reception halls · Renaissance'}
+        </figcaption>
+      </figure>
+
+      <div class="essay__text flow" data-reveal>
+        {isFr ? (
+          <>
+            <p>
+              L’architecture de Lésigny appartient au premier Renaissance français. Le château que
+              vous parcourez aujourd’hui doit l’essentiel de sa silhouette à la reconstruction
+              conduite vers le milieu du XVIᵉ siècle par Charles de Pierrevive et Charlotte
+              Briçonnet, sur les fondations de la demeure des Poncher. On y reconnaît le vocabulaire
+              de l’époque : pierre de taille, fenêtres à meneaux, lucarnes à frontons et toitures
+              d’ardoise — un langage importé d’Italie, mais retenu avec la mesure francilienne.
+            </p>
+            <p>
+              Le corps principal est ceint de douves en eau, alimentées par les pièces d’eau du
+              parc — dispositif autant défensif qu’ornemental, hérité du château médiéval qui l’a
+              précédé. À la Révolution, en 1794, les quatre tours d’angle furent abattues sur ordre
+              du district et les étangs asséchés : le profil horizontal que vous voyez aujourd’hui
+              garde la mémoire de cette amputation.
+            </p>
+
+            <figure class="essay__plan" data-reveal>
+              <Photo
+                name="plan-floorplan"
+                ratio="3/2"
+                duotone
+                alt={isFr
+                  ? 'Plan ancien du château et de ses tours d’angle disparues'
+                  : 'Historic plan of the château and its lost corner towers'}
+              />
+              <figcaption class="essay__caption slate">
+                {isFr
+                  ? 'Le plan du château, avant la perte des tours'
+                  : 'Plan of the château, before the loss of its towers'}
+              </figcaption>
+            </figure>
+
+            <p>
+              Au sein du domaine, le colombier rappelle les privilèges seigneuriaux de l’Ancien
+              Régime, quand le droit de pigeonnier signalait le rang du propriétaire. La chapelle,
+              consacrée en 1615 du temps de la Galigaï, vit en 1617 le mariage de Charles de Luynes
+              et de Marie de Rohan — l’un des épisodes les plus romanesques de l’histoire du lieu.
+            </p>
+
+            <div class="essay__duo" data-reveal>
+              <figure>
+                <Photo
+                  name="grounds-moat"
+                  ratio="4/5"
+                  duotone
+                  alt="Douves en eau au pied du Château de Lésigny"
+                />
+                <figcaption class="essay__caption slate">{isFr ? 'Les douves' : 'The moat'}</figcaption>
+              </figure>
+              <figure>
+                <Photo
+                  name="grounds-dovecote"
+                  ratio="4/5"
+                  duotone
+                  alt={isFr ? 'Colombier du domaine de Lésigny' : 'Dovecote of the Lésigny estate'}
+                />
+                <figcaption class="essay__caption slate">{isFr ? 'Le colombier' : 'The dovecote'}</figcaption>
+              </figure>
+            </div>
+
+            <p>
+              À l’intérieur, les salles de réception du rez-de-chaussée conservent plafonds peints
+              et cheminées qui leur donnent un caractère exceptionnel. Ces décors, enrichis au fil
+              des siècles par des propriétaires successifs, expliquent pourquoi tant de productions
+              de cinéma et de télévision ont reconnu en Lésigny un cadre intemporel.
+            </p>
+            <p>
+              Le domaine s’étend sur {site.estate.hectares} hectares — parc boisé, douves, terrasses
+              et une cour d’un hectare — où chaque espace forme un décor autonome. C’est cette
+              diversité qui fonde les {site.estate.decors}+ lieux aujourd’hui ouverts aux mariages,
+              aux événements et aux tournages.
+            </p>
+          </>
+        ) : (
+          <>
+            <p>
+              The architecture of Lésigny belongs to the first French Renaissance. The château you
+              walk through today owes its silhouette largely to the rebuild carried out around the
+              middle of the 16th century by Charles de Pierrevive and Charlotte Briçonnet, on the
+              foundations of the Poncher house. The vocabulary of the era is unmistakable: ashlar,
+              mullioned windows, pedimented dormers, and slate roofs — a language imported from
+              Italy yet held to an Île-de-France restraint.
+            </p>
+            <p>
+              The main body is encircled by a water-filled moat, fed by the park’s ponds — a device
+              as defensive as it is ornamental, inherited from the medieval castle that preceded it.
+              In 1794, the Revolution had the four corner towers pulled down by order of the
+              district and the ponds drained: the horizontal profile you see today still carries the
+              memory of that loss.
+            </p>
+
+            <figure class="essay__plan" data-reveal>
+              <Photo
+                name="plan-floorplan"
+                ratio="3/2"
+                duotone
+                alt="Historic plan of the château and its lost corner towers"
+              />
+              <figcaption class="essay__caption slate">
+                Plan of the château, before the loss of its towers
+              </figcaption>
+            </figure>
+
+            <p>
+              Within the estate, the dovecote recalls the seigneurial privileges of the Ancien
+              Régime, when the right to keep pigeons signalled the owner’s rank. The chapel,
+              consecrated in 1615 in la Galigaï’s day, witnessed in 1617 the marriage of Charles de
+              Luynes and Marie de Rohan — one of the most novelistic episodes in the château’s
+              history.
+            </p>
+
+            <div class="essay__duo" data-reveal>
+              <figure>
+                <Photo
+                  name="grounds-moat"
+                  ratio="4/5"
+                  duotone
+                  alt="Water-filled moat at the foot of Château de Lésigny"
+                />
+                <figcaption class="essay__caption slate">The moat</figcaption>
+              </figure>
+              <figure>
+                <Photo
+                  name="grounds-dovecote"
+                  ratio="4/5"
+                  duotone
+                  alt="Dovecote of the Lésigny estate"
+                />
+                <figcaption class="essay__caption slate">The dovecote</figcaption>
+              </figure>
+            </div>
+
+            <p>
+              Inside, the ground-floor reception halls retain painted ceilings and fireplaces that
+              give them exceptional character. These décors, enriched over the centuries by
+              successive owners, explain why so many film and television productions have recognised
+              in Lésigny a timeless frame.
+            </p>
+            <p>
+              The estate spreads across {site.estate.hectares} hectares — wooded park, moats,
+              terraces, and a one-hectare courtyard — where each space forms a self-contained set.
+              That diversity underpins the {site.estate.decors}+ locations now open to weddings,
+              events, and film shoots.
+            </p>
+          </>
+        )}
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════
+       4.5. LES FRESQUES / THE FRESCOES
+       ═══════════════════════════════════════════════ -->
+  <section class="section frescoes-section" aria-labelledby="frescoes-heading">
+    <div class="wrap essay-wrap">
+
+      <div class="essay__meta" data-reveal>
+        <hr class="rule" />
+        <p class="eyebrow essay__eyebrow">
+          {isFr ? 'Les fresques & plafonds peints' : 'Frescoes & painted ceilings'}
+        </p>
+      </div>
+
+      <h2 id="frescoes-heading" class="essay__title" data-reveal>
+        {isFr
+          ? 'Plafonds à caissons peints — la Renaissance intacte'
+          : 'Painted coffered ceilings — the Renaissance intact'}
+      </h2>
+
+      <figure class="essay__plate" data-reveal>
+        <Photo
+          name="int-painted-ceiling"
+          ratio="16/9"
+          alt={isFr
+            ? 'Plafond à caissons peints d’une salle de réception du Château de Lésigny'
+            : 'Painted coffered ceiling of a reception room at Château de Lésigny'}
+        />
+        <figcaption class="essay__caption slate">
+          {isFr
+            ? 'Décor peint Renaissance d’une salle de réception du rez-de-chaussée'
+            : 'Renaissance painted decoration, a ground-floor reception room'}
+        </figcaption>
+      </figure>
+
+      <div class="essay__text flow" data-reveal>
+        {isFr ? (
+          <>
+            <p>
+              Les salons en enfilade du rez-de-chaussée conservent leurs plafonds à poutres
+              et caissons peints de décorations de la Renaissance — un trésor fragile aux
+              côtés des cheminées d’époque et des parquets authentiques. Ces décors leur
+              confèrent un cachet exceptionnel que cinq siècles d’histoire ont façonné.
+            </p>
+            <p>
+              {/* VERIFY: origines italiennes de Pierrevive — source unique : montjoye.net */}
+              La facture de ces plafonds est indissociable de la culture de leurs commanditaires.
+              Charles de Pierrevive, d’origine italienne et proche de la faction des Médicis,
+              fait reconstruire le château vers 1550 dans le sillage des grands chantiers
+              royaux de François Iᵉʳ — une époque où le vocabulaire ornamental de la
+              Renaissance italienne irriguait l’art décoratif français. Ces poutres à
+              caissons en portent la grammaire.
+            </p>
+            <p>
+              Enrichis au fil des siècles par la Galigaï, les Luynes et leurs successeurs,
+              ces décors sont au cœur du projet de restauration conduit par Daphne Reckert
+              et Ian Figueira. La série HGTV <em>Castle Impossible</em> en suit la reprise
+              progressive, pièce après pièce — une renaissance que chaque mariage et tournage
+              organisé sur le domaine contribue à financer.
+            </p>
+          </>
+        ) : (
+          <>
+            <p>
+              The ground-floor reception rooms in <em>enfilade</em> preserve their coffered
+              beamed ceilings painted with Renaissance ornamental decoration — a fragile
+              treasure set alongside period fireplaces and authentic parquet floors. These
+              décors lend the halls the exceptional character that five centuries of history
+              have shaped.
+            </p>
+            <p>
+              {/* VERIFY: Pierrevive’s Italian origins — single source: montjoye.net */}
+              The quality of these ceilings is inseparable from the culture of those who
+              commissioned them. Charles de Pierrevive, of Italian origin and close to the
+              Medici circle, rebuilt the château around 1550 in the wake of Francis I’s
+              great royal building programmes — a moment when the ornamental vocabulary of
+              the Italian Renaissance was enriching French decorative art. These coffered
+              beams speak that same language.
+            </p>
+            <p>
+              Enriched over the centuries by la Galigaï, the Luynes, and their successors,
+              these décors are today at the heart of the restoration undertaken by Daphne
+              Reckert and Ian Figueira. HGTV’s <em>Castle Impossible</em> documents the
+              progress, room by room — a long-term endeavour that each wedding and film
+              shoot on the estate helps to finance.
+            </p>
+          </>
+        )}
+      </div>
+
+      <div class="essay__duo" data-reveal>
+        <figure>
+          <Photo
+            name="int-paneled-salon"
+            ratio="4/5"
+            alt={isFr
+              ? 'Salon lambrissé du rez-de-chaussée du Château de Lésigny'
+              : 'Panelled salon on the ground floor of Château de Lésigny'}
+          />
+          <figcaption class="essay__caption slate">
+            {isFr ? 'Salon lambrissé · boiseries d’époque' : 'Panelled salon · period woodwork'}
+          </figcaption>
+        </figure>
+        <figure>
+          <Photo
+            name="int-fireplace-parquet"
+            ratio="4/5"
+            alt={isFr
+              ? 'Cheminée Renaissance et parquet authentique d’une salle de réception'
+              : 'Renaissance fireplace and authentic parquet floor in a reception room'}
+          />
+          <figcaption class="essay__caption slate">
+            {isFr
+              ? 'Cheminée d’époque et parquet authentique · artisanat Renaissance'
+              : 'Period fireplace and authentic parquet · Renaissance craftsmanship'}
+          </figcaption>
+        </figure>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════
+       5. LE TRÉSOR PERDU / THE LOST TREASURE
+       ═══════════════════════════════════════════════ -->
+  <section class="section treasure-section" aria-labelledby="treasure-heading">
+    <div class="wrap treasure-wrap">
+
+      <figure class="treasure__portrait" data-reveal>
+        <Image
+          src={portraitGaligai}
+          alt={isFr
+            ? 'Portrait de Léonora Dori, dite la Galigaï, maréchale d’Ancre, dessiné vers 1614'
+            : 'Portrait of Léonora Dori, known as la Galigaï, Maréchale d’Ancre, drawn around 1614'}
+          widths={[400, 800]}
+          sizes="(max-width: 860px) 60vw, 360px"
+        />
+        <figcaption class="treasure__credit slate">
+          {isFr
+            ? 'Léonora Dori, dite « la Galigaï » · attr. Daniel Dumonstier, v. 1614 · BnF · Domaine public'
+            : 'Léonora Dori, known as “la Galigaï” · attr. Daniel Dumonstier, c. 1614 · BnF · Public domain'}
+        </figcaption>
+      </figure>
+
+      <div class="treasure__body" data-reveal>
+        <p class="eyebrow treasure__eyebrow">
+          {isFr ? 'Mystère & légende' : 'Mystery & legend'}
+        </p>
+        <h2 id="treasure-heading" class="treasure__title">
+          {isFr ? 'Le trésor perdu de la Galigaï' : 'The lost treasure of la Galigaï'}
+        </h2>
+
+        <div class="treasure__text flow">
+          {isFr ? (
+            <>
+              <p>
+                En 1613, Léonora Dori — la Galigaï — achète Lésigny pour 95 000 livres. Confidente
+                de Marie de Médicis et épouse de Concino Concini, futur maréchal d’Ancre, elle
+                appartient au couple le plus puissant et le plus fortuné de la cour. Leur richesse,
+                amassée et placée dans les banques et les terres, était immense.
+              </p>
+              <p>
+                La chute fut foudroyante : en 1617, Concini est assassiné au Louvre « au nom du
+                roi » ; quelques mois plus tard, la Galigaï est jugée, décapitée puis brûlée en
+                place de Grève. Lorsque les biens du couple furent saisis, une part de leur fortune
+                demeura, dit-on, introuvable.
+              </p>
+              <p>
+                {/* VERIFY: « trésor caché » et estimation « en milliards » — légende relayée par l’émission HGTV, non corroborée par une source primaire */}
+                De là est née une légende tenace : selon le récit, la Galigaï aurait dissimulé son
+                trésor avant de se livrer, car rien ne fut retrouvé lors de la perquisition. Aucun
+                trésor n’a jamais été mis au jour, et nul ne s’enrichit dans les suites de
+                l’affaire — ce qui, pour beaucoup, signifie qu’il dort encore quelque part.
+              </p>
+              <p>
+                C’est cette intrigue que <em>Castle Impossible</em> fait revivre : le grand-père de
+                Daphne, puis Daphne et Ian eux-mêmes, ont reçu d’innombrables sollicitations de
+                chercheurs de trésor désireux de fouiller le domaine. La série en a fait l’un de ses
+                fils rouges — sans qu’aucune découverte n’ait, à ce jour, été confirmée.
+              </p>
+            </>
+          ) : (
+            <>
+              <p>
+                In 1613, Léonora Dori — la Galigaï — bought Lésigny for 95,000 livres. Confidante of
+                Marie de’ Medici and wife of Concino Concini, the future Maréchal d’Ancre, she was
+                one half of the most powerful and wealthy couple at court. Their fortune, amassed and
+                invested in banks and land, was immense.
+              </p>
+              <p>
+                The fall was sudden: in 1617 Concini was assassinated at the Louvre “in the king’s
+                name”; months later la Galigaï was tried, beheaded, and her body burned at the Place
+                de Grève. When the couple’s assets were seized, part of their fortune — so the story
+                goes — was never found.
+              </p>
+              <p>
+                {/* VERIFY: "hidden treasure" and the "billions" estimate — a legend relayed by the HGTV show, not corroborated by a primary source */}
+                From this grew a persistent legend: according to the account, la Galigaï hid her
+                treasure before surrendering, since nothing was found when the property was searched.
+                No treasure has ever been recovered, and no one emerged notably richer afterward —
+                which, to many, means it still lies hidden somewhere.
+              </p>
+              <p>
+                It is this intrigue that <em>Castle Impossible</em> revives: Daphne’s grandfather,
+                and later Daphne and Ian themselves, have fielded countless approaches from treasure
+                hunters wanting to dig the estate. The series has made it one of its running
+                threads — though no discovery has, to date, been confirmed.
+              </p>
+            </>
+          )}
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════
+       6. CASTLE IMPOSSIBLE · HGTV
+       ═══════════════════════════════════════════════ -->
+  <section class="section feature-section is-dark" aria-labelledby="feature-heading">
+    <div class="wrap feature-wrap">
+      <div class="feature__text" data-reveal>
+        <p class="eyebrow feature__eyebrow">
+          {isFr ? 'Castle Impossible · HGTV' : 'Castle Impossible · HGTV'}
+        </p>
+        <h2 id="feature-heading" class="feature__title">
+          {isFr
+            ? 'La renaissance d’un château, saison après saison'
+            : 'A château’s renaissance, season after season'}
+        </h2>
+        <p class="feature__body">
+          {isFr
+            ? `La restauration contemporaine du château est filmée pour HGTV dans « Castle Impossible ». Daphne Reckert et Ian Figueira — « the Figs » — y redonnent vie, pièce après pièce, au domaine que Daphne a hérité de son grand-père. La première saison a été diffusée d’avril à juin 2025.`
+            : `The château’s contemporary restoration is filmed for HGTV in “Castle Impossible”. Daphne Reckert and Ian Figueira — “the Figs” — revive, room by room, the estate Daphne inherited from her grandfather. The first season aired from April to June 2025.`}
+        </p>
+        <p class="feature__body">
+          {isFr
+            ? `La deuxième saison a été lancée le mardi 26 mai 2026 : huit épisodes, en streaming dès le lendemain sur HBO Max et discovery+. Au programme — une suite nuptiale dans la tour du colombier, un salon de thé, une taverne dans les souterrains, une bibliothèque, et la restauration de la maison de gardien.`
+            : `Season two premiered on Tuesday 26 May 2026: eight episodes, streaming the next day on HBO Max and discovery+. On the agenda — a honeymoon suite in the dovecote tower, a tea salon, a dungeon tavern, a library, and the restoration of the gatehouse.`}
+        </p>
+
+        <div class="feature__actions">
+          <a
+            class="btn btn--primary"
+            href={site.social.youtube}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={isFr ? 'Voir TheBeauChateau sur YouTube (nouvelle fenêtre)' : 'Watch TheBeauChateau on YouTube (opens in new tab)'}
+          >
+            {isFr ? 'Voir sur YouTube' : 'Watch on YouTube'}
+          </a>
+          <a
+            class="btn btn--ghost feature__cta"
+            href="https://www.hgtv.com/shows/castle-impossible"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={isFr ? 'Castle Impossible sur HGTV.com (nouvelle fenêtre)' : 'Castle Impossible on HGTV.com (opens in new tab)'}
+          >
+            {isFr ? 'La série sur HGTV' : 'The series on HGTV'}
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true" focusable="false">
+              <path d="M2 2h10M12 2v10M12 2L2 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <figure class="feature__media" data-reveal>
+        <Photo
+          name="exterior-evening"
+          ratio="4/5"
+          alt={isFr
+            ? 'Le Château de Lésigny illuminé à la tombée du jour'
+            : 'Château de Lésigny lit at dusk'}
+        />
+        <figcaption class="feature__media-cap slate">
+          {isFr ? 'Le château, au crépuscule' : 'The château at dusk'}
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════
+       7. SOFT CTA → le-domaine
+       ═══════════════════════════════════════════════ -->
+  <section class="section cta-section" aria-labelledby="cta-heading">
+    <div class="wrap cta-wrap" data-reveal>
+      <hr class="rule cta-rule" />
+      <p class="eyebrow cta-eyebrow">
+        {isFr ? 'Prochaine étape' : 'Next step'}
+      </p>
+      <h2 id="cta-heading" class="cta-title">
+        {isFr
+          ? 'Explorez le domaine dans son intégralité'
+          : 'Explore the estate in its entirety'}
+      </h2>
+      <p class="cta-body">
+        {isFr
+          ? `${site.estate.decors}+ décors répartis sur ${site.estate.hectares} hectares, à ${site.address.fromParisKm} km de Paris. Découvrez chaque espace.`
+          : `${site.estate.decors}+ décors across ${site.estate.hectares} hectares, ${site.address.fromParisKm} km from Paris. Discover every space.`}
+      </p>
+      <a class="btn btn--primary cta-btn" href={`${base}/le-domaine/`}>
+        {isFr ? 'Découvrir le domaine' : 'Discover the estate'} →
+      </a>
+    </div>
+  </section>
+
+</PageLayout>
+
+<script>
+  // Highlight the condensed rail’s active year as its narrative entry scrolls
+  // into view. Purely a visual aid — degrades gracefully without JS/observer.
+  const entries = Array.from(document.querySelectorAll<HTMLElement>('.timeline__entry'));
+  const railItems = Array.from(document.querySelectorAll<HTMLElement>('.rail__item'));
+
+  if (entries.length && railItems.length && 'IntersectionObserver' in window) {
+    const visible = new Map<number, number>();
+
+    const setActive = (idx: number) => {
+      railItems.forEach((el, i) => el.classList.toggle('is-active', i === idx));
+    };
+
+    const observer = new IntersectionObserver(
+      (records) => {
+        for (const record of records) {
+          const idx = Number(record.target.getAttribute('data-tl-index'));
+          if (record.isIntersecting) visible.set(idx, record.intersectionRatio);
+          else visible.delete(idx);
+        }
+        if (visible.size) setActive(Math.min(...visible.keys()));
+      },
+      { rootMargin: '-20% 0px -60% 0px', threshold: [0, 0.25, 0.6, 1] },
+    );
+
+    entries.forEach((el) => observer.observe(el));
+  }
+</script>
+
+
+<style>
+  /* ── HERO (image + scrim) ──────────────────────────── */
+  .hero {
+    position: relative;
+    isolation: isolate;
+    padding-block: clamp(4rem, 11vh, 8rem) var(--space-l);
+    overflow: hidden;
+    background: var(--suie);
+    color: var(--ivoire);
+  }
+  .hero__bg { position: absolute; inset: 0; z-index: -2; }
+  .hero__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(180deg, rgba(20,16,12,0.55) 0%, rgba(20,16,12,0.40) 40%, rgba(20,16,12,0.78) 100%),
+      linear-gradient(90deg, rgba(20,16,12,0.55) 0%, rgba(20,16,12,0.15) 70%);
+  }
+  .hero__inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: clamp(var(--space-l), 5vw, var(--space-2xl));
+  }
+  .hero__title { display: grid; gap: var(--space-m); }
+  .hero__eyebrow { color: var(--laiton-soft); }
+
+  /* Featured historical portrait — museum title-wall framing */
+  .hero__portrait {
+    margin: 0;
+    justify-self: end;
+    width: clamp(13rem, 24vw, 22rem);
+    max-width: 100%;
+  }
+  .hero__frame {
+    padding: clamp(0.4rem, 0.8vw, 0.7rem);
+    border: 1px solid var(--laiton);
+    background: linear-gradient(135deg,
+      color-mix(in srgb, var(--laiton) 22%, transparent),
+      color-mix(in srgb, var(--laiton-soft) 10%, transparent));
+    box-shadow: 0 24px 60px -28px rgba(0, 0, 0, 0.85);
+  }
+  .hero__frame :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid color-mix(in srgb, var(--laiton-soft) 55%, transparent);
+  }
+  .hero__portrait-cap {
+    display: block;
+    margin-top: var(--space-2xs, 0.4rem);
+    color: var(--laiton-soft);
+    text-align: center;
+  }
+
+  /* The enormous "1508" typographic numeral */
+  .hero__numeral {
+    font-family: var(--font-display);
+    font-size: clamp(5.5rem, 22vw, 18rem);
+    font-weight: 300;
+    line-height: 0.88;
+    letter-spacing: -0.04em;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--laiton-soft);
+    text-stroke: 1px var(--laiton-soft);
+    background: linear-gradient(135deg, var(--laiton) 0%, var(--laiton-soft) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    user-select: none;
+    pointer-events: none;
+    margin-block: var(--space-xs) 0;
+    font-variation-settings: 'SOFT' 100, 'WONK' 0, 'opsz' 144;
+  }
+
+  .hero__h1 {
+    font-size: clamp(var(--step-3), 5vw, var(--step-5));
+    max-width: 22ch;
+    margin-top: var(--space-xs);
+    color: var(--ivoire);
+  }
+  .hero__deck {
+    font-size: var(--step-1);
+    color: color-mix(in srgb, var(--ivoire) 80%, transparent);
+    max-width: 52ch;
+    line-height: 1.55;
+  }
+  .hero__rule {
+    margin-top: var(--space-2xl);
+    border-color: color-mix(in srgb, var(--laiton-soft) 45%, transparent);
+  }
+
+  /* ── TIMELINE ─────────────────────────────────────── */
+  .timeline-section { background: var(--calcaire); }
+
+  .section-h2 {
+    font-size: var(--step-3);
+    margin-block: var(--space-xs) var(--space-2xl);
+    max-width: 32ch;
+  }
+
+  /* Two-column: ~70% narrative / ~30% sticky rail */
+  .timeline-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
+    gap: clamp(var(--space-l), 5vw, var(--space-2xl));
+    align-items: start;
+  }
+
+  /* LEFT — readable narrative column */
+  .timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2xl);
+  }
+  .timeline__entry {
+    display: grid;
+    gap: var(--space-2xs, 0.45rem);
+    scroll-margin-top: 6rem;
+  }
+  .timeline__year {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 460;
+    color: var(--encre);
+    line-height: 1;
+    font-variation-settings: 'SOFT' 20, 'WONK' 0, 'opsz' 48;
+  }
+  .timeline__prose {
+    color: var(--text-muted);
+    font-size: var(--step-0);
+    line-height: 1.7;
+    max-width: 56ch;
+  }
+
+  /* RIGHT — condensed sticky rail */
+  .timeline-rail {
+    position: sticky;
+    top: 5.5rem;
+    align-self: start;
+  }
+  .rail {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-s);
+    position: relative;
+  }
+  .rail::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 0.55em;
+    bottom: 0.55em;
+    width: var(--hairline);
+    background: color-mix(in srgb, var(--laiton) 45%, transparent);
+  }
+  .rail__item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+    padding-left: 1.35rem;
+  }
+  .rail__node {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--calcaire);
+    border: var(--hairline) solid var(--laiton);
+    transition: background-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .rail__year {
+    font-family: var(--font-slate);
+    font-size: var(--step--1);
+    letter-spacing: 0.02em;
+    color: var(--text-muted);
+    line-height: 1.2;
+    transition: color 0.25s ease;
+  }
+  .rail__item.is-active .rail__node {
+    background: var(--sang);
+    border-color: var(--sang);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--sang) 22%, transparent);
+  }
+  .rail__item.is-active .rail__year {
+    color: var(--sang);
+    font-weight: 600;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rail__node, .rail__year { transition: none; }
+  }
+
+  /* ── ESTATE BAND (image + scrim) ──────────────────── */
+  .estate-band {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    color: var(--ivoire);
+    padding-block: clamp(4rem, 13vh, 9rem);
+    background: var(--suie);
+  }
+  .estate-band__media { position: absolute; inset: 0; z-index: -2; }
+  .estate-band__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(90deg, rgba(20,16,12,0.82) 0%, rgba(20,16,12,0.45) 55%, rgba(20,16,12,0.25) 100%);
+  }
+  .estate-band__inner { display: grid; gap: var(--space-s); max-width: 48ch; }
+  .estate-band__eyebrow { color: var(--laiton-soft); }
+  .estate-band__caption {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    line-height: 1.15;
+    color: var(--ivoire);
+    max-width: 18ch;
+  }
+  .estate-band__sub {
+    color: color-mix(in srgb, var(--ivoire) 80%, transparent);
+    line-height: 1.6;
+  }
+
+  /* ── ESSAY ────────────────────────────────────────── */
+  .essay-section { background: var(--pierre); }
+  .essay-wrap { max-width: 72ch; }
+
+  .essay__meta { margin-bottom: var(--space-s); }
+  .essay__eyebrow { margin-top: var(--space-s); }
+
+  .essay__title {
+    font-size: var(--step-3);
+    max-width: 30ch;
+    margin-block: var(--space-m) var(--space-xl);
+  }
+
+  .essay__plate {
+    width: 100%;
+    margin: 0 0 var(--space-xl);
+  }
+  .essay__caption {
+    display: block;
+    margin-top: var(--space-2xs, 0.4rem);
+    color: var(--text-muted);
+  }
+
+  .essay__plan {
+    margin-block: var(--space-l) var(--space-xl);
+    max-width: 52ch;
+  }
+
+  .essay__duo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-m);
+    margin-block: var(--space-l) var(--space-xl);
+  }
+  .essay__duo figure { margin: 0; }
+
+  .essay__text p {
+    font-size: var(--step-0);
+    line-height: 1.75;
+    color: var(--text-muted);
+    max-width: 68ch;
+  }
+
+  /* ── FEATURE (dark) — Castle Impossible ──────────── */
+  .feature-section {
+    background: var(--suie);
+    color: var(--ivoire);
+  }
+  .feature-wrap {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: var(--space-2xl);
+    align-items: center;
+  }
+  .feature__eyebrow { color: var(--laiton-soft); }
+  .feature__title {
+    font-size: var(--step-3);
+    color: var(--ivoire);
+    margin-block: var(--space-s) var(--space-m);
+    max-width: 24ch;
+  }
+  .feature__body {
+    color: color-mix(in srgb, var(--ivoire) 78%, transparent);
+    max-width: 52ch;
+    line-height: 1.7;
+  }
+  .feature__body + .feature__body { margin-top: var(--space-s); }
+
+  .feature__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-s);
+    margin-top: var(--space-l);
+  }
+  .feature__cta {
+    color: var(--ivoire);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ivoire) 40%, transparent);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+  .feature__cta:hover { box-shadow: inset 0 0 0 1px var(--laiton-soft); }
+
+  .feature__media { margin: 0; }
+  .feature__media-cap {
+    display: block;
+    margin-top: var(--space-2xs, 0.4rem);
+    color: var(--laiton-soft);
+  }
+
+  /* ── CTA ──────────────────────────────────────────── */
+  .cta-section { background: var(--calcaire-2); }
+  .cta-wrap { display: grid; gap: var(--space-m); }
+  .cta-rule { margin-bottom: var(--space-s); }
+  .cta-eyebrow { color: var(--laiton); }
+  .cta-title { font-size: var(--step-3); max-width: 28ch; }
+  .cta-body { color: var(--text-muted); max-width: 48ch; }
+  .cta-btn { justify-self: start; margin-top: var(--space-xs); }
+
+  /* ── RESPONSIVE ──────────────────────────────────── */
+  @media (max-width: 860px) {
+    /* Collapse to a single column; rail moves above as an inline overview */
+    .timeline-grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-xl);
+    }
+    .timeline-rail {
+      position: static;
+      order: -1;
+      padding-bottom: var(--space-m);
+      border-bottom: var(--hairline) solid var(--rule);
+    }
+    .rail {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-s) var(--space-m);
+    }
+    .rail::before { content: none; }
+    .rail__item { padding-left: 1rem; }
+    .rail__node { left: 0; }
+
+    .feature-wrap { grid-template-columns: 1fr; gap: var(--space-xl); }
+    .treasure-wrap { grid-template-columns: 1fr; gap: var(--space-xl); }
+    .treasure__portrait { position: static; max-width: 320px; }
+    .hero__numeral { font-size: clamp(4rem, 28vw, 9rem); }
+
+    .hero__inner {
+      grid-template-columns: 1fr;
+      justify-items: start;
+      gap: var(--space-xl);
+    }
+    .hero__portrait {
+      order: -1;
+      justify-self: start;
+      width: clamp(11rem, 42vw, 16rem);
+    }
+    .hero__portrait-cap { text-align: left; }
+  }
+
+  @media (max-width: 540px) {
+    .section-h2 { font-size: var(--step-2); }
+    .essay__title { font-size: var(--step-2); }
+    .estate-band__caption { font-size: var(--step-2); }
+    .feature__title { font-size: var(--step-2); }
+    .treasure__title { font-size: var(--step-2); }
+    .cta-title { font-size: var(--step-2); }
+    .essay__duo { grid-template-columns: 1fr; }
+  }
+
+  /* ── FRESCOES (4.5) ──────────────────────────────── */
+  .frescoes-section { background: var(--calcaire); }
+  .frescoes__link {
+    color: var(--laiton);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .frescoes__link:hover { color: var(--encre); }
+
+  /* ── TREASURE (5.5) ──────────────────────────────── */
+  .treasure-section { background: var(--pierre); }
+  .treasure-wrap {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+  .treasure__portrait { margin: 0; position: sticky; top: var(--space-l); }
+  .treasure__portrait :global(img) {
+    width: 100%;
+    height: auto;
+    display: block;
+    border: 1px solid color-mix(in srgb, var(--laiton-soft) 50%, transparent);
+    box-shadow: 0 18px 40px -24px rgba(20, 16, 12, 0.55);
+  }
+  .treasure__credit {
+    display: block;
+    margin-top: var(--space-2xs, 0.4rem);
+    color: var(--text-muted);
+    max-width: 34ch;
+  }
+  .treasure__title {
+    font-size: var(--step-3);
+    max-width: 22ch;
+    margin-block: var(--space-xs) var(--space-l);
+  }
+  .treasure__text p {
+    font-size: var(--step-0);
+    line-height: 1.75;
+    color: var(--text-muted);
+    max-width: 60ch;
+  }
+  .treasure__link {
+    color: var(--laiton);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .treasure__link:hover { color: var(--encre); }
+</style>

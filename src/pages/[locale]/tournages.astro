@@ -1,0 +1,1051 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import Photo from '../../components/Photo.astro';
+import { site } from '../../config/site';
+import { locales, type Locale, useT } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return locales.map((locale) => ({ params: { locale } }));
+}
+
+const { locale } = Astro.params as { locale: Locale };
+const t = useT(locale);
+const base = `/${locale}`;
+const isFr = locale === 'fr';
+
+// ── Décor plates (8 × 16:9 image panels) ────────────────────────────────
+const decors = [
+  {
+    photo: 'int-ballroom-red',
+    label: isFr ? 'La Salle de Bal' : 'The Ballroom',
+    note: isFr ? 'Parquet d\'époque — 250 m²' : 'Period parquet — 250 m²',
+  },
+  {
+    photo: 'int-dungeon-passage',
+    label: isFr ? 'Le Donjon Médiéval' : 'The Medieval Dungeon',
+    note: isFr ? 'Voûtes en ogive — pierre brute' : 'Gothic vaulting — raw stone',
+  },
+  {
+    photo: 'int-chapel',
+    label: isFr ? 'La Chapelle' : 'The Chapel',
+    note: isFr ? 'Voûtes gothiques — lumière naturelle' : 'Gothic vaults — natural light',
+  },
+  {
+    photo: 'int-stone-courtyard',
+    label: isFr ? 'Les Douves & Remparts' : 'The Moat & Ramparts',
+    note: isFr ? 'Eau courante — perspective 80 m' : 'Running water — 80 m perspective',
+  },
+  {
+    photo: 'int-great-hall',
+    label: isFr ? 'La Grande Salle' : 'The Great Hall',
+    note: isFr ? 'Plafonds hauts — lumière directionnelle' : 'High ceilings — directional light',
+  },
+  {
+    photo: 'int-cellar',
+    label: isFr ? 'Les Caves' : 'The Cellars',
+    note: isFr ? 'Voûtes en berceau — pierre médiévale' : 'Barrel vaults — medieval stone',
+  },
+  {
+    photo: 'int-staircase-statue',
+    label: isFr ? 'Le Grand Escalier' : 'The Grand Staircase',
+    note: isFr ? 'Pierre de taille XVIe — 5 niveaux' : '16th-c. cut stone — 5 levels',
+  },
+  {
+    photo: 'ferme-timberwork',
+    label: isFr ? 'La Ferme — Pierre & Bois' : 'La Ferme — Stone & Timber',
+    note: isFr ? 'Sols d\'origine — poutres apparentes' : 'Original floors — exposed beams',
+  },
+] as const;
+---
+
+<PageLayout
+  title={isFr
+    ? `Tournages & Décors de Cinéma — ${site.name}`
+    : `Film & TV Locations — ${site.name}`}
+  description={isFr
+    ? `Plus de ${site.cinema.productions} productions françaises en ${site.cinema.yearsAsLocation} ans. ${site.estate.decors}+ décors Renaissance et médiévaux sur ${site.estate.hectares} hectares, à ${site.address.fromParisKm} km de Paris.`
+    : `Over ${site.cinema.productions} French productions in ${site.cinema.yearsAsLocation} years. ${site.estate.decors}+ Renaissance and medieval décors across ${site.estate.hectares} hectares, ${site.address.fromParisKm} km from Paris.`}
+  locale={locale}
+  path="tournages/"
+  dark={true}
+>
+
+  <!-- ═══════════════════════════════════════════════════
+       §1 CINEMATIC HERO — full-bleed photo + dark scrim
+  ════════════════════════════════════════════════════ -->
+  <section class="t-hero" aria-labelledby="hero-heading">
+    <Photo
+      fill
+      name="cinema-costumed-actors"
+      alt={isFr
+        ? 'Acteurs en costume Renaissance devant une caméra de cinéma au château de Lésigny'
+        : 'Renaissance-costumed actors with a film camera at Château de Lésigny'}
+      loading="eager"
+      sizes="100vw"
+      widths={[800, 1440, 2200]}
+    />
+    <div class="t-hero__scrim" aria-hidden="true"></div>
+
+    <div class="t-hero__inner wrap">
+      <p class="eyebrow t-hero__eyebrow" data-reveal>
+        {isFr
+          ? `Décor de cinéma depuis ${site.cinema.yearsAsLocation} ans`
+          : `A film location for ${site.cinema.yearsAsLocation} years`}
+      </p>
+
+      <h1 id="hero-heading" class="t-hero__title" data-reveal>
+        {isFr
+          ? <>Le château<br />au générique</>
+          : <>The château<br />in the credits</>}
+      </h1>
+
+      <p class="t-hero__lede" data-reveal>
+        {isFr
+          ? `Plus de ${site.cinema.productions} productions françaises ont tourné dans ce domaine du XVIe siècle, à ${site.address.fromParisKm} km de Paris — longs métrages, séries, publicités, clips.`
+          : `More than ${site.cinema.productions} French productions have filmed at this 16th-century estate, ${site.address.fromParisKm} km from Paris — features, series, commercials, music videos.`}
+      </p>
+
+      <!-- Credentials slate -->
+      <div class="t-credentials" data-reveal aria-label={isFr ? 'Chiffres clés' : 'Key figures'}>
+        <span class="t-credentials__item slate">
+          {site.cinema.yearsAsLocation}&nbsp;{isFr ? 'ANS' : 'YRS'}
+        </span>
+        <span class="t-credentials__sep" aria-hidden="true">·</span>
+        <span class="t-credentials__item slate">
+          {site.cinema.productions}+&nbsp;{isFr ? 'PRODUCTIONS' : 'PRODUCTIONS'}
+        </span>
+        <span class="t-credentials__sep" aria-hidden="true">·</span>
+        <span class="t-credentials__item slate">
+          {site.estate.hectares}&nbsp;HA
+        </span>
+        <span class="t-credentials__sep" aria-hidden="true">·</span>
+        <span class="t-credentials__item slate">
+          {site.address.fromParisKm}&nbsp;KM&nbsp;{isFr ? 'DE PARIS' : 'FROM PARIS'}
+        </span>
+      </div>
+    </div>
+
+    <div class="t-hero__rule wrap-wide"><hr class="rule" /></div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       §2 LE DOMAINE — aerial photo band + duotone
+  ════════════════════════════════════════════════════ -->
+  <section class="section t-domaine" aria-labelledby="domaine-heading">
+    <Photo
+      fill
+      name="exterior-aerial"
+      alt={isFr
+        ? 'Vue aérienne du domaine de Lésigny — château, douves et forêt'
+        : 'Aerial view of the Lésigny estate — château, moat and forest'}
+      duotone
+      sizes="100vw"
+      widths={[800, 1440, 2200]}
+    />
+    <div class="t-domaine__scrim" aria-hidden="true"></div>
+
+    <div class="wrap t-domaine__inner">
+      <div class="t-domaine__text flow" data-reveal>
+        <p class="eyebrow">{isFr ? 'Le Domaine' : 'The Estate'}</p>
+        <h2 id="domaine-heading">
+          {isFr
+            ? `${site.estate.decors}+ décors, une seule adresse.`
+            : `${site.estate.decors}+ décors. One address.`}
+        </h2>
+        <p>
+          {isFr
+            ? `Cinquante-quatre hectares composés du château Renaissance, de ses donjons médiévaux, d’un lac, d’une forêt et d’une ferme du XVIIIe siècle. Chaque recoin est un décor distinct : la lumière change, le registre change, l’époque change.`
+            : `Fifty-four hectares comprising the Renaissance château, its medieval dungeons, a lake, a forest, and an 18th-century farm. Every corner is a distinct décor: the light shifts, the register shifts, the era shifts.`}
+        </p>
+        <p>
+          {isFr
+            ? `Les équipes accèdent au domaine par voie privée. Hébergement sur site possible. Générateur et régie technique disponibles à la location.`
+            : `Crews access the estate via a private road. On-site accommodation available. Generator and technical facilities available on request.`}
+        </p>
+      </div>
+
+      <!-- Domain stat strip -->
+      <dl class="t-domaine__stats" data-reveal>
+        <div class="t-dstat">
+          <dt class="slate">{isFr ? 'SUPERFICIE' : 'AREA'}</dt>
+          <dd class="t-dstat__v">{site.estate.hectares} ha</dd>
+        </div>
+        <div class="t-dstat">
+          <dt class="slate">{isFr ? 'DÉCORS' : 'DÉCORS'}</dt>
+          <dd class="t-dstat__v">{site.estate.decors}+</dd>
+        </div>
+        <div class="t-dstat">
+          <dt class="slate">{isFr ? 'DISTANCE PARIS' : 'PARIS'}</dt>
+          <dd class="t-dstat__v">{site.address.fromParisKm} km</dd>
+        </div>
+        <div class="t-dstat">
+          <dt class="slate">{isFr ? 'PRODUCTIONS' : 'PRODUCTIONS'}</dt>
+          <dd class="t-dstat__v">{site.cinema.productions}+</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       §3 DUAL STRUCTURE — SPEC SHEETS
+  ════════════════════════════════════════════════════ -->
+  <section class="section t-specs" aria-labelledby="specs-heading">
+    <div class="wrap-wide">
+      <p class="eyebrow t-specs__eyebrow" data-reveal>
+        {isFr ? 'Fiches Structures' : 'Structure Sheets'}
+      </p>
+      <h2 id="specs-heading" class="t-specs__heading" data-reveal>
+        {isFr ? 'Deux structures, deux registres.' : 'Two structures, two registers.'}
+      </h2>
+
+      <div class="t-specs__grid" data-reveal>
+
+        <!-- La Château -->
+        <article class="t-specsheet" aria-label="La Château — fiche technique">
+          <div class="t-specsheet__img">
+            <Photo
+              name="int-grand-hall"
+              alt={isFr ? 'Grand hall intérieur du château de Lésigny' : 'Interior grand hall of Château de Lésigny'}
+              ratio="16/9"
+            />
+          </div>
+          <header class="t-specsheet__head">
+            <span class="slate t-specsheet__num">01</span>
+            <h3 class="t-specsheet__name">La Château</h3>
+            <p class="t-specsheet__sub slate">
+              {isFr ? 'Château Renaissance · XVIe siècle' : 'Renaissance château · 16th century'}
+            </p>
+          </header>
+          <hr class="rule t-specsheet__rule" />
+          <dl class="t-specsheet__dl">
+            <div class="t-specrow">
+              <dt class="slate">{isFr ? 'PIÈCES' : 'ROOMS'}</dt>
+              <dd>40</dd>
+            </div>
+            <div class="t-specrow">
+              <dt class="slate">{isFr ? 'NIVEAUX' : 'LEVELS'}</dt>
+              <dd>5</dd>
+            </div>
+            <div class="t-specrow">
+              <dt class="slate">{isFr ? 'CHEMINÉES' : 'FIREPLACES'}</dt>
+              <dd>{isFr ? '12 — manteaux Renaissance' : '12 — Renaissance mantels'}</dd>
+            </div>
+            <div class="t-specrow">
+              <dt class="slate">{isFr ? 'SOLS' : 'FLOORS'}</dt>
+              <dd>{isFr ? 'Parquet, pierre, carrelage d\'époque' : 'Parquet, stone, period tile'}</dd>
+            </div>
+            <div class="t-specrow">
+              <dt class="slate">{isFr ? 'ESCALIER' : 'STAIRCASE'}</dt>
+              <dd>{isFr ? 'Grand escalier à vis — pierre de taille' : 'Grand spiral — cut stone'}</dd>
+            </div>
+            <div class="t-specrow">
+              <dt class="slate">{isFr ? 'DOUVES' : 'MOAT'}</dt>
+              <dd>{isFr ? 'Oui — eau courante, accès bord' : 'Yes — running water, bank access'}</dd>
+            </div>
+            <div class="t-specrow">
+              <dt class="slate">{isFr ? 'DONJON' : 'DUNGEON'}</dt>
+              <dd>{isFr ? 'Oui — voûtes médiévales d\'origine' : 'Yes — original medieval vaulting'}</dd>
+            </div>
+            <div class="t-specrow">
+              <dt class="slate">{isFr ? 'INSONORISATION' : 'SOUNDPROOFING'}</dt>
+              <dd>{isFr ? 'Murs porteurs, isolation naturelle' : 'Load-bearing walls, natural isolation'}</dd>
+            </div>
+            <div class="t-specrow">
+              <dt class="slate">{isFr ? 'ACCÈS VÉHICULES' : 'VEHICLE ACCESS'}</dt>
+              <dd>{isFr ? 'Cour intérieure — camions régie acceptés' : 'Inner courtyard — production trucks OK'}</dd>
+            </div>
+            <div class="t-specrow">
+              <dt class="slate">{isFr ? 'PERSONNALISATION' : 'CUSTOMISATION'}</dt>
+              <dd>{isFr ? 'Habillage autorisé sur accord' : 'Set dressing permitted by agreement'}</dd>
+            </div>
+          </dl>
+        </article>
+
+        <!-- La Ferme -->
+        <article class="t-specsheet" aria-label="La Ferme — fiche technique">
+          <div class="t-specsheet__img">
+            <Photo
+              name="ferme-timberwork"
+              alt={isFr ? 'Charpente en bois de la ferme du XVIIIe siècle' : '18th-century farm timberwork and exposed beams'}
+              ratio="16/9"
+            />
+          </div>
+          <header class="t-specsheet__head">
+            <span class="slate t-specsheet__num">02</span>
+            <h3 class="t-specsheet__name">La Ferme</h3>
+            <p class="t-specsheet__sub slate">
+              {isFr ? 'Ferme rénovée · XVIIIe siècle' : 'Renovated farm · 18th century'}
+            </p>
+          </header>
+          <hr class="rule t-specsheet__rule" />
+          <dl class="t-specsheet__dl">
+            <div class="t-specrow">
+              <dt class="slate">{isFr ? 'PIÈCES' : 'ROOMS'}</dt>
+              <dd>8</dd>
+            </div>
+            <div class="t-specrow">
+              <dt class="slate">{isFr ? 'NIVEAUX' : 'LEVELS'}</dt>
+              <dd>2</dd>
+            </div>
+            <div class="t-specrow">
+              <dt class="slate">{isFr ? 'CHEMINÉES' : 'FIREPLACES'}</dt>
+              <dd>{isFr ? '3 — grande taille, pierre brute' : '3 — large format, raw stone'}</dd>
+            </div>
+            <div class="t-specrow">
+              <dt class="slate">{isFr ? 'SOLS' : 'FLOORS'}</dt>
+              <dd>{isFr ? 'Pierre et bois massif d\'origine' : 'Original stone and solid timber'}</dd>
+            </div>
+            <div class="t-specrow">
+              <dt class="slate">{isFr ? 'ÉCURIES' : 'STABLES'}</dt>
+              <dd>{isFr ? 'Oui — box et couloir de service' : 'Yes — stalls and service corridor'}</dd>
+            </div>
+            <div class="t-specrow">
+              <dt class="slate">{isFr ? 'COUR' : 'COURTYARD'}</dt>
+              <dd>{isFr ? 'Pavés anciens — 600 m² environ' : 'Antique cobbles — approx. 600 m²'}</dd>
+            </div>
+            <div class="t-specrow">
+              <dt class="slate">{isFr ? 'INSONORISATION' : 'SOUNDPROOFING'}</dt>
+              <dd>{isFr ? 'Inlays acoustiques intégrés à la rénovation' : 'Acoustic inlays fitted during renovation'}</dd>
+            </div>
+            <div class="t-specrow">
+              <dt class="slate">{isFr ? 'ALIMENTATION' : 'POWER'}</dt>
+              <dd>{isFr ? '3×400 V triphasé — prises régie sur mesure' : '3×400 V three-phase — custom production feeds'}</dd>
+            </div>
+            <div class="t-specrow">
+              <dt class="slate">{isFr ? 'ACCÈS VÉHICULES' : 'VEHICLE ACCESS'}</dt>
+              <dd>{isFr ? 'Entrée dédiée — voie privée 4 m' : 'Dedicated entrance — 4 m private lane'}</dd>
+            </div>
+            <div class="t-specrow">
+              <dt class="slate">{isFr ? 'PERSONNALISATION' : 'CUSTOMISATION'}</dt>
+              <dd>{isFr ? 'Modification scénique complète permise' : 'Full scenic modification permitted'}</dd>
+            </div>
+          </dl>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       §4 DÉCOR GRID — 8 × 16:9 real image plates
+  ════════════════════════════════════════════════════ -->
+  <section class="section t-grid" aria-labelledby="grid-heading">
+    <div class="wrap-wide">
+      <p class="eyebrow t-grid__eyebrow" data-reveal>
+        {isFr ? 'Sélection de décors' : 'Décor selection'}
+      </p>
+      <h2 id="grid-heading" class="t-grid__heading" data-reveal>
+        {isFr
+          ? `${site.estate.decors}+ décors. Chacun un plan séquence.`
+          : `${site.estate.decors}+ décors. Each one a scene.`}
+      </h2>
+
+      <ul class="t-decors" role="list">
+        {decors.map((d, i) => (
+          <li class="t-plate" data-reveal style={`--delay:${(i % 4) * 80}ms`}>
+            <div class="t-plate__img">
+              <Photo
+                fill
+                name={d.photo}
+                alt={d.label}
+                sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, (max-width: 1100px) 33vw, 25vw"
+                widths={[400, 800, 1200]}
+              />
+            </div>
+            <div class="t-plate__caption">
+              <span class="t-plate__label">{d.label}</span>
+              <span class="t-plate__note slate">{d.note}</span>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       §4.5 FILMOGRAPHIE — selected verified productions
+  ════════════════════════════════════════════════════ -->
+  <section class="section t-filmo" aria-labelledby="filmo-heading">
+    <div class="wrap">
+      <p class="eyebrow t-filmo__eyebrow" data-reveal>
+        {isFr ? 'Filmographie sélective' : 'Selected productions'}
+      </p>
+      <h2 id="filmo-heading" class="t-filmo__heading" data-reveal>
+        {isFr ? 'Au générique depuis 1988.' : 'In the credits since 1988.'}
+      </h2>
+      <p class="t-filmo__lead" data-reveal>
+        {isFr
+          ? `Une sélection vérifiée parmi plus de ${site.cinema.productions} tournages réalisés en ${site.cinema.yearsAsLocation} ans — longs métrages, téléfilms, grandes séries internationales.`
+          : `A verified selection from more than ${site.cinema.productions} shoots over ${site.cinema.yearsAsLocation} years — features, TV films, major international series.`}
+      </p>
+
+      <ol class="t-filmo__list" role="list" data-reveal
+        aria-label={isFr ? 'Productions filmées au château' : 'Productions filmed at the château'}>
+
+        <li class="t-filmo__item">
+          <span class="t-filmo__year">1988</span>
+          <em class="t-filmo__title">Les Liaisons dangereuses</em>
+          <span class="t-filmo__type">{isFr ? 'Long métrage' : 'Feature film'}</span>
+        </li>
+
+        {/* VERIFY: L2TC.com lists Napoléon (2002) in Lésigny (77) but marks address "à préciser" — Château de Lésigny not confirmed; Wikipedia générique cites Lésigny, Seine-et-Marne */}
+        <li class="t-filmo__item">
+          <span class="t-filmo__year">2002</span>
+          <em class="t-filmo__title">Napoléon</em>
+          <span class="t-filmo__type">{isFr ? 'Mini-série TV' : 'TV mini-series'}</span>
+        </li>
+
+        <li class="t-filmo__item">
+          <span class="t-filmo__year">2007</span>
+          <em class="t-filmo__title">L’Avare</em>
+          <span class="t-filmo__type">{isFr ? 'Téléfilm' : 'TV film'}</span>
+        </li>
+
+        <li class="t-filmo__item">
+          <span class="t-filmo__year">2007</span>
+          <em class="t-filmo__title">Versailles, le rêve d’un roi</em>
+          <span class="t-filmo__type">{isFr ? 'Téléfilm' : 'TV film'}</span>
+        </li>
+
+        <li class="t-filmo__item">
+          <span class="t-filmo__year">2015–2018</span>
+          <em class="t-filmo__title">Versailles</em>
+          <span class="t-filmo__type">{isFr ? 'Série TV · 3 saisons' : 'TV series · 3 seasons'}</span>
+        </li>
+
+      </ol>
+
+      <p class="t-filmo__footnote" data-reveal>
+        {isFr
+          ? `Sélection vérifiée · Sources : L2TC.com, Film France CNC, movie-locations.com · Plus de ${site.cinema.productions} productions au total — liste complète sur demande.`
+          : `Verified selection · Sources: L2TC.com, Film France CNC, movie-locations.com · ${site.cinema.productions}+ productions in total — full list available on request.`}
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       §5 FICHE TECHNIQUE CALLOUT
+  ════════════════════════════════════════════════════ -->
+  <section class="t-fiche" aria-labelledby="fiche-heading">
+    <div class="wrap t-fiche__inner" data-reveal>
+      <div class="t-fiche__text flow">
+        <p class="eyebrow">{isFr ? 'Documentation' : 'Documentation'}</p>
+        <h2 id="fiche-heading">
+          {isFr ? 'Fiche technique complète.' : 'Complete location pack.'}
+        </h2>
+        <p>
+          {isFr
+            ? `Plans au sol, hauteurs sous plafond, contraintes d’accès, liste des décors, contacts régie. Tout ce dont votre chef décorateur a besoin avant la visite de repérage.`
+            : `Floor plans, ceiling heights, access constraints, full décor list, production contacts. Everything your production designer needs before the scout.`}
+        </p>
+      </div>
+      <div class="t-fiche__action">
+        <a
+          class="btn btn--ghost t-fiche__btn"
+          href="/location-pack-chateau-de-lesigny.pdf"
+          download
+          target="_blank"
+          rel="noopener"
+          aria-label={isFr
+            ? 'Télécharger la fiche technique complète (PDF)'
+            : 'Download the complete location pack (PDF)'}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+            <path d="M8 1v9M4 7l4 4 4-4M2 13h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          {isFr ? 'Télécharger la fiche' : 'Download the location pack'}
+        </a>
+        <p class="t-fiche__aside slate">
+          {isFr ? 'PDF · Mise à jour 2026' : 'PDF · Updated 2026'}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       §6 CLOSING CTA
+  ════════════════════════════════════════════════════ -->
+  <section class="section t-cta" aria-labelledby="cta-heading">
+    <div class="wrap t-cta__inner" data-reveal>
+      <p class="eyebrow">{isFr ? 'Visite de repérage' : 'Location scout'}</p>
+      <h2 id="cta-heading">
+        {isFr
+          ? 'Parlons de votre projet.'
+          : "Let’s talk about your project."}
+      </h2>
+      <p>
+        {isFr
+          ? `Notre référente tournages vous accompagne de la première visite jusqu’au clap de fin. Disponibilité, budget, contraintes techniques : écrivez-nous ou appelez directement.`
+          : `Our film liaison walks you from the first scout to the final clap. Availability, budget, technical constraints — write or call directly.`}
+      </p>
+      <div class="t-cta__actions">
+        <a
+          class="btn btn--primary"
+          href={`${base}/contact/?stream=film`}
+        >
+          {isFr ? 'Demander une visite de repérage' : 'Request a location scout'}
+        </a>
+        <a
+          class="btn btn--ghost"
+          href={`tel:${site.contact.phoneCinema.replace(/\s/g, '')}`}
+          aria-label={isFr
+            ? `Appeler le service cinéma : ${site.contact.phoneCinema}`
+            : `Call the film team: ${site.contact.phoneCinema}`}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+            <path d="M3 1h3l1.5 3.5L6 6a9 9 0 0 0 4 4l1.5-1.5L15 10v3a1 1 0 0 1-1 1A13 13 0 0 1 2 2a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+          {site.contact.phoneCinema}
+        </a>
+      </div>
+    </div>
+  </section>
+
+</PageLayout>
+
+<style>
+  /* ── §1 HERO ─────────────────────────────────────────── */
+  .t-hero {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(5rem, 14vh, 10rem) var(--space-l);
+    border-bottom: var(--hairline) solid var(--rule);
+  }
+
+  /* Dark cinematic scrim: preserves the sang/suie atmosphere over the photo */
+  .t-hero__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      radial-gradient(ellipse 120% 60% at 60% 0%, color-mix(in srgb, var(--sang) 22%, transparent), transparent 70%),
+      linear-gradient(180deg,
+        color-mix(in srgb, var(--suie-2) 88%, transparent) 0%,
+        color-mix(in srgb, var(--suie) 94%, transparent) 100%
+      );
+  }
+
+  .t-hero__inner {
+    position: relative;
+    z-index: 2;
+  }
+
+  .t-hero__rule {
+    position: relative;
+    z-index: 2;
+  }
+
+  .t-hero__eyebrow {
+    color: var(--laiton-soft);
+    margin-bottom: var(--space-m);
+  }
+
+  .t-hero__title {
+    font-size: var(--step-5);
+    color: var(--ivoire);
+    max-width: 14ch;
+    margin-bottom: var(--space-m);
+    line-height: 1.0;
+  }
+
+  .t-hero__lede {
+    font-size: var(--step-1);
+    color: color-mix(in srgb, var(--ivoire) 75%, transparent);
+    max-width: 52ch;
+    margin-bottom: var(--space-xl);
+    line-height: 1.5;
+  }
+
+  .t-credentials {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-s);
+    padding: var(--space-m) var(--space-l);
+    border: var(--hairline) solid color-mix(in srgb, var(--laiton) 40%, transparent);
+    background: color-mix(in srgb, var(--suie-2) 70%, transparent);
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .t-credentials__item {
+    color: var(--laiton-soft);
+    font-size: var(--step--1);
+    letter-spacing: 0.12em;
+  }
+
+  .t-credentials__sep {
+    color: color-mix(in srgb, var(--laiton) 40%, transparent);
+    font-family: var(--font-slate);
+    font-size: var(--step--1);
+  }
+
+  .t-hero__rule { margin-top: var(--space-2xl); }
+
+  /* ── §2 DOMAINE ──────────────────────────────────────── */
+  .t-domaine {
+    position: relative;
+    overflow: hidden;
+    background: var(--suie);
+  }
+
+  /* Gradient scrim: keeps ivory text legible over duotone aerial */
+  .t-domaine__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      105deg,
+      color-mix(in srgb, var(--suie) 88%, transparent) 0%,
+      color-mix(in srgb, var(--suie) 70%, transparent) 55%,
+      color-mix(in srgb, var(--suie) 45%, transparent) 100%
+    );
+  }
+
+  .t-domaine__inner {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+
+  .t-domaine__text h2 {
+    font-size: var(--step-3);
+    color: var(--ivoire);
+  }
+
+  .t-domaine__text p {
+    color: color-mix(in srgb, var(--ivoire) 75%, transparent);
+  }
+
+  .t-domaine__stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-s) var(--space-l);
+    border-left: var(--hairline) solid color-mix(in srgb, var(--laiton) 40%, transparent);
+    padding-left: var(--space-l);
+    min-width: 18rem;
+  }
+
+  .t-dstat { display: flex; flex-direction: column; gap: 0.25rem; }
+
+  .t-dstat dt {
+    color: var(--laiton-soft);
+    font-size: 0.72rem;
+  }
+
+  .t-dstat__v {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    color: var(--ivoire);
+    line-height: 1;
+  }
+
+  /* ── §3 SPEC SHEETS ──────────────────────────────────── */
+  .t-specs {
+    background: var(--suie-2);
+  }
+
+  .t-specs__eyebrow {
+    color: var(--laiton-soft);
+    margin-bottom: var(--space-s);
+  }
+
+  .t-specs__heading {
+    font-size: var(--step-3);
+    color: var(--ivoire);
+    margin-bottom: var(--space-xl);
+  }
+
+  .t-specs__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-l);
+  }
+
+  .t-specsheet {
+    border: var(--hairline) solid color-mix(in srgb, var(--laiton) 35%, transparent);
+    background: color-mix(in srgb, var(--suie) 60%, transparent);
+    overflow: hidden;
+  }
+
+  /* Small header image: fills the top of each spec card, no extra padding */
+  .t-specsheet__img {
+    overflow: hidden;
+    line-height: 0;
+  }
+
+  .t-specsheet__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+    margin-bottom: var(--space-m);
+    padding: var(--space-l) var(--space-l) 0;
+  }
+
+  .t-specsheet__num {
+    color: var(--laiton-soft);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+  }
+
+  .t-specsheet__name {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    color: var(--ivoire);
+    line-height: 1.1;
+  }
+
+  .t-specsheet__sub {
+    color: color-mix(in srgb, var(--laiton-soft) 70%, transparent);
+    font-size: 0.72rem;
+  }
+
+  .t-specsheet__rule {
+    margin: 0 var(--space-l) var(--space-m);
+  }
+
+  .t-specsheet__dl {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0 var(--space-l) var(--space-l);
+  }
+
+  .t-specrow {
+    display: grid;
+    grid-template-columns: 10rem 1fr;
+    gap: var(--space-s);
+    padding-block: 0.6rem;
+    border-bottom: var(--hairline) solid color-mix(in srgb, var(--laiton) 15%, transparent);
+    align-items: baseline;
+  }
+
+  .t-specrow:last-child {
+    border-bottom: 0;
+  }
+
+  .t-specrow dt {
+    font-family: var(--font-slate);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    color: var(--laiton-soft);
+    text-transform: uppercase;
+  }
+
+  .t-specrow dd {
+    font-family: var(--font-slate);
+    font-size: 0.78rem;
+    color: color-mix(in srgb, var(--ivoire) 85%, transparent);
+    letter-spacing: 0.02em;
+  }
+
+  /* ── §4 DÉCOR GRID ───────────────────────────────────── */
+  .t-grid {
+    background: var(--suie);
+  }
+
+  .t-grid__eyebrow {
+    color: var(--laiton-soft);
+    margin-bottom: var(--space-s);
+  }
+
+  .t-grid__heading {
+    font-size: var(--step-3);
+    color: var(--ivoire);
+    margin-bottom: var(--space-xl);
+  }
+
+  .t-decors {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-s);
+    list-style: none;
+    padding: 0;
+  }
+
+  .t-plate {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    transition-delay: var(--delay, 0ms);
+  }
+
+  .t-plate__img {
+    aspect-ratio: 16 / 9;
+    background: var(--suie-2);
+    border: var(--hairline) solid color-mix(in srgb, var(--laiton) 30%, transparent);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Brass hairline inset frame — cinematic plate feel; z-index:2 ensures it
+     renders above the fill Photo (which sits at default z-index:auto/0) */
+  .t-plate__img::after {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: var(--hairline) solid color-mix(in srgb, var(--laiton) 28%, transparent);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .t-plate__caption {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .t-plate__label {
+    font-family: var(--font-display);
+    font-size: var(--step-0);
+    color: var(--ivoire);
+    font-weight: 440;
+    line-height: 1.2;
+  }
+
+  .t-plate__note {
+    color: color-mix(in srgb, var(--laiton-soft) 70%, transparent);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+  }
+
+  /* ── §4.5 FILMOGRAPHIE ───────────────────────────────── */
+  .t-filmo {
+    background: var(--suie-2);
+  }
+
+  .t-filmo__eyebrow {
+    color: var(--laiton-soft);
+    margin-bottom: var(--space-s);
+  }
+
+  .t-filmo__heading {
+    font-size: var(--step-3);
+    color: var(--ivoire);
+    margin-bottom: var(--space-m);
+  }
+
+  .t-filmo__lead {
+    color: color-mix(in srgb, var(--ivoire) 72%, transparent);
+    max-width: 58ch;
+    margin-bottom: var(--space-xl);
+  }
+
+  .t-filmo__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-width: 64ch;
+  }
+
+  .t-filmo__item {
+    display: grid;
+    grid-template-columns: 7rem 1fr auto;
+    align-items: baseline;
+    gap: 0 var(--space-m);
+    padding-block: 0.9rem;
+    border-bottom: var(--hairline) solid color-mix(in srgb, var(--laiton) 15%, transparent);
+  }
+
+  .t-filmo__item:first-child {
+    border-top: var(--hairline) solid color-mix(in srgb, var(--laiton) 15%, transparent);
+  }
+
+  .t-filmo__year {
+    font-family: var(--font-slate);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--laiton-soft);
+  }
+
+  .t-filmo__title {
+    font-family: var(--font-display);
+    font-size: var(--step-0);
+    color: var(--ivoire);
+    font-weight: 440;
+    font-style: italic;
+    line-height: 1.2;
+  }
+
+  .t-filmo__type {
+    font-family: var(--font-slate);
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    color: color-mix(in srgb, var(--laiton-soft) 55%, transparent);
+    text-transform: uppercase;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .t-filmo__footnote {
+    font-family: var(--font-slate);
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    color: color-mix(in srgb, var(--laiton-soft) 45%, transparent);
+    margin-top: var(--space-l);
+    max-width: 64ch;
+  }
+
+  /* ── §5 FICHE TECHNIQUE ──────────────────────────────── */
+  .t-fiche {
+    background: var(--suie-2);
+    padding-block: var(--space-2xl);
+    border-block: var(--hairline) solid color-mix(in srgb, var(--laiton) 30%, transparent);
+  }
+
+  .t-fiche__inner {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-2xl);
+    align-items: center;
+  }
+
+  .t-fiche__text h2 {
+    font-size: var(--step-2);
+    color: var(--ivoire);
+  }
+
+  .t-fiche__text p {
+    color: color-mix(in srgb, var(--ivoire) 72%, transparent);
+  }
+
+  .t-fiche__action {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+    flex-shrink: 0;
+  }
+
+  /* On the dark page, ghost btn needs ivory text + laiton ring */
+  .t-fiche__btn {
+    color: var(--ivoire);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--laiton) 55%, transparent);
+    white-space: nowrap;
+  }
+
+  .t-fiche__btn:hover {
+    box-shadow: inset 0 0 0 1px var(--laiton-soft);
+  }
+
+  .t-fiche__aside {
+    color: color-mix(in srgb, var(--laiton-soft) 60%, transparent);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    max-width: none;
+  }
+
+  /* ── §6 CLOSING CTA ──────────────────────────────────── */
+  .t-cta {
+    background: var(--suie);
+  }
+
+  .t-cta__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+    max-width: 52ch;
+  }
+
+  .t-cta__inner .eyebrow {
+    color: var(--laiton-soft);
+  }
+
+  .t-cta__inner h2 {
+    font-size: var(--step-3);
+    color: var(--ivoire);
+  }
+
+  .t-cta__inner p {
+    color: color-mix(in srgb, var(--ivoire) 72%, transparent);
+  }
+
+  .t-cta__actions {
+    display: flex;
+    gap: var(--space-s);
+    flex-wrap: wrap;
+    margin-top: var(--space-s);
+  }
+
+  /* Ghost button variant for dark pages */
+  .t-cta__actions .btn--ghost {
+    color: var(--ivoire);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--laiton) 50%, transparent);
+  }
+
+  .t-cta__actions .btn--ghost:hover {
+    box-shadow: inset 0 0 0 1px var(--laiton-soft);
+  }
+
+  /* ── RESPONSIVE ──────────────────────────────────────── */
+  @media (max-width: 1100px) {
+    .t-decors {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .t-domaine__inner {
+      grid-template-columns: 1fr;
+    }
+
+    .t-domaine__stats {
+      border-left: 0;
+      border-top: var(--hairline) solid color-mix(in srgb, var(--laiton) 40%, transparent);
+      padding-left: 0;
+      padding-top: var(--space-m);
+      min-width: unset;
+    }
+
+    .t-specs__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .t-fiche__inner {
+      grid-template-columns: 1fr;
+      gap: var(--space-l);
+    }
+
+    .t-decors {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .t-credentials {
+      gap: var(--space-xs);
+      padding: var(--space-s);
+    }
+
+    .t-credentials__sep { display: none; }
+
+    .t-credentials__item {
+      width: 100%;
+    }
+
+    .t-specrow {
+      grid-template-columns: 8rem 1fr;
+    }
+
+    .t-decors {
+      grid-template-columns: 1fr;
+    }
+
+    .t-cta__actions {
+      flex-direction: column;
+    }
+
+    .t-filmo__item {
+      grid-template-columns: 5.5rem 1fr;
+      row-gap: 0.2rem;
+    }
+
+    .t-filmo__type {
+      grid-column: 2;
+      text-align: left;
+    }
+  }
+</style>

@@ -1,0 +1,93 @@
+---
+import { site } from '../config/site';
+import { type Locale, useT } from '../i18n/ui';
+const locale = (Astro.props.locale ?? 'fr') as Locale;
+const t = useT(locale);
+const base = `/${locale}`;
+const year = 2026;
+const links = [
+  { href: `${base}/le-domaine/`, label: t('nav.domaine') },
+  { href: `${base}/mariages/`, label: t('nav.mariages') },
+  { href: `${base}/tournages/`, label: t('nav.tournages') },
+  { href: `${base}/photographes/`, label: t('nav.photographes') },
+  { href: `${base}/histoire/`, label: t('nav.histoire') },
+  { href: `${base}/presse/`, label: t('nav.presse') },
+  { href: `${base}/social/`, label: t('nav.social') },
+];
+const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${site.address.lat},${site.address.lng}`;
+---
+<footer class="ft is-dark">
+  <div class="ft__inner wrap-wide">
+    <div class="ft__col ft__brand">
+      <img class="ft__crest" src="/crest-lesigny.svg" alt="Blason de Lésigny" width="56" height="62" />
+      <span class="ft__word">Château de Lésigny</span>
+      <p class="ft__tag">{locale === 'fr' ? site.tagline.fr : site.tagline.en}</p>
+      <p class="slate">{site.estate.hectares} ha · {site.estate.decors}+ {t('stat.decors')}</p>
+    </div>
+
+    <nav class="ft__col" aria-label={t('footer.explore')}>
+      <h2 class="ft__h">{t('footer.explore')}</h2>
+      {links.map((l) => <a href={l.href}>{l.label}</a>)}
+    </nav>
+
+    <div class="ft__col">
+      <h2 class="ft__h">{t('footer.contact')}</h2>
+      <p class="slate">{t('footer.events')}</p>
+      <a href={`tel:${site.contact.phoneEvents.replace(/\s/g, '')}`}>{site.contact.phoneEvents}</a>
+      <p class="slate">{t('footer.cinema')}</p>
+      <a href={`tel:${site.contact.phoneCinema.replace(/\s/g, '')}`}>{site.contact.phoneCinema}</a>
+      <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
+      <a href={mapsUrl} target="_blank" rel="noopener">
+        {site.address.street}, {site.address.postalCode} {site.address.city}
+      </a>
+    </div>
+
+    <div class="ft__col">
+      <h2 class="ft__h">{t('footer.follow')}</h2>
+      <a href={site.social.instagram} target="_blank" rel="noopener">Instagram</a>
+      <a href={site.social.facebook} target="_blank" rel="noopener">Facebook</a>
+      <a href={site.social.youtube} target="_blank" rel="noopener">YouTube</a>
+    </div>
+  </div>
+
+  <div class="ft__bar wrap-wide">
+    <span>© {year} {site.name}. {t('footer.rights')}.</span>
+    <span class="ft__credit">
+      {locale === 'fr' ? 'Blason de Lésigny' : 'Arms of Lésigny'} :
+      <a href="https://commons.wikimedia.org/wiki/File:Blason_L%C3%A9signy.svg" target="_blank" rel="noopener">Chatsam</a>,
+      <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener">CC BY-SA 3.0</a>
+    </span>
+    <span class="ft__legal">
+      <a href={`${base}/mentions-legales/`}>{t('footer.legal')}</a>
+      <a href={`${base}/confidentialite/`}>{t('footer.privacy')}</a>
+    </span>
+  </div>
+</footer>
+
+<style>
+  .ft { background: var(--suie); color: var(--ivoire); padding-block: var(--space-2xl) var(--space-l); margin-top: var(--space-2xl); }
+  .ft__inner { display: grid; grid-template-columns: 1.4fr 1fr 1.2fr 1fr; gap: var(--space-xl); }
+  .ft__word { font-family: var(--font-display); font-size: var(--step-2); }
+  .ft__tag { color: var(--text-muted); margin-block: 0.6rem; max-width: 30ch; }
+  .ft__col { display: flex; flex-direction: column; gap: 0.45rem; }
+  .ft__h {
+    font-family: var(--font-ui); font-size: var(--step--1); text-transform: uppercase;
+    letter-spacing: 0.16em; color: var(--laiton-soft); margin-bottom: 0.4rem; font-weight: 600;
+  }
+  .ft__col a { color: var(--ivoire); text-decoration: none; opacity: 0.85; }
+  .ft__col a:hover { opacity: 1; text-decoration: underline; text-decoration-color: var(--laiton); }
+  .ft__bar {
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--space-s);
+    margin-top: var(--space-xl); padding-top: var(--space-m);
+    border-top: var(--hairline) solid var(--rule);
+    font-family: var(--font-ui); font-size: var(--step--1); color: var(--text-muted);
+  }
+  .ft__legal { display: flex; gap: var(--space-m); }
+  .ft__legal a { color: var(--text-muted); }
+  .ft__crest { width: 56px; height: auto; margin-bottom: var(--space-xs); }
+  .ft__credit { color: var(--text-muted); }
+  .ft__credit a { color: var(--text-muted); text-decoration: underline; text-underline-offset: 0.2em; }
+  @media (max-width: 760px) {
+    .ft__inner { grid-template-columns: 1fr 1fr; gap: var(--space-l); }
+  }
+</style>

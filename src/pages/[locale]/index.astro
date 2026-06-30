@@ -1,0 +1,179 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import Photo from '../../components/Photo.astro';
+import { site } from '../../config/site';
+import { locales, type Locale, useT } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return locales.map((locale) => ({ params: { locale } }));
+}
+
+const { locale } = Astro.params as { locale: Locale };
+const t = useT(locale);
+const base = `/${locale}`;
+const isFr = locale === 'fr';
+
+const streams = [
+  { n: '01', href: `${base}/mariages/`, label: t('nav.mariages'), img: 'couple-kiss',
+    line: isFr ? 'Cérémonies et réceptions privées jusqu’à 350 invités.' : 'Private ceremonies and receptions for up to 350 guests.' },
+  { n: '02', href: `${base}/tournages/`, label: t('nav.tournages'), img: 'cinema-costumed-actors',
+    line: isFr ? '30 ans de décors de cinéma, à 24 km de Paris.' : '30 years as a film location, 24 km from Paris.' },
+  { n: '03', href: `${base}/photographes/`, label: t('nav.photographes'), img: 'bride-window',
+    line: isFr ? 'Séances professionnelles et privées dans 70+ décors.' : 'Professional and private shoots across 70+ décors.' },
+];
+
+const stats = [
+  { v: 2026 - site.founded, l: t('stat.years') },
+  { v: `${site.estate.decors}+`, l: t('stat.decors') },
+  { v: `${site.cinema.yearsAsLocation} ${isFr ? 'ans' : 'yrs'}`, l: t('stat.productions') },
+  { v: site.estate.hectares, l: t('stat.hectares') },
+];
+
+const title = `${site.name} — ${isFr ? 'Domaine privé près de Paris' : 'Private estate near Paris'}`;
+const desc = t('home.hero.sub');
+---
+<PageLayout title={title} description={desc} locale={locale} path="">
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero__media">
+      <Photo name="exterior-aerial" fill loading="eager" widths={[1100, 1700, 2400]} sizes="100vw"
+        alt={isFr ? 'Vue aérienne du domaine de 54 hectares et du château' : 'Aerial view of the 54-hectare estate and château'} />
+    </div>
+    <div class="hero__scrim" aria-hidden="true"></div>
+    <div class="hero__frame wrap-wide">
+      <p class="eyebrow hero__eyebrow" data-reveal>
+        {isFr ? `Depuis ${site.founded} · Lésigny, Île-de-France` : `Since ${site.founded} · Lésigny, Île-de-France`}
+      </p>
+      <h1 class="hero__title" data-reveal>{t('home.hero.title')}</h1>
+      <p class="hero__sub" data-reveal>{t('home.hero.sub')}</p>
+      <div class="hero__actions" data-reveal>
+        <a class="btn btn--primary" href={`${base}/contact/`}>{t('cta.planVisit')}</a>
+        <a class="btn btn--ghost btn--on-dark" href={`${base}/le-domaine/`}>{t('cta.seeDecors')}</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Three streams -->
+  <section class="section streams">
+    <div class="wrap-wide">
+      <div class="streams__grid">
+        {streams.map((s) => (
+          <a class="plate" href={s.href} data-reveal>
+            <div class="plate__media">
+              <Photo name={s.img} alt={s.label} ratio="4/5" />
+            </div>
+            <span class="plate__n slate">N°{s.n}</span>
+            <h2 class="plate__title">{s.label}</h2>
+            <p class="plate__line">{s.line}</p>
+            <span class="plate__more">{t('cta.learnMore')} →</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Estate band (full-bleed aerial) -->
+  <section class="estate">
+    <div class="estate__media">
+      <Photo name="exterior-ivy-autumn" fill duotone widths={[1000, 1600, 2200]} sizes="100vw"
+        alt={isFr ? 'La façade du château habillée de lierre d’automne' : 'The château façade clad in autumn ivy'} />
+    </div>
+    <div class="estate__scrim" aria-hidden="true"></div>
+    <div class="estate__inner wrap" data-reveal>
+      <p class="eyebrow estate__eyebrow">{isFr ? 'Le Domaine' : 'The Estate'}</p>
+      <h2>{isFr ? `${site.estate.decors}+ décors, un seul lieu.` : `${site.estate.decors}+ décors, one estate.`}</h2>
+      <p>
+        {isFr
+          ? 'De la salle de bal Renaissance aux douves, de la ferme aux sous-bois : un répertoire de décors uniques, à cinq minutes de Paris.'
+          : 'From the Renaissance ballroom to the moat, the farm to the woodland: a repertoire of singular décors, minutes from Paris.'}
+      </p>
+      <a class="btn btn--primary" href={`${base}/le-domaine/`}>{t('cta.seeDecors')} →</a>
+    </div>
+  </section>
+
+  <!-- Stats band -->
+  <section class="stats is-dark">
+    <div class="wrap-wide stats__grid">
+      {stats.map((s) => (
+        <div class="stat" data-reveal>
+          <span class="stat__v">{s.v}</span>
+          <span class="stat__l slate">{s.l}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Proof / press -->
+  <section class="section proof">
+    <div class="wrap proof__inner" data-reveal>
+      <p class="eyebrow">{isFr ? 'Reconnaissance' : 'Recognition'}</p>
+      <p class="proof__hgtv">
+        {isFr ? 'Vu dans ' : 'As seen on '}<strong>Castle Impossible</strong>{isFr ? ' sur ' : ' on '}<strong>HGTV</strong>
+        {isFr ? ' — la renovation du château racontée à l’écran.' : ' — the château’s renovation, told on screen.'}
+      </p>
+      <div class="proof__badges">
+        <Photo name="badge-awards-2024" alt={isFr ? 'Wedding Awards 2024' : 'Wedding Awards 2024'} contain class="proof__badge" />
+        <Photo name="badge-awards-2026" alt={isFr ? 'Wedding Awards 2026' : 'Wedding Awards 2026'} contain class="proof__badge" />
+        <Photo name="badge-zankyou" alt="Zankyou" contain class="proof__badge" />
+      </div>
+      <a class="btn btn--ghost" href={`${base}/presse/`}>{t('nav.presse')} →</a>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  /* Hero */
+  .hero { position: relative; min-height: 88vh; display: flex; align-items: flex-end; color: var(--ivoire); }
+  .hero__media { position: absolute; inset: 0; }
+  .hero__scrim {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(21,19,15,0.35) 0%, rgba(21,19,15,0.1) 35%, rgba(21,19,15,0.78) 100%);
+  }
+  .hero__frame { position: relative; padding-block: var(--space-2xl) var(--space-xl); }
+  .hero__eyebrow { color: var(--laiton-soft); margin-bottom: var(--space-s); }
+  .hero__title { max-width: 18ch; color: var(--ivoire); }
+  .hero__sub { font-size: var(--step-1); color: rgba(246,241,231,0.86); max-width: 46ch; margin-block: var(--space-m) var(--space-l); }
+  .hero__actions { display: flex; gap: var(--space-s); flex-wrap: wrap; }
+  .btn--on-dark { color: var(--ivoire); box-shadow: inset 0 0 0 1px rgba(246,241,231,0.4); }
+  .btn--on-dark:hover { box-shadow: inset 0 0 0 1px var(--laiton-soft); }
+
+  /* Streams */
+  .streams__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-l); }
+  .plate { display: flex; flex-direction: column; gap: var(--space-2xs); text-decoration: none; }
+  .plate__media { overflow: hidden; margin-bottom: var(--space-s); box-shadow: inset 0 0 0 1px var(--rule); }
+  .plate__media :global(.photo :global(img)) { transition: transform var(--dur-slow) var(--ease-cut); }
+  .plate:hover .plate__media :global(img) { transform: scale(1.04); }
+  .plate__n { color: var(--laiton); }
+  .plate__title { font-size: var(--step-2); }
+  .plate__line { color: var(--text-muted); margin-block: var(--space-3xs) var(--space-2xs); }
+  .plate__more { font-family: var(--font-ui); font-size: var(--step--1); letter-spacing: 0.04em; }
+
+  /* Estate band */
+  .estate { position: relative; min-height: 70vh; display: flex; align-items: center; color: var(--ivoire); }
+  .estate__media { position: absolute; inset: 0; }
+  .estate__scrim { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(21,19,15,0.82) 0%, rgba(21,19,15,0.45) 55%, rgba(21,19,15,0.2) 100%); }
+  .estate__inner { position: relative; padding-block: var(--space-2xl); }
+  .estate__inner h2 { color: var(--ivoire); font-size: var(--step-4); max-width: 14ch; }
+  .estate__inner p { color: rgba(246,241,231,0.86); max-width: 46ch; margin-block: var(--space-s) var(--space-l); }
+  .estate__eyebrow { color: var(--laiton-soft); }
+
+  /* Stats */
+  .stats { background: var(--suie); color: var(--ivoire); padding-block: var(--space-xl); }
+  .stats__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-l); text-align: center; }
+  .stat { display: flex; flex-direction: column; gap: 0.3rem; }
+  .stat__v { font-family: var(--font-display); font-size: var(--step-4); line-height: 1; }
+  .stat__l { color: var(--laiton-soft); }
+
+  /* Proof */
+  .proof__inner { text-align: center; display: grid; justify-items: center; gap: var(--space-m); }
+  .proof__hgtv { font-size: var(--step-1); max-width: 40ch; }
+  .proof__badges { display: flex; gap: var(--space-xl); align-items: center; flex-wrap: nowrap; justify-content: center; }
+  .proof__badge { height: 56px; width: auto; background: transparent; flex: 0 0 auto; }
+  @media (max-width: 560px) { .proof__badge { height: 42px; } .proof__badges { gap: var(--space-l); } }
+
+  @media (max-width: 820px) {
+    .streams__grid { grid-template-columns: 1fr; gap: var(--space-l); }
+    .stats__grid { grid-template-columns: 1fr 1fr; gap: var(--space-m); }
+    .hero { min-height: 80vh; }
+  }
+</style>

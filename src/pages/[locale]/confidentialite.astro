@@ -1,0 +1,442 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { site } from '../../config/site';
+import { locales, type Locale, useT } from '../../i18n/ui';
+export function getStaticPaths() { return locales.map((locale) => ({ params: { locale } })); }
+const { locale } = Astro.params as { locale: Locale };
+const t = useT(locale); const base = `/${locale}`; const isFr = locale === 'fr';
+---
+<PageLayout
+  title={isFr ? `Politique de confidentialité — ${site.name}` : `Privacy Policy — ${site.name}`}
+  description={isFr
+    ? `Politique de confidentialité du site ${site.name} : données collectées, droits RGPD, absence de cookies.`
+    : `Privacy policy for the ${site.name} website: data collected, GDPR rights, no third-party cookies.`}
+  locale={locale}
+  path="confidentialite/"
+>
+
+  <div class="legal-page">
+
+    <!-- Page title block (full wrap width) -->
+    <div class="legal-header section wrap">
+      <p class="eyebrow">{isFr ? 'Données personnelles' : 'Personal data'}</p>
+      <h1>
+        {isFr ? 'Politique de confidentialité' : 'Privacy Policy'}
+      </h1>
+      <p class="legal-lead">
+        {isFr
+          ? 'Règlement (UE) 2016/679 du 27 avril 2016 relatif à la protection des données (RGPD).'
+          : 'Regulation (EU) 2016/679 of 27 April 2016 on the protection of personal data (GDPR).'}
+      </p>
+    </div>
+
+    <!-- Prose column (narrowed) -->
+    <div class="wrap legal-body">
+
+      <!-- 1. Responsable du traitement -->
+      <section class="legal-section" aria-labelledby="s-responsable">
+        <h2 id="s-responsable">{isFr ? '1. Responsable du traitement' : '1. Data Controller'}</h2>
+        <dl class="info-grid">
+          <div class="info-row">
+            <dt>{isFr ? 'Dénomination' : 'Entity'}</dt>
+            <dd><mark class="todo">{site.legal.entityName}</mark></dd>
+          </div>
+          <div class="info-row">
+            <dt>{isFr ? 'Adresse' : 'Address'}</dt>
+            <dd>
+              {site.address.street}<br />
+              {site.address.postalCode}&nbsp;{site.address.city}<br />
+              {site.address.country}
+            </dd>
+          </div>
+          <div class="info-row">
+            <dt>{isFr ? 'Contact' : 'Contact'}</dt>
+            <dd>
+              <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <hr class="rule" />
+
+      <!-- 2. Données collectées -->
+      <section class="legal-section" aria-labelledby="s-donnees">
+        <h2 id="s-donnees">{isFr ? '2. Données collectées lors de la navigation' : '2. Data Collected During Browsing'}</h2>
+        {isFr && (
+          <Fragment>
+            <p class="legal-para">
+              Ce site ne déploie <strong>aucun outil d&rsquo;analyse d&rsquo;audience</strong>, aucun cookie de traçage et aucun dispositif de collecte automatique de données personnelles lors de votre navigation. Votre adresse IP n&rsquo;est pas enregistrée à des fins d&rsquo;identification. Aucune donnée n&rsquo;est transmise à des régies publicitaires ou à des plateformes tierces de mesure.
+            </p>
+            <p class="legal-para">
+              Votre visite sur ce site est, par défaut, <strong>non tracée</strong>.
+            </p>
+          </Fragment>
+        )}
+        {!isFr && (
+          <Fragment>
+            <p class="legal-para">
+              This website deploys <strong>no audience analytics tools</strong>, no tracking cookies, and no automatic personal data collection systems during your browsing. Your IP address is not recorded for identification purposes. No data is passed to advertising networks or third-party measurement platforms.
+            </p>
+            <p class="legal-para">
+              Your visit to this site is, by default, <strong>untracked</strong>.
+            </p>
+          </Fragment>
+        )}
+      </section>
+
+      <hr class="rule" />
+
+      <!-- 3. Formulaire de contact -->
+      <section class="legal-section" aria-labelledby="s-formulaire">
+        <h2 id="s-formulaire">{isFr ? '3. Formulaire de contact' : '3. Contact Form'}</h2>
+        {isFr && (
+          <Fragment>
+            <p class="legal-para">
+              La seule collecte de données intervient lorsque vous remplissez volontairement le formulaire de contact ou de demande. Les informations que vous fournissez &mdash; prénom, nom, adresse e-mail, numéro de téléphone et message &mdash; sont utilisées <strong>exclusivement pour répondre à votre demande</strong>.
+            </p>
+            <p class="legal-para">
+              Ces données sont transmises par e-mail à l&rsquo;équipe du {site.name}. Elles ne font l&rsquo;objet d&rsquo;aucun enregistrement dans une base de données, d&rsquo;aucune cession à un tiers et d&rsquo;aucune utilisation à des fins commerciales ou publicitaires.
+            </p>
+          </Fragment>
+        )}
+        {!isFr && (
+          <Fragment>
+            <p class="legal-para">
+              The only data collection occurs when you voluntarily complete the contact or enquiry form. The information you provide &mdash; first name, last name, email address, phone number and message &mdash; is used <strong>solely to respond to your request</strong>.
+            </p>
+            <p class="legal-para">
+              This data is sent by email to the {site.name} team. It is not stored in a database, not transferred to any third party, and not used for commercial or advertising purposes.
+            </p>
+          </Fragment>
+        )}
+      </section>
+
+      <hr class="rule" />
+
+      <!-- 4. Base juridique du traitement -->
+      <section class="legal-section" aria-labelledby="s-base">
+        <h2 id="s-base">
+          {isFr ? '4. Base juridique du traitement' : '4. Legal Basis for Processing'}
+        </h2>
+        {isFr && (
+          <p class="legal-para">
+            Le traitement de vos données repose sur votre <strong>consentement</strong> (article 6, paragraphe 1, point a) du RGPD), que vous exprimez librement en soumettant le formulaire. Vous pouvez retirer ce consentement à tout moment en nous contactant à l&rsquo;adresse indiquée ci-dessous.
+          </p>
+        )}
+        {!isFr && (
+          <p class="legal-para">
+            The processing of your data is based on your <strong>consent</strong> (Article 6(1)(a) GDPR), freely expressed by submitting the form. You may withdraw this consent at any time by contacting us at the address set out below.
+          </p>
+        )}
+      </section>
+
+      <hr class="rule" />
+
+      <!-- 5. Durée de conservation -->
+      <section class="legal-section" aria-labelledby="s-conservation">
+        <h2 id="s-conservation">
+          {isFr ? '5. Durée de conservation' : '5. Retention Period'}
+        </h2>
+        {isFr && (
+          <p class="legal-para">
+            Vos données sont conservées dans notre messagerie électronique uniquement le temps nécessaire au traitement de votre demande. Elles ne font l&rsquo;objet d&rsquo;aucun archivage systématique au-delà de cette période.
+          </p>
+        )}
+        {!isFr && (
+          <p class="legal-para">
+            Your data is retained in our email system only for as long as necessary to handle your request. It is not systematically archived beyond that period.
+          </p>
+        )}
+      </section>
+
+      <hr class="rule" />
+
+      <!-- 6. Vos droits RGPD -->
+      <section class="legal-section" aria-labelledby="s-droits">
+        <h2 id="s-droits">
+          {isFr ? '6. Vos droits' : '6. Your Rights'}
+        </h2>
+        {isFr && (
+          <Fragment>
+            <p class="legal-para">
+              Conformément au RGPD, vous disposez des droits suivants concernant les données que vous nous avez transmises&nbsp;:
+            </p>
+            <ul class="rights-list" role="list">
+              <li><strong>Droit d&rsquo;accès</strong> (art. 15) &mdash; obtenir une copie de vos données.</li>
+              <li><strong>Droit de rectification</strong> (art. 16) &mdash; corriger des données inexactes.</li>
+              <li><strong>Droit à l&rsquo;effacement</strong> (art. 17) &mdash; demander la suppression de vos données.</li>
+              <li><strong>Droit d&rsquo;opposition</strong> (art. 21) &mdash; vous opposer au traitement.</li>
+            </ul>
+            <p class="legal-para">
+              Pour exercer l&rsquo;un de ces droits, adressez votre demande par e-mail à&nbsp;:
+              <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>.
+              Nous nous engageons à y répondre dans un délai d&rsquo;un mois.
+            </p>
+            <p class="legal-para">
+              Vous disposez également du droit d&rsquo;introduire une réclamation auprès de la <abbr title="Commission Nationale de l’Informatique et des Libertés">CNIL</abbr> (<a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer">www.cnil.fr</a>).
+            </p>
+          </Fragment>
+        )}
+        {!isFr && (
+          <Fragment>
+            <p class="legal-para">
+              Under the GDPR, you hold the following rights in respect of the data you have sent us:
+            </p>
+            <ul class="rights-list" role="list">
+              <li><strong>Right of access</strong> (Art. 15) &mdash; obtain a copy of your data.</li>
+              <li><strong>Right to rectification</strong> (Art. 16) &mdash; correct inaccurate data.</li>
+              <li><strong>Right to erasure</strong> (Art. 17) &mdash; request deletion of your data.</li>
+              <li><strong>Right to object</strong> (Art. 21) &mdash; object to processing.</li>
+            </ul>
+            <p class="legal-para">
+              To exercise any of these rights, send your request by email to:
+              <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>.
+              We undertake to respond within one month.
+            </p>
+            <p class="legal-para">
+              You also have the right to lodge a complaint with the French data-protection authority, the <abbr title="Commission Nationale de l’Informatique et des Libertés">CNIL</abbr> (<a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer">www.cnil.fr</a>).
+            </p>
+          </Fragment>
+        )}
+      </section>
+
+      <hr class="rule" />
+
+      <!-- 7. Cookies tiers -->
+      <section class="legal-section" aria-labelledby="s-cookies">
+        <h2 id="s-cookies">
+          {isFr ? '7. Cookies et services tiers' : '7. Cookies and Third-party Services'}
+        </h2>
+        {isFr && (
+          <Fragment>
+            <p class="legal-para">
+              Ce site n&rsquo;intègre <strong>aucun cookie provenant de services tiers</strong> &mdash; réseaux sociaux, régies publicitaires ou outils de mesure d&rsquo;audience. Aucun bandeau de consentement aux cookies n&rsquo;est donc requis.
+            </p>
+            <p class="legal-para">
+              Les liens vers nos profils sur les réseaux sociaux (Instagram, Facebook, YouTube) ouvrent des sites tiers soumis à leurs propres politiques de confidentialité. Nous vous invitons à les consulter directement.
+            </p>
+          </Fragment>
+        )}
+        {!isFr && (
+          <Fragment>
+            <p class="legal-para">
+              This website integrates <strong>no third-party cookies</strong> &mdash; no social networks, advertising networks, or audience measurement tools. No cookie-consent banner is therefore required.
+            </p>
+            <p class="legal-para">
+              Links to our social media profiles (Instagram, Facebook, YouTube) open third-party sites subject to their own privacy policies. We invite you to consult those directly.
+            </p>
+          </Fragment>
+        )}
+      </section>
+
+      <hr class="rule" />
+
+      <!-- 8. Contact -->
+      <section class="legal-section legal-section--last" aria-labelledby="s-contact-rgpd">
+        <h2 id="s-contact-rgpd">
+          {isFr ? '8. Contact' : '8. Contact'}
+        </h2>
+        {isFr && (
+          <p class="legal-para">
+            Pour toute question relative à la protection de vos données personnelles, contactez-nous par e-mail&nbsp;:
+            {' '}<a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>.
+          </p>
+        )}
+        {!isFr && (
+          <p class="legal-para">
+            For any questions regarding the protection of your personal data, contact us by email:
+            {' '}<a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>.
+          </p>
+        )}
+      </section>
+
+    </div><!-- /.legal-body -->
+  </div><!-- /.legal-page -->
+
+</PageLayout>
+
+<style>
+  /* ---------------------------------------------------------------
+     Politique de confidentialité / Privacy Policy page — scoped
+     Tokens: --pierre, --calcaire, --encre, --text-muted, --sang,
+     --laiton, --rule, --font-display, --font-body, --font-ui,
+     spacing/step tokens, --hairline, --radius-*
+  --------------------------------------------------------------- */
+
+  .legal-page {
+    padding-bottom: var(--space-3xl);
+  }
+
+  /* --- Page header -------------------------------------------- */
+  .legal-header {
+    padding-block-end: var(--space-xl);
+    border-bottom: var(--hairline) solid var(--rule);
+  }
+
+  .legal-header .eyebrow {
+    margin-bottom: var(--space-m);
+  }
+
+  .legal-header h1 {
+    margin-block: var(--space-s) var(--space-m);
+    max-width: 22ch;
+    line-height: 1.0;
+  }
+
+  .legal-lead {
+    font-family: var(--font-ui);
+    font-size: var(--step-0);
+    color: var(--text-muted);
+    max-width: 56ch;
+  }
+
+  /* --- Prose column: narrowed within .wrap -------------------- */
+  .legal-body {
+    max-width: 72ch;
+    padding-top: var(--space-xl);
+  }
+
+  /* --- TODO inline mark --------------------------------------- */
+  /*
+   * Contrast: --encre (#1a1714) on
+   * color-mix(sang 12%, calcaire) ≈ #e4d6d0 → ratio ≈ 13:1 (AAA).
+   */
+  mark.todo {
+    background: color-mix(in srgb, var(--sang) 12%, var(--calcaire));
+    color: var(--encre);
+    border-bottom: 2px solid color-mix(in srgb, var(--sang) 60%, transparent);
+    padding: 0.08em 0.35em;
+    border-radius: var(--radius-s);
+    font-style: normal;
+    -webkit-text-emphasis: none;
+  }
+
+  /* --- Section blocks ---------------------------------------- */
+  .legal-section {
+    padding-block: var(--space-xl) var(--space-l);
+  }
+
+  .legal-section--last {
+    padding-bottom: 0;
+  }
+
+  .legal-section h2 {
+    font-size: var(--step-2);
+    font-weight: 460;
+    margin-bottom: var(--space-l);
+    letter-spacing: -0.01em;
+  }
+
+  /* Hairline rule between sections */
+  .legal-body > hr.rule {
+    margin-block: 0;
+  }
+
+  /* Prose paragraphs */
+  .legal-para {
+    font-family: var(--font-body);
+    font-size: var(--step-0);
+    line-height: 1.75;
+    color: var(--text);
+  }
+
+  .legal-para + .legal-para {
+    margin-block-start: var(--space-m);
+  }
+
+  .legal-para a {
+    text-decoration: underline;
+    text-underline-offset: 0.22em;
+    text-decoration-thickness: 1px;
+  }
+
+  .legal-para a:hover {
+    color: var(--text-muted);
+  }
+
+  /* --- Definition list (data-controller info) ----------------- */
+  .info-grid {
+    margin-top: var(--space-m);
+  }
+
+  .info-row {
+    display: grid;
+    grid-template-columns: 10rem 1fr;
+    column-gap: var(--space-m);
+    padding-block: var(--space-xs);
+    border-bottom: var(--hairline) solid var(--rule);
+    align-items: baseline;
+  }
+
+  .info-row:first-child {
+    border-top: var(--hairline) solid var(--rule);
+  }
+
+  .info-row dt {
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    padding-top: 0.15em;
+  }
+
+  .info-row dd {
+    font-family: var(--font-body);
+    font-size: var(--step-0);
+    line-height: 1.65;
+  }
+
+  .info-row dd a {
+    text-decoration: underline;
+    text-underline-offset: 0.22em;
+    text-decoration-thickness: 1px;
+  }
+
+  /* --- GDPR rights list --------------------------------------- */
+  .rights-list {
+    list-style: none;
+    padding: 0;
+    margin-block: var(--space-m);
+  }
+
+  .rights-list li {
+    font-family: var(--font-body);
+    font-size: var(--step-0);
+    line-height: 1.6;
+    padding-block: var(--space-xs);
+    padding-inline-start: var(--space-m);
+    border-bottom: var(--hairline) solid var(--rule);
+    position: relative;
+  }
+
+  .rights-list li:first-child {
+    border-top: var(--hairline) solid var(--rule);
+  }
+
+  /* ::before em-dash is purely decorative; content alt text hides it from AT */
+  .rights-list li::before {
+    content: '\2014' / ''; /* em dash with empty accessible name */
+    position: absolute;
+    inset-inline-start: 0;
+    color: var(--laiton);
+  }
+
+  /* --- Responsive -------------------------------------------- */
+  @media (max-width: 600px) {
+    .legal-header h1 {
+      max-width: none;
+    }
+
+    .info-row {
+      grid-template-columns: 1fr;
+      row-gap: var(--space-3xs);
+    }
+
+    .info-row dt {
+      padding-top: 0;
+    }
+  }
+</style>

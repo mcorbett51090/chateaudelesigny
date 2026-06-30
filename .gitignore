@@ -1,0 +1,15 @@
+# build output
+dist/
+.output/
+# deps
+node_modules/
+# astro
+.astro/
+# env / secrets (optional upgrades: email, analytics, maps)
+.env
+.env.production
+.env.*.local
+# os / editor
+.DS_Store
+*.log
+npm-debug.log*
