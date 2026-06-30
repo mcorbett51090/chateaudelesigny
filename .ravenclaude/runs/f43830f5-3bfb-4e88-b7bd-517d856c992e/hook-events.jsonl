@@ -1,0 +1,1 @@
+{"schema_version":1,"ts":"2026-06-30T22:35:36Z","hook":"guard-destructive.sh","verdict":"deny","tool":"Bash","path":"cd /workspaces/chateaudelesigny; rm -rf dist; npm run build 2>&1 | grep -iE 'error|warn|redirect|complete|built|page\\(s\\)' | head -30","rule":"recursive-rm-of-dangerous-target","session_id":"f43830f5-3bfb-4e88-b7bd-517d856c992e","exit_code":2}

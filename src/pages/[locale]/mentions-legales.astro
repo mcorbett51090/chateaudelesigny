@@ -1,0 +1,340 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { site } from '../../config/site';
+import { locales, type Locale, useT, localeBase } from '../../i18n/ui';
+export function getStaticPaths() { return locales.map((locale) => ({ params: { locale } })); }
+const { locale } = Astro.params as { locale: Locale };
+const t = useT(locale); const base = localeBase(locale); const isFr = locale === 'fr';
+---
+<PageLayout
+  title={isFr ? `Mentions légales — ${site.name}` : `Legal Notice — ${site.name}`}
+  description={isFr
+    ? `Mentions légales du site ${site.name} : éditeur, hébergeur, propriété intellectuelle.`
+    : `Legal notice for the ${site.name} website: publisher, host, and intellectual property.`}
+  locale={locale}
+  path="mentions-legales/"
+>
+
+  <div class="legal-page">
+
+    <!-- Page title block (full wrap width) -->
+    <div class="legal-header section wrap">
+      <p class="eyebrow">{isFr ? 'Informations légales' : 'Legal information'}</p>
+      <h1>{isFr ? 'Mentions légales' : 'Legal Notice'}</h1>
+      <p class="legal-lead">
+        {isFr
+          ? 'Conformément aux dispositions de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l’économie numérique (LCEN).'
+          : 'In accordance with French Law No. 2004-575 of 21 June 2004 on Confidence in the Digital Economy (LCEN).'}
+      </p>
+    </div>
+
+    <!-- Prose column (narrowed) -->
+    <div class="wrap legal-body">
+
+      <!-- TODO legend notice -->
+      <div class="todo-legend" role="note" aria-label={isFr ? 'Légende : champs à compléter' : 'Key: fields to complete'}>
+        <p>
+          <strong>{isFr ? 'Note au propriétaire :' : 'Owner note:'}</strong>{' '}
+          {isFr ? 'Les champs marqués ' : 'Fields marked '}
+          <mark class="todo">{isFr ? 'comme ceci' : 'like this'}</mark>
+          {isFr
+            ? ' contiennent des informations juridiques obligatoires non encore renseignées. Ils doivent être complétés avant toute mise en ligne.'
+            : ' contain mandatory legal information that has not yet been provided. They must be completed before the site goes live.'}
+        </p>
+      </div>
+
+      <!-- 1. Éditeur du site -->
+      <section class="legal-section" aria-labelledby="s-editeur">
+        <h2 id="s-editeur">{isFr ? '1. Éditeur du site' : '1. Website Publisher'}</h2>
+        <dl class="info-grid">
+          <div class="info-row">
+            <dt>{isFr ? 'Dénomination sociale' : 'Company name'}</dt>
+            <dd><mark class="todo">{site.legal.entityName}</mark></dd>
+          </div>
+          <div class="info-row">
+            <dt>{isFr ? 'Forme juridique' : 'Legal form'}</dt>
+            <dd><mark class="todo">{site.legal.legalForm}</mark></dd>
+          </div>
+          <div class="info-row">
+            <dt>{isFr ? 'Capital social' : 'Share capital'}</dt>
+            <dd><mark class="todo">{site.legal.shareCapital}</mark></dd>
+          </div>
+          <div class="info-row">
+            <dt>{isFr ? 'Siège social' : 'Registered address'}</dt>
+            <dd>
+              {site.address.street}<br />
+              {site.address.postalCode}&nbsp;{site.address.city}<br />
+              {site.address.country}
+            </dd>
+          </div>
+          <div class="info-row">
+            <dt>SIREN / SIRET</dt>
+            <dd><mark class="todo">{site.legal.siren}</mark></dd>
+          </div>
+          <div class="info-row">
+            <dt>RCS</dt>
+            <dd><mark class="todo">{site.legal.rcs}</mark></dd>
+          </div>
+          <div class="info-row">
+            <dt>{isFr ? 'Directeur de la publication' : 'Publication director'}</dt>
+            <dd><mark class="todo">{site.legal.publicationDirector}</mark></dd>
+          </div>
+          <div class="info-row">
+            <dt>{isFr ? 'Contact' : 'Contact'}</dt>
+            <dd>
+              <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a><br />
+              <a href={`tel:${site.contact.phoneEvents.replace(/\s/g, '')}`}>{site.contact.phoneEvents}</a>
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <hr class="rule" />
+
+      <!-- 2. Hébergeur -->
+      <section class="legal-section" aria-labelledby="s-hebergeur">
+        <h2 id="s-hebergeur">{isFr ? '2. Hébergeur du site' : '2. Website Host'}</h2>
+        <p class="legal-para">
+          {isFr
+            ? 'Le site est hébergé par :'
+            : 'This website is hosted by:'}
+        </p>
+        <p class="legal-para">
+          <mark class="todo">{site.legal.hostingProvider}</mark>
+        </p>
+      </section>
+
+      <hr class="rule" />
+
+      <!-- 3. Propriété intellectuelle -->
+      <section class="legal-section" aria-labelledby="s-pi">
+        <h2 id="s-pi">{isFr ? '3. Propriété intellectuelle' : '3. Intellectual Property'}</h2>
+        {isFr && (
+          <Fragment>
+            <p class="legal-para">
+              Le présent site ainsi que l&rsquo;ensemble de son contenu &mdash; textes, photographies, vidéos, graphismes et logotype &mdash; sont la propriété exclusive de&nbsp;<mark class="todo">{site.legal.entityName}</mark> ou font l&rsquo;objet d&rsquo;une licence d&rsquo;utilisation dûment autorisée.
+            </p>
+            <p class="legal-para">
+              Toute reproduction, représentation, modification, publication ou adaptation de tout ou partie des éléments du site, quel que soit le moyen ou le procédé utilisé, est interdite sans autorisation écrite préalable du propriétaire.
+            </p>
+            <p class="legal-para">
+              Toute exploitation non autorisée sera considérée comme constitutive d&rsquo;une contrefaçon et poursuivie conformément aux articles L.335-2 et suivants du Code de la propriété intellectuelle français.
+            </p>
+          </Fragment>
+        )}
+        {!isFr && (
+          <Fragment>
+            <p class="legal-para">
+              This website and all of its content &mdash; texts, photographs, videos, graphics and logo &mdash; are the exclusive property of&nbsp;<mark class="todo">{site.legal.entityName}</mark> or are used under duly authorised licence.
+            </p>
+            <p class="legal-para">
+              Any reproduction, representation, modification, publication or adaptation of any part of the website&rsquo;s elements, by any means or process, is prohibited without the owner&rsquo;s prior written consent.
+            </p>
+            <p class="legal-para">
+              Any unauthorised use shall be deemed an act of infringement and prosecuted in accordance with Articles L.335-2 et seq. of the French Intellectual Property Code.
+            </p>
+          </Fragment>
+        )}
+      </section>
+
+      <hr class="rule" />
+
+      <!-- 4. Crédits -->
+      <section class="legal-section legal-section--last" aria-labelledby="s-credits">
+        <h2 id="s-credits">{isFr ? '4. Crédits' : '4. Credits'}</h2>
+        {isFr && (
+          <Fragment>
+            <p class="legal-para">
+              Photographies et contenus visuels&nbsp;: <strong>{site.name}</strong>.
+            </p>
+            <p class="legal-para">
+              Conception et développement du site&nbsp;: <strong>{site.name}</strong>.
+            </p>
+          </Fragment>
+        )}
+        {!isFr && (
+          <Fragment>
+            <p class="legal-para">
+              Photographs and visual content: <strong>{site.name}</strong>.
+            </p>
+            <p class="legal-para">
+              Website design and development: <strong>{site.name}</strong>.
+            </p>
+          </Fragment>
+        )}
+      </section>
+
+    </div><!-- /.legal-body -->
+  </div><!-- /.legal-page -->
+
+</PageLayout>
+
+<style>
+  /* ---------------------------------------------------------------
+     Mentions légales / Legal Notice page — scoped styles
+     Tokens used: --pierre, --calcaire, --encre, --text-muted,
+     --sang, --laiton, --rule, --font-display, --font-body,
+     --font-ui, spacing/step tokens, --hairline, --radius-*
+  --------------------------------------------------------------- */
+
+  .legal-page {
+    padding-bottom: var(--space-3xl);
+  }
+
+  /* --- Page header: eyebrow + h1 + lead ----------------------- */
+  .legal-header {
+    padding-block-end: var(--space-xl);
+    border-bottom: var(--hairline) solid var(--rule);
+  }
+
+  .legal-header .eyebrow {
+    margin-bottom: var(--space-m);
+  }
+
+  .legal-header h1 {
+    /* Inherits --font-display, --step-5 from global; just add breathing room */
+    margin-block: var(--space-s) var(--space-m);
+    max-width: 18ch;
+    line-height: 1.0;
+  }
+
+  .legal-lead {
+    font-family: var(--font-ui);
+    font-size: var(--step-0);
+    color: var(--text-muted);
+    max-width: 56ch;
+  }
+
+  /* --- Prose column: narrowed within .wrap -------------------- */
+  .legal-body {
+    max-width: 72ch;
+    padding-top: var(--space-xl);
+  }
+
+  /* --- TODO legend callout ------------------------------------ */
+  .todo-legend {
+    background: color-mix(in srgb, var(--sang) 7%, var(--calcaire));
+    border-left: 3px solid var(--sang);
+    padding: var(--space-m) var(--space-l);
+    border-radius: var(--radius-m);
+    margin-bottom: var(--space-2xl);
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    line-height: 1.6;
+  }
+
+  .todo-legend p {
+    /* Override global p max-width so legend fills the callout */
+    max-width: none;
+  }
+
+  /* --- TODO inline mark --------------------------------------- */
+  /*
+   * Contrast check: --encre (#1a1714) on
+   * color-mix(sang 12%, calcaire) ≈ #e4d6d0 → ratio ≈ 13:1 (AAA).
+   */
+  mark.todo {
+    background: color-mix(in srgb, var(--sang) 12%, var(--calcaire));
+    color: var(--encre);
+    border-bottom: 2px solid color-mix(in srgb, var(--sang) 60%, transparent);
+    padding: 0.08em 0.35em;
+    border-radius: var(--radius-s);
+    font-style: normal;
+    /* Prevent mark’s default yellow-highlight from competing */
+    -webkit-text-emphasis: none;
+  }
+
+  /* --- Section blocks ---------------------------------------- */
+  .legal-section {
+    padding-block: var(--space-xl) var(--space-l);
+  }
+
+  .legal-section--last {
+    padding-bottom: 0;
+  }
+
+  .legal-section h2 {
+    /* Bring display heading to a section-appropriate size */
+    font-size: var(--step-2);
+    font-weight: 460;
+    margin-bottom: var(--space-l);
+    letter-spacing: -0.01em;
+  }
+
+  /* Hairline rule between sections */
+  .legal-body > hr.rule {
+    margin-block: 0;
+  }
+
+  /* Prose paragraphs inside sections */
+  .legal-para {
+    font-family: var(--font-body);
+    font-size: var(--step-0);
+    line-height: 1.75;
+    color: var(--text);
+  }
+
+  .legal-para + .legal-para {
+    margin-block-start: var(--space-m);
+  }
+
+  /* --- Definition list (publisher info) ----------------------- */
+  .info-grid {
+    margin-top: var(--space-m);
+  }
+
+  .info-row {
+    display: grid;
+    grid-template-columns: 13rem 1fr;
+    column-gap: var(--space-m);
+    padding-block: var(--space-xs);
+    border-bottom: var(--hairline) solid var(--rule);
+    align-items: baseline;
+  }
+
+  .info-row:first-child {
+    border-top: var(--hairline) solid var(--rule);
+  }
+
+  .info-row dt {
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    padding-top: 0.15em;
+  }
+
+  .info-row dd {
+    font-family: var(--font-body);
+    font-size: var(--step-0);
+    line-height: 1.65;
+  }
+
+  .info-row dd a {
+    text-decoration: underline;
+    text-underline-offset: 0.22em;
+    text-decoration-thickness: 1px;
+  }
+
+  .info-row dd a:hover {
+    color: var(--text-muted);
+  }
+
+  /* --- Responsive -------------------------------------------- */
+  @media (max-width: 600px) {
+    .legal-header h1 {
+      max-width: none;
+    }
+
+    .info-row {
+      grid-template-columns: 1fr;
+      row-gap: var(--space-3xs);
+    }
+
+    .info-row dt {
+      padding-top: 0;
+    }
+  }
+</style>

@@ -1,0 +1,146 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import Photo from '../../components/Photo.astro';
+import { site } from '../../config/site';
+import { locales, type Locale, useT, localeBase } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return locales.map((locale) => ({ params: { locale } }));
+}
+const { locale } = Astro.params as { locale: Locale };
+const t = useT(locale);
+const base = localeBase(locale);
+const isFr = locale === 'fr';
+
+const platforms = [
+  {
+    name: 'Instagram',
+    handle: '@chateaudelesigny',
+    href: site.social.instagram,
+    cta: isFr ? 'Suivre' : 'Follow',
+    line: isFr ? 'Le domaine au fil des saisons, mariages et coulisses.' : 'The estate through the seasons, weddings and behind the scenes.',
+    icon: 'M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zm0 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM17.5 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z',
+  },
+  {
+    name: 'YouTube',
+    handle: 'TheBeauChateau',
+    href: site.social.youtube,
+    cta: isFr ? "S’abonner" : 'Subscribe',
+    line: isFr ? 'La renovation racontée — la série « Castle Impossible » (HGTV).' : 'The renovation, told — the HGTV series “Castle Impossible”.',
+    icon: 'M23 12s0-3.5-.45-5.18a2.78 2.78 0 0 0-1.95-1.96C18.88 4.4 12 4.4 12 4.4s-6.88 0-8.6.46A2.78 2.78 0 0 0 1.45 6.82 29 29 0 0 0 1 12a29 29 0 0 0 .45 5.18 2.78 2.78 0 0 0 1.95 1.96C5.12 19.6 12 19.6 12 19.6s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.95-1.96C23 15.5 23 12 23 12zM9.75 15.02V8.98L15.5 12l-5.75 3.02z',
+  },
+  {
+    name: 'Facebook',
+    handle: 'Château de Lésigny',
+    href: site.social.facebook,
+    cta: isFr ? 'Suivre' : 'Follow',
+    line: isFr ? 'Actualités, événements publics et annonces du château.' : 'News, public events and announcements from the château.',
+    icon: 'M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z',
+  },
+];
+
+const feed = ['couple-kiss', 'exterior-ivy-autumn', 'int-ballroom-red', 'grounds-moat', 'bride-window', 'event-banquet-sparklers', 'int-grand-staircase', 'grounds-dovecote'];
+
+const title = `${isFr ? 'Suivez le château' : 'Follow the château'} — ${site.name}`;
+const desc = isFr
+  ? 'Suivez Château de Lésigny sur Instagram, YouTube et Facebook — le domaine, les mariages et la série Castle Impossible (HGTV).'
+  : 'Follow Château de Lésigny on Instagram, YouTube and Facebook — the estate, the weddings and the HGTV series Castle Impossible.';
+---
+<PageLayout title={title} description={desc} locale={locale} path="social/">
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero__media">
+      <Photo name="couple-kiss" fill duotone loading="eager" widths={[900, 1500, 2200]} sizes="100vw"
+        alt={isFr ? 'Un mariage au château' : 'A wedding at the château'} />
+    </div>
+    <div class="hero__scrim" aria-hidden="true"></div>
+    <div class="hero__inner wrap" data-reveal>
+      <p class="eyebrow hero__eyebrow">{t('nav.social')}</p>
+      <h1 class="hero__h1">{isFr ? 'Suivez le château.' : 'Follow the château.'}</h1>
+      <p class="hero__deck">
+        {isFr
+          ? 'De la restauration aux mariages, suivez la vie du domaine — et la série Castle Impossible — au plus près.'
+          : 'From the restoration to the weddings, follow the life of the estate — and the Castle Impossible series — up close.'}
+      </p>
+    </div>
+  </section>
+
+  <!-- Platform cards -->
+  <section class="section platforms">
+    <div class="wrap-wide">
+      <div class="platforms__grid">
+        {platforms.map((p) => (
+          <a class="pcard" href={p.href} target="_blank" rel="noopener" data-reveal>
+            <span class="pcard__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="28" height="28"><path d={p.icon} fill="currentColor" /></svg>
+            </span>
+            <span class="pcard__name">{p.name}</span>
+            <span class="pcard__handle slate">{p.handle}</span>
+            <span class="pcard__line">{p.line}</span>
+            <span class="pcard__cta">{p.cta} →</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Feed -->
+  <section class="section feed">
+    <div class="wrap-wide">
+      <div class="feed__head" data-reveal>
+        <p class="eyebrow">{isFr ? 'Sur Instagram' : 'On Instagram'}</p>
+        <h2>@chateaudelesigny</h2>
+      </div>
+      <div class="feed__grid">
+        {feed.map((k, i) => (
+          <a class="feed__cell" href={site.social.instagram} target="_blank" rel="noopener"
+             aria-label={isFr ? 'Voir sur Instagram' : 'View on Instagram'} data-reveal>
+            <Photo name={k} alt="" ratio="1/1" sizes="(max-width:700px) 50vw, 25vw" />
+          </a>
+        ))}
+      </div>
+      <div class="feed__cta" data-reveal>
+        <a class="btn btn--primary" href={site.social.instagram} target="_blank" rel="noopener">
+          {isFr ? 'Suivre sur Instagram' : 'Follow on Instagram'} →
+        </a>
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .hero { position: relative; min-height: 100svh; display: flex; align-items: flex-end; color: var(--ivoire); }
+  .hero__media { position: absolute; inset: 0; }
+  .hero__scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(21,19,15,0.3) 0%, rgba(21,19,15,0.15) 40%, rgba(21,19,15,0.8) 100%); }
+  .hero__inner { position: relative; padding-block: var(--space-2xl); }
+  .hero__eyebrow { color: var(--laiton-soft); margin-bottom: var(--space-s); }
+  .hero__h1 { color: var(--ivoire); max-width: 16ch; }
+  .hero__deck { color: rgba(246,241,231,0.86); max-width: 46ch; margin-top: var(--space-m); font-size: var(--step-1); }
+
+  .platforms__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-l); }
+  .pcard {
+    display: flex; flex-direction: column; gap: var(--space-2xs);
+    padding: var(--space-l); text-decoration: none;
+    background: var(--calcaire); box-shadow: inset 0 0 0 1px var(--rule);
+    transition: box-shadow var(--dur-mid) var(--ease-soft), transform var(--dur-mid) var(--ease-soft);
+  }
+  .pcard:hover { box-shadow: inset 0 0 0 1px var(--laiton); transform: translateY(-3px); }
+  .pcard__icon { color: var(--sang); }
+  .pcard__name { font-family: var(--font-display); font-size: var(--step-2); margin-top: var(--space-2xs); }
+  .pcard__handle { color: var(--laiton); }
+  .pcard__line { color: var(--text-muted); margin-block: var(--space-2xs) var(--space-s); }
+  .pcard__cta { font-family: var(--font-ui); font-size: var(--step--1); letter-spacing: 0.04em; }
+
+  .feed__head { text-align: center; margin-bottom: var(--space-l); }
+  .feed__head h2 { font-size: var(--step-3); }
+  .feed__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-2xs); }
+  .feed__cell { overflow: hidden; }
+  .feed__cell :global(img) { transition: transform var(--dur-slow) var(--ease-cut); }
+  .feed__cell:hover :global(img) { transform: scale(1.06); }
+  .feed__cta { text-align: center; margin-top: var(--space-l); }
+
+  @media (max-width: 760px) {
+    .platforms__grid { grid-template-columns: 1fr; gap: var(--space-m); }
+    .feed__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>

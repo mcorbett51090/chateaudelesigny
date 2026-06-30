@@ -1,0 +1,288 @@
+---
+/**
+ * DomaineIndex — curated, filterable index of décor "plates".
+ * ~15 grounded décors split across La Château and the grounds / La Ferme.
+ * Filters (Espace + Usage) are real <button>s — keyboard-operable, aria-pressed,
+ * with an aria-live count. Progressive: with JS off, no plate is ever hidden.
+ * No photographs exist yet — each plate is a stone panel (swappable image slot).
+ */
+import type { Locale } from '../../i18n/ui';
+import Photo from '../Photo.astro';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const isFr = locale === 'fr';
+
+type Space = 'chateau' | 'ferme';
+type Use = 'mariage' | 'film' | 'photo';
+interface Decor {
+  n: string;
+  name: string;
+  space: Space;
+  uses: Use[];
+  levelFr: string; levelEn: string;
+  lightFr: string; lightEn: string;
+  size: string;
+  photo: string;
+}
+
+const decors: Decor[] = [
+  { n: '01', name: 'Salle de Bal', space: 'chateau', uses: ['mariage', 'film'],
+    levelFr: 'Niveau 1', levelEn: 'Level 1', lightFr: 'Lumière Sud', lightEn: 'South Light', size: '18×9 m',
+    photo: 'int-ballroom-red' },
+  { n: '02', name: 'Grand Escalier', space: 'chateau', uses: ['film', 'photo'],
+    levelFr: '5 Niveaux', levelEn: '5 Levels', lightFr: 'Lumière Zénithale', lightEn: 'Zenithal Light', size: '4×7 m',
+    photo: 'int-grand-staircase' },
+  { n: '03', name: 'Cheminées Renaissance', space: 'chateau', uses: ['mariage', 'film', 'photo'],
+    levelFr: 'Niveau 1', levelEn: 'Level 1', lightFr: 'Lumière Ouest', lightEn: 'West Light', size: '7×5 m',
+    photo: 'int-fireplace-parquet' },
+  { n: '04', name: 'Chambre d’Apparat', space: 'chateau', uses: ['film', 'photo'],
+    levelFr: 'Niveau 2', levelEn: 'Level 2', lightFr: 'Lumière Est', lightEn: 'East Light', size: '6×6 m',
+    photo: 'int-rose-drapes' },
+  { n: '05', name: 'La Bibliothèque', space: 'chateau', uses: ['film', 'photo'],
+    levelFr: 'Niveau 2', levelEn: 'Level 2', lightFr: 'Lumière Nord', lightEn: 'North Light', size: '8×5 m',
+    photo: 'int-paneled-salon' },
+  { n: '06', name: 'Le Donjon', space: 'chateau', uses: ['film'],
+    levelFr: '5 Niveaux', levelEn: '5 Levels', lightFr: 'Lumière Réduite', lightEn: 'Low Light', size: '5×5 m',
+    photo: 'int-dungeon-passage' },
+  { n: '07', name: 'Les Douves', space: 'chateau', uses: ['photo', 'film'],
+    levelFr: 'Extérieur', levelEn: 'Exterior', lightFr: 'Lumière Naturelle', lightEn: 'Natural Light', size: '130 m lin.',
+    photo: 'grounds-moat' },
+  { n: '08', name: 'La Cour d’Honneur', space: 'chateau', uses: ['mariage', 'photo'],
+    levelFr: 'Extérieur', levelEn: 'Exterior', lightFr: 'Plein Jour', lightEn: 'Daylight', size: '30×24 m',
+    photo: 'int-stone-courtyard' },
+  { n: '09', name: 'Les Écuries', space: 'ferme', uses: ['mariage', 'film'],
+    levelFr: 'Rez-de-chaussée', levelEn: 'Ground', lightFr: 'Lumière Latérale', lightEn: 'Side Light', size: '22×7 m',
+    photo: 'ferme-arches' },
+  { n: '10', name: 'La Grange', space: 'ferme', uses: ['mariage', 'film'],
+    levelFr: 'Rez-de-chaussée', levelEn: 'Ground', lightFr: 'Charpente Apparente', lightEn: 'Open Timber', size: '16×11 m',
+    photo: 'ferme-timberwork' },
+  { n: '11', name: 'La Cour de Ferme', space: 'ferme', uses: ['mariage', 'photo'],
+    levelFr: 'Extérieur', levelEn: 'Exterior', lightFr: 'Plein Jour', lightEn: 'Daylight', size: '28×20 m',
+    photo: 'ferme-exterior' },
+  { n: '12', name: 'Le Fournil', space: 'ferme', uses: ['film', 'photo'],
+    levelFr: 'Rez-de-chaussée', levelEn: 'Ground', lightFr: 'Lumière Réduite', lightEn: 'Low Light', size: '5×4 m',
+    photo: 'int-cellar' },
+  { n: '13', name: 'Les Sous-bois', space: 'ferme', uses: ['photo', 'film'],
+    levelFr: 'Extérieur', levelEn: 'Exterior', lightFr: 'Lumière Tamisée', lightEn: 'Diffused Light', size: '2 ha',
+    photo: 'grounds-forest' },
+  { n: '14', name: 'Le Verger', space: 'ferme', uses: ['photo', 'mariage'],
+    levelFr: 'Extérieur', levelEn: 'Exterior', lightFr: 'Plein Jour', lightEn: 'Daylight', size: '0,6 ha',
+    photo: 'grounds-allee' },
+  { n: '15', name: 'L’Étang', space: 'ferme', uses: ['photo', 'film'],
+    levelFr: 'Extérieur', levelEn: 'Exterior', lightFr: 'Lumière Naturelle', lightEn: 'Natural Light', size: '0,4 ha',
+    photo: 'grounds-lake' },
+];
+
+const useLabel: Record<Use, string> = isFr
+  ? { mariage: 'Mariage', film: 'Film', photo: 'Photo' }
+  : { mariage: 'Wedding', film: 'Film', photo: 'Photo' };
+
+const slate = (d: Decor) =>
+  [isFr ? d.levelFr : d.levelEn, isFr ? d.lightFr : d.lightEn, d.size,
+   d.uses.map((u) => useLabel[u]).join('·')].join(' · ');
+
+const spaceFilters = [
+  { v: 'tous', label: isFr ? 'Tous' : 'All' },
+  { v: 'chateau', label: 'La Château' },
+  { v: 'ferme', label: 'La Ferme' },
+];
+const useFilters = [
+  { v: 'tous', label: isFr ? 'Tous' : 'All' },
+  { v: 'mariage', label: isFr ? 'Mariage' : 'Wedding' },
+  { v: 'film', label: 'Film' },
+  { v: 'photo', label: 'Photo' },
+];
+---
+<section class="section index" aria-labelledby="index-heading">
+  <div class="wrap-wide">
+    <header class="index__head flow" data-reveal>
+      <p class="eyebrow">{isFr ? 'Index des décors' : 'Décor index'}</p>
+      <h2 id="index-heading">{isFr ? 'Une sélection du répertoire.' : 'A selection from the repertoire.'}</h2>
+      <p class="index__lede">
+        {isFr
+          ? 'Quinze décors représentatifs, du grand apparat aux extérieurs agricoles. Le répertoire complet — plus de soixante-dix — se découvre en repérage.'
+          : 'Fifteen representative décors, from state rooms to working exteriors. The full repertoire — over seventy — is revealed on a location scout.'}
+      </p>
+    </header>
+
+    <!-- Filters -->
+    <div class="filters" data-reveal>
+      <div class="filters__group" role="group" aria-label={isFr ? 'Filtrer par espace' : 'Filter by space'}>
+        <span class="filters__legend slate">{isFr ? 'Espace' : 'Space'}</span>
+        {spaceFilters.map((f, i) => (
+          <button type="button" class="chip" data-group="space" data-value={f.v} aria-pressed={i === 0 ? 'true' : 'false'}>
+            {f.label}
+          </button>
+        ))}
+      </div>
+      <div class="filters__group" role="group" aria-label={isFr ? 'Filtrer par usage' : 'Filter by use'}>
+        <span class="filters__legend slate">{isFr ? 'Usage' : 'Use'}</span>
+        {useFilters.map((f, i) => (
+          <button type="button" class="chip" data-group="use" data-value={f.v} aria-pressed={i === 0 ? 'true' : 'false'}>
+            {f.label}
+          </button>
+        ))}
+      </div>
+      <p class="filters__count slate" data-count aria-live="polite">
+        {decors.length} {isFr ? 'décors' : 'décors'}
+      </p>
+    </div>
+
+    <!-- Grid -->
+    <ul class="index__grid" data-grid data-space="tous" data-use="tous">
+      {decors.map((d) => (
+        <li class="decor" data-decor data-space={d.space} data-uses={d.uses.join(' ')} data-reveal>
+          <article class="decor__card">
+            <div class="decor__plate" aria-hidden="true">
+              <Photo fill name={d.photo} alt="" sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 34vw" />
+              <span class="decor__n slate">N°{d.n}</span>
+              <span class="decor__plate-name">{d.name}</span>
+            </div>
+            <div class="decor__meta">
+              <h3 class="decor__name visually-hidden">{d.name}</h3>
+              <p class="decor__slate slate">{slate(d)}</p>
+            </div>
+          </article>
+        </li>
+      ))}
+    </ul>
+
+    <p class="index__empty slate" data-empty hidden>
+      {isFr ? 'Aucun décor pour cette combinaison.' : 'No décor for this combination.'}
+    </p>
+  </div>
+</section>
+
+<script>
+  // Vanilla, progressive filtering. With JS off, nothing is hidden.
+  const grid = document.querySelector<HTMLElement>('[data-grid]');
+  if (grid) {
+    const chips = Array.from(document.querySelectorAll<HTMLButtonElement>('.chip'));
+    const decors = Array.from(grid.querySelectorAll<HTMLElement>('[data-decor]'));
+    const countEl = document.querySelector<HTMLElement>('[data-count]');
+    const emptyEl = document.querySelector<HTMLElement>('[data-empty]');
+    const countLabel = countEl?.textContent?.replace(/[\d]+/, '').trim() ?? 'décors';
+
+    const apply = () => {
+      const space = grid.dataset.space ?? 'tous';
+      const use = grid.dataset.use ?? 'tous';
+      let shown = 0;
+      for (const el of decors) {
+        const okSpace = space === 'tous' || el.dataset.space === space;
+        const okUse = use === 'tous' || (el.dataset.uses ?? '').split(' ').includes(use);
+        const visible = okSpace && okUse;
+        el.hidden = !visible;
+        if (visible) shown++;
+      }
+      if (countEl) countEl.textContent = `${shown} ${countLabel}`;
+      if (emptyEl) emptyEl.hidden = shown !== 0;
+    };
+
+    for (const chip of chips) {
+      chip.addEventListener('click', () => {
+        const group = chip.dataset.group;       // 'space' | 'use'
+        const value = chip.dataset.value ?? 'tous';
+        for (const c of chips) {
+          if (c.dataset.group === group) c.setAttribute('aria-pressed', String(c === chip));
+        }
+        if (group === 'space') grid.dataset.space = value;
+        if (group === 'use') grid.dataset.use = value;
+        apply();
+      });
+    }
+  }
+</script>
+
+<style>
+  .index__head { max-width: 60ch; margin-bottom: var(--space-l); }
+  .index__lede { color: var(--text-muted); font-size: var(--step-1); }
+
+  /* --- Filters --- */
+  .filters {
+    display: flex; flex-wrap: wrap; align-items: center;
+    gap: var(--space-m) var(--space-l);
+    padding-block: var(--space-m);
+    border-top: var(--hairline) solid var(--rule);
+    border-bottom: var(--hairline) solid var(--rule);
+    margin-bottom: var(--space-xl);
+  }
+  .filters__group { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2xs); }
+  .filters__legend { margin-right: var(--space-2xs); }
+  .filters__count { margin-left: auto; color: var(--encre); }
+
+  .chip {
+    font-family: var(--font-ui); font-size: var(--step--1); font-weight: 500;
+    letter-spacing: 0.02em;
+    padding: 0.5em 0.95em; border-radius: 999px; cursor: pointer;
+    color: var(--text-muted);
+    background: transparent;
+    border: var(--hairline) solid var(--rule);
+    transition: color var(--dur-fast) var(--ease-soft),
+                border-color var(--dur-fast) var(--ease-soft),
+                background var(--dur-fast) var(--ease-soft);
+  }
+  .chip:hover { color: var(--encre); border-color: var(--laiton); }
+  .chip[aria-pressed='true'] {
+    color: var(--ivoire); background: var(--sang);
+    border-color: var(--sang);
+  }
+
+  /* --- Grid --- */
+  .index__grid {
+    list-style: none; padding: 0; margin: 0;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-l) var(--space-m);
+  }
+  .decor[hidden] { display: none; }
+  .decor__card { display: flex; flex-direction: column; gap: var(--space-s); height: 100%; }
+
+  .decor__plate {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    background: var(--suie);  /* dark fallback if image missing */
+    border-radius: var(--radius-s);
+    box-shadow: inset 0 0 0 1px var(--laiton);
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: var(--space-s);
+    overflow: hidden;
+  }
+  /* Gradient scrim over the photo */
+  .decor__plate::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(
+      to top,
+      rgba(10, 8, 6, 0.78) 0%,
+      rgba(10, 8, 6, 0.18) 52%,
+      rgba(10, 8, 6, 0.44) 100%
+    );
+    z-index: 1;
+  }
+  /* Inset brass border above scrim */
+  .decor__plate::after {
+    content: ''; position: absolute; inset: 6px;
+    border: var(--hairline) solid color-mix(in srgb, var(--laiton) 35%, transparent);
+    border-radius: 1px; pointer-events: none;
+    z-index: 3;
+  }
+  /* Text labels above scrim */
+  .decor__n { color: var(--laiton); position: relative; z-index: 2; }
+  .decor__plate-name {
+    font-family: var(--font-display); font-weight: 460;
+    font-size: var(--step-2); line-height: 1.05;
+    color: var(--ivoire);
+    max-width: 14ch; text-wrap: balance;
+    position: relative; z-index: 2;
+  }
+
+  .decor__meta { display: flex; flex-direction: column; gap: 0.35rem; }
+  .decor__name { font-size: var(--step-1); }
+  .decor__slate { color: var(--text-muted); }
+
+  @media (max-width: 900px) {
+    .index__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 560px) {
+    .index__grid { grid-template-columns: 1fr; }
+    .filters__count { margin-left: 0; width: 100%; }
+  }
+</style>

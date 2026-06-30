@@ -1,0 +1,189 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { site } from '../../config/site';
+import { locales, type Locale, useT, localeBase } from '../../i18n/ui';
+import DomaineSchematic from '../../components/domaine/DomaineSchematic.astro';
+import DomaineIndex from '../../components/domaine/DomaineIndex.astro';
+import Photo from '../../components/Photo.astro';
+
+export function getStaticPaths() { return locales.map((locale) => ({ params: { locale } })); }
+
+const { locale } = Astro.params as { locale: Locale };
+const t = useT(locale);
+const base = localeBase(locale);
+const isFr = locale === 'fr';
+
+const heroSlate = isFr
+  ? `${site.estate.hectares} HA · 2 STRUCTURES · 30 MIN DE PARIS`
+  : `${site.estate.hectares} HA · 2 STRUCTURES · 30 MIN FROM PARIS`;
+
+// Two structures, summarised for the orientation band.
+const structures = [
+  {
+    n: '01', name: 'La Château',
+    line: isFr
+      ? '40 pièces sur 5 niveaux, du donjon à la salle de bal — cheminées Renaissance, grand escalier, ceint de ses douves.'
+      : '40 rooms across 5 levels, from the keep to the ballroom — Renaissance mantels, grand staircase, ringed by its moat.',
+    spec: isFr ? '40 PIÈCES · 5 NIVEAUX · DONJON · DOUVES' : '40 ROOMS · 5 LEVELS · KEEP · MOAT',
+  },
+  {
+    n: '02', name: 'La Ferme',
+    line: isFr
+      ? '8 pièces insonorisées autour de la cour — écuries, grange et fournil, à l’écart du château.'
+      : '8 soundproofed rooms around the courtyard — stables, barn and bakehouse, set apart from the château.',
+    spec: isFr ? '8 PIÈCES · INSONORISÉ · ÉCURIES · GRANGE' : '8 ROOMS · SOUNDPROOFED · STABLES · BARN',
+  },
+];
+---
+<PageLayout
+  title={isFr ? 'Le Domaine & les décors — Château de Lésigny' : 'The Estate & its décors — Château de Lésigny'}
+  description={isFr
+    ? 'Un domaine privé de 54 hectares, deux structures et plus de soixante-dix décors à 30 minutes de Paris : plan du domaine et index des décors pour mariages, tournages et séances photo.'
+    : 'A private 54-hectare estate, two structures and over seventy décors 30 minutes from Paris: estate plan and décor index for weddings, film and photography.'}
+  locale={locale}
+  path="le-domaine/"
+>
+  <!-- Hero -->
+  <section class="hero">
+    <Photo
+      fill
+      name="exterior-aerial"
+      loading="eager"
+      alt={isFr ? 'Vue aérienne du château de Lésigny et de ses douves' : 'Aerial view of Château de Lésigny and its moat'}
+      sizes="100vw"
+      widths={[800, 1600, 2400]}
+    />
+    <div class="hero__scrim" aria-hidden="true"></div>
+    <div class="wrap-wide hero__inner">
+      <p class="eyebrow" data-reveal>{isFr ? 'Le Domaine' : 'The Estate'}</p>
+      <h1 class="hero__title" data-reveal>
+        {isFr ? '70+ décors, un seul domaine.' : '70+ décors, one estate.'}
+      </h1>
+      <p class="hero__lede" data-reveal>
+        {isFr
+          ? 'Une seule adresse, deux structures distinctes et plus de soixante-dix décors — du grand apparat Renaissance aux extérieurs agricoles, à une demi-heure de Paris.'
+          : 'One address, two distinct structures and over seventy décors — from Renaissance state rooms to working exteriors, half an hour from Paris.'}
+      </p>
+      <p class="hero__slate slate" data-reveal>{heroSlate}</p>
+    </div>
+    <div class="wrap-wide hero__footer"><hr class="rule" /></div>
+  </section>
+
+  <!-- Estate schematic -->
+  <section class="section plan" aria-labelledby="plan-heading">
+    <div class="wrap-wide">
+      <header class="plan__head flow" data-reveal>
+        <p class="eyebrow">{isFr ? 'Plan du domaine' : 'Estate plan'}</p>
+        <h2 id="plan-heading">{isFr ? 'Le domaine d’un seul regard.' : 'The estate at a glance.'}</h2>
+        <p class="plan__lede">
+          {isFr
+            ? 'Le château et son donjon, ceints des douves ; l’allée d’honneur ; La Ferme et sa cour ; le verger et l’étang — disposés dans une enceinte de 54 hectares.'
+            : 'The château and its keep, ringed by the moat; the grand allée; La Ferme and its courtyard; the orchard and the pond — laid out within a 54-hectare boundary.'}
+        </p>
+      </header>
+      <DomaineSchematic locale={locale} />
+    </div>
+  </section>
+
+  <!-- Two structures -->
+  <section class="section structures" aria-labelledby="structures-heading">
+    <div class="wrap-wide">
+      <h2 id="structures-heading" class="visually-hidden">
+        {isFr ? 'Les deux structures' : 'The two structures'}
+      </h2>
+      <div class="structures__grid">
+        {structures.map((s) => (
+          <article class="struct" data-reveal>
+            <span class="struct__n slate">N°{s.n}</span>
+            <h3 class="struct__name">{s.name}</h3>
+            <p class="struct__line">{s.line}</p>
+            <p class="struct__spec slate">{s.spec}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Curated décor index (filterable) -->
+  <DomaineIndex locale={locale} />
+
+  <!-- Closing CTA band -->
+  <section class="cta is-dark" aria-labelledby="cta-heading">
+    <div class="wrap cta__inner" data-reveal>
+      <p class="eyebrow">{isFr ? 'Repérage' : 'Location scout'}</p>
+      <h2 id="cta-heading" class="cta__title">
+        {isFr ? 'Le répertoire complet se visite.' : 'The full repertoire is best walked.'}
+      </h2>
+      <p class="cta__line">
+        {isFr
+          ? `Plus de soixante-dix décors, à partir de ${site.weddings.priceFromEUR.toLocaleString('fr-FR')} €. Convenons d’une visite de repérage sur place.`
+          : `Over seventy décors, from €${site.weddings.priceFromEUR.toLocaleString('en-US')}. Let us arrange a location scout on site.`}
+      </p>
+      <div class="cta__actions">
+        <a class="btn btn--primary" href={`${base}/contact/?stream=wedding`}>
+          {isFr ? 'Demander une visite' : 'Request a visit'}
+        </a>
+        <a class="btn btn--ghost cta__ghost" href={`${base}/mariages/`}>
+          {isFr ? 'Voir les mariages' : 'See weddings'} →
+        </a>
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  /* --- Hero --- */
+  .hero {
+    position: relative;
+    background: var(--suie);  /* dark fallback when photo is absent */
+    padding-block: clamp(4rem, 12vh, 9rem) var(--space-l);
+  }
+  /* Dark gradient scrim over the aerial photo */
+  .hero__scrim {
+    position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(175deg, rgba(10,8,6,.54) 0%, rgba(10,8,6,.64) 100%);
+    z-index: 1;
+  }
+  /* Content layers above photo + scrim */
+  .hero__inner { display: grid; gap: var(--space-m); position: relative; z-index: 2; }
+  .hero__footer { position: relative; z-index: 2; }
+  /* Ivory text on dark photo */
+  .hero .eyebrow { color: color-mix(in srgb, var(--ivoire) 80%, transparent); }
+  .hero__title { max-width: 16ch; color: var(--ivoire); }
+  .hero__lede {
+    font-size: var(--step-1);
+    color: color-mix(in srgb, var(--ivoire) 72%, transparent);
+    max-width: 52ch;
+  }
+  .hero__slate { color: var(--laiton); letter-spacing: 0.1em; }
+  .hero .rule { margin-top: var(--space-2xl); border-color: color-mix(in srgb, var(--ivoire) 20%, transparent); }
+
+  /* --- Plan --- */
+  .plan__head { max-width: 62ch; margin-bottom: var(--space-xl); }
+  .plan__lede { color: var(--text-muted); font-size: var(--step-1); }
+
+  /* --- Structures --- */
+  .structures { padding-top: 0; }
+  .structures__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xl); }
+  .struct {
+    display: flex; flex-direction: column; gap: var(--space-2xs);
+    padding-top: var(--space-m);
+    border-top: 2px solid var(--encre);
+  }
+  .struct__n { color: var(--laiton); }
+  .struct__name { font-size: var(--step-3); margin-top: var(--space-3xs); }
+  .struct__line { color: var(--text-muted); margin-block: var(--space-2xs) var(--space-s); }
+  .struct__spec { color: var(--encre); }
+
+  /* --- CTA band --- */
+  .cta { background: var(--suie); color: var(--ivoire); padding-block: var(--space-2xl); }
+  .cta__inner { display: grid; justify-items: start; gap: var(--space-m); }
+  .cta__title { max-width: 18ch; font-size: var(--step-4); }
+  .cta__line { color: var(--text-muted); max-width: 48ch; font-size: var(--step-1); }
+  .cta__actions { display: flex; flex-wrap: wrap; gap: var(--space-s); margin-top: var(--space-2xs); }
+  .cta__ghost { color: var(--ivoire); }
+
+  @media (max-width: 820px) {
+    .structures__grid { grid-template-columns: 1fr; gap: var(--space-l); }
+  }
+</style>

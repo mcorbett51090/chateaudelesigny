@@ -1,0 +1,587 @@
+{
+  "$schema": "../../../../schemas/brand-kit.schema.json",
+  "source": {
+    "url": "https://www.chateaudelesigny.com/?lang=en",
+    "fetched_at": "2026-06-30T20:25:13Z",
+    "title": "Filming venue| Château de Lésigny | France",
+    "site_name": "Chateau de Lesigny"
+  },
+  "colors": {
+    "theme_color": null,
+    "palette": [
+      {
+        "value": "#0f2ccf",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-blue-0"
+      },
+      {
+        "value": "#2f5dff",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-blue-100"
+      },
+      {
+        "value": "#597dff",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-blue-200"
+      },
+      {
+        "value": "#acbeff",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-blue-300"
+      },
+      {
+        "value": "#d5dfff",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-blue-400"
+      },
+      {
+        "value": "#eaefff",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-blue-500"
+      },
+      {
+        "value": "#f5f7ff",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-blue-600"
+      },
+      {
+        "value": "#151414",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-black-0"
+      },
+      {
+        "value": "#383838",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-black-100"
+      },
+      {
+        "value": "#525150",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-black-200"
+      },
+      {
+        "value": "#767574",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-black-300"
+      },
+      {
+        "value": "#a8a6a5",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-black-400"
+      },
+      {
+        "value": "#e0dfdf",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-black-500"
+      },
+      {
+        "value": "#f1f0ef",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-black-600"
+      },
+      {
+        "value": "#9c2426",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-red-0"
+      },
+      {
+        "value": "#df3336",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-red-100"
+      },
+      {
+        "value": "#e55c5e",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-red-200"
+      },
+      {
+        "value": "#ed8f90",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-red-300"
+      },
+      {
+        "value": "#f4b8b9",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-red-400"
+      },
+      {
+        "value": "#f9d6d7",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-red-500"
+      },
+      {
+        "value": "#fcebeb",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-red-600"
+      },
+      {
+        "value": "#0d4f3d",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-green-0"
+      },
+      {
+        "value": "#4b916d",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-green-100"
+      },
+      {
+        "value": "#97c693",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-green-200"
+      },
+      {
+        "value": "#bde2a7",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-green-300"
+      },
+      {
+        "value": "#daf3c0",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-green-400"
+      },
+      {
+        "value": "#effae5",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-green-500"
+      },
+      {
+        "value": "#f1f5ed",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-green-600"
+      },
+      {
+        "value": "#d49341",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-yellow-0"
+      },
+      {
+        "value": "#f9ad4d",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-yellow-100"
+      },
+      {
+        "value": "#fabd71",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-yellow-200"
+      },
+      {
+        "value": "#fcd29d",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-yellow-300"
+      },
+      {
+        "value": "#fdead2",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-yellow-400"
+      },
+      {
+        "value": "#fef3e5",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-yellow-500"
+      },
+      {
+        "value": "#fef6ed",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-yellow-600"
+      },
+      {
+        "value": "#ae3e09",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-orange-0"
+      },
+      {
+        "value": "#ff8044",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-orange-100"
+      },
+      {
+        "value": "#fe9361",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-orange-200"
+      },
+      {
+        "value": "#fda77f",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-orange-300"
+      },
+      {
+        "value": "#fbcfbb",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-orange-400"
+      },
+      {
+        "value": "#fbe3d9",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-orange-500"
+      },
+      {
+        "value": "#fdf1ec",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-orange-600"
+      },
+      {
+        "value": "#5000aa",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-purple-0"
+      },
+      {
+        "value": "#7200f3",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-purple-100"
+      },
+      {
+        "value": "#8b2df5",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-purple-200"
+      },
+      {
+        "value": "#be89f9",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-purple-300"
+      },
+      {
+        "value": "#d7b7fb",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-purple-400"
+      },
+      {
+        "value": "#f1e5fe",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-purple-500"
+      },
+      {
+        "value": "#f8f2ff",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-purple-600"
+      },
+      {
+        "value": "#4d3dd0",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-ai-0"
+      },
+      {
+        "value": "#5a48f5",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-ai-100"
+      },
+      {
+        "value": "#7b6df7",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-ai-200"
+      },
+      {
+        "value": "#a59bfa",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-ai-300"
+      },
+      {
+        "value": "#d6d1fc",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-ai-400"
+      },
+      {
+        "value": "#e7e4fe",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-ai-500"
+      },
+      {
+        "value": "#eeecfe",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--wbu-color-ai-600"
+      },
+      {
+        "value": "#ffffff",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--focus-ring-box-shadow"
+      },
+      {
+        "value": "rgba(0, 0, 0, 0.6)",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--shd"
+      },
+      {
+        "value": "rgb(255, 255, 255)",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--remainderBadgeColor"
+      },
+      {
+        "value": "rgba(32, 32, 32, 1)",
+        "role": "unknown",
+        "source": "css-custom-property",
+        "name": "--borderColorHover"
+      },
+      {
+        "value": "#0000",
+        "role": "unknown",
+        "source": "frequency",
+        "count": 20
+      }
+    ],
+    "custom_properties": {
+      "--wbu-color-blue-0": "#0f2ccf",
+      "--wbu-color-blue-100": "#2f5dff",
+      "--wbu-color-blue-200": "#597dff",
+      "--wbu-color-blue-300": "#acbeff",
+      "--wbu-color-blue-400": "#d5dfff",
+      "--wbu-color-blue-500": "#eaefff",
+      "--wbu-color-blue-600": "#f5f7ff",
+      "--wbu-color-black-0": "#151414",
+      "--wbu-color-black-100": "#383838",
+      "--wbu-color-black-200": "#525150",
+      "--wbu-color-black-300": "#767574",
+      "--wbu-color-black-400": "#a8a6a5",
+      "--wbu-color-black-500": "#e0dfdf",
+      "--wbu-color-black-600": "#f1f0ef",
+      "--wbu-color-red-0": "#9c2426",
+      "--wbu-color-red-100": "#df3336",
+      "--wbu-color-red-200": "#e55c5e",
+      "--wbu-color-red-300": "#ed8f90",
+      "--wbu-color-red-400": "#f4b8b9",
+      "--wbu-color-red-500": "#f9d6d7",
+      "--wbu-color-red-600": "#fcebeb",
+      "--wbu-color-green-0": "#0d4f3d",
+      "--wbu-color-green-100": "#4b916d",
+      "--wbu-color-green-200": "#97c693",
+      "--wbu-color-green-300": "#bde2a7",
+      "--wbu-color-green-400": "#daf3c0",
+      "--wbu-color-green-500": "#effae5",
+      "--wbu-color-green-600": "#f1f5ed",
+      "--wbu-color-yellow-0": "#d49341",
+      "--wbu-color-yellow-100": "#f9ad4d",
+      "--wbu-color-yellow-200": "#fabd71",
+      "--wbu-color-yellow-300": "#fcd29d",
+      "--wbu-color-yellow-400": "#fdead2",
+      "--wbu-color-yellow-500": "#fef3e5",
+      "--wbu-color-yellow-600": "#fef6ed",
+      "--wbu-color-orange-0": "#ae3e09",
+      "--wbu-color-orange-100": "#ff8044",
+      "--wbu-color-orange-200": "#fe9361",
+      "--wbu-color-orange-300": "#fda77f",
+      "--wbu-color-orange-400": "#fbcfbb",
+      "--wbu-color-orange-500": "#fbe3d9",
+      "--wbu-color-orange-600": "#fdf1ec",
+      "--wbu-color-purple-0": "#5000aa",
+      "--wbu-color-purple-100": "#7200f3",
+      "--wbu-color-purple-200": "#8b2df5",
+      "--wbu-color-purple-300": "#be89f9",
+      "--wbu-color-purple-400": "#d7b7fb",
+      "--wbu-color-purple-500": "#f1e5fe",
+      "--wbu-color-purple-600": "#f8f2ff",
+      "--wbu-color-ai-0": "#4d3dd0",
+      "--wbu-color-ai-100": "#5a48f5",
+      "--wbu-color-ai-200": "#7b6df7",
+      "--wbu-color-ai-300": "#a59bfa",
+      "--wbu-color-ai-400": "#d6d1fc",
+      "--wbu-color-ai-500": "#e7e4fe",
+      "--wbu-color-ai-600": "#eeecfe",
+      "--focus-ring-box-shadow": "0 0 0 1px #ffffff, 0 0 0 3px #116dff",
+      "--shd": "0 1px 4px rgba(0, 0, 0, 0.6)",
+      "--remainderBadgeColor": "rgb(255, 255, 255)",
+      "--borderColorHover": "rgba(32, 32, 32, 1)",
+      "--borderColorActive": "rgba(32, 32, 32, 1)"
+    }
+  },
+  "typography": {
+    "font_families": [
+      {
+        "family": "eb garamond",
+        "source": "font-family",
+        "count": 28,
+        "role": "unknown"
+      },
+      {
+        "family": "cinzel",
+        "source": "font-family",
+        "count": 18,
+        "role": "unknown"
+      },
+      {
+        "family": "brandon-grot-w01-light",
+        "source": "font-family",
+        "count": 13,
+        "role": "unknown"
+      },
+      {
+        "family": "didot-w01-italic",
+        "source": "font-family",
+        "count": 13,
+        "role": "unknown"
+      },
+      {
+        "family": "snellroundhandw01-scrip",
+        "source": "font-family",
+        "count": 7,
+        "role": "unknown"
+      },
+      {
+        "family": "anton",
+        "source": "font-family",
+        "count": 4,
+        "role": "unknown"
+      },
+      {
+        "family": "niconne",
+        "source": "font-family",
+        "count": 4,
+        "role": "unknown"
+      },
+      {
+        "family": "din-next-w01-light",
+        "source": "font-family",
+        "count": 3,
+        "role": "unknown"
+      },
+      {
+        "family": "avenir-lt-w01_85-heavy1475544",
+        "source": "font-family",
+        "count": 3,
+        "role": "unknown"
+      },
+      {
+        "family": "Arial",
+        "source": "font-family",
+        "count": 2,
+        "role": "body"
+      },
+      {
+        "family": "Helvetica",
+        "source": "font-family",
+        "count": 2,
+        "role": "unknown"
+      },
+      {
+        "family": "mr de haviland",
+        "source": "font-family",
+        "count": 2,
+        "role": "unknown"
+      },
+      {
+        "family": "Wix Madefor Text",
+        "source": "font-family",
+        "count": 1,
+        "role": "unknown"
+      },
+      {
+        "family": "wf_0ba3a7db2c4e4b31b576d8931",
+        "source": "font-family",
+        "count": 1,
+        "role": "unknown"
+      },
+      {
+        "family": "wfont_028600_0ba3a7db2c4e4b31b576d8931a072808",
+        "source": "font-family",
+        "count": 1,
+        "role": "unknown"
+      }
+    ],
+    "google_fonts": [],
+    "font_links": []
+  },
+  "logos": [
+    {
+      "role": "favicon",
+      "src": "https://static.wixstatic.com/media/bf326d_4de3d397081f4bc4a6904dda7953c011%7Emv2.png/v1/fill/w_192%2Ch_192%2Clg_1%2Cusm_0.66_1.00_0.01/bf326d_4de3d397081f4bc4a6904dda7953c011%7Emv2.png",
+      "context": "rel=icon sizes=192x192",
+      "theme": "any",
+      "declared_color": "",
+      "local_path": "logos/favicon-0.png",
+      "format": "png",
+      "downloaded": true
+    },
+    {
+      "role": "favicon",
+      "src": "https://static.wixstatic.com/media/bf326d_4de3d397081f4bc4a6904dda7953c011%7Emv2.png/v1/fill/w_32%2Ch_32%2Clg_1%2Cusm_0.66_1.00_0.01/bf326d_4de3d397081f4bc4a6904dda7953c011%7Emv2.png",
+      "context": "rel=shortcut icon sizes=",
+      "theme": "any",
+      "declared_color": "",
+      "local_path": "logos/favicon-1.png",
+      "format": "png",
+      "downloaded": true
+    },
+    {
+      "role": "apple-touch-icon",
+      "src": "https://static.wixstatic.com/media/bf326d_4de3d397081f4bc4a6904dda7953c011%7Emv2.png/v1/fill/w_180%2Ch_180%2Clg_1%2Cusm_0.66_1.00_0.01/bf326d_4de3d397081f4bc4a6904dda7953c011%7Emv2.png",
+      "context": "rel=apple-touch-icon sizes=",
+      "theme": "any",
+      "declared_color": "",
+      "local_path": "logos/apple-touch-icon-2.png",
+      "format": "png",
+      "downloaded": true
+    },
+    {
+      "role": "og-image",
+      "src": "https://static.wixstatic.com/media/bf326d_3877f774fc0e49b9b65ec5b5b91b21a4%7Emv2.png/v1/fit/w_2500,h_1330,al_c/bf326d_3877f774fc0e49b9b65ec5b5b91b21a4%7Emv2.png",
+      "context": "meta og:image",
+      "theme": "any",
+      "local_path": "logos/og-image-3.png",
+      "format": "png",
+      "downloaded": true
+    }
+  ],
+  "radii": [
+    "50%",
+    "300px",
+    "2px",
+    "24px"
+  ],
+  "confidence_notes": []
+}

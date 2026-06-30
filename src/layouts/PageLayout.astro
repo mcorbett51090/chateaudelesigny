@@ -1,0 +1,21 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import type { Locale } from '../i18n/ui';
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  path?: string;
+  dark?: boolean;
+  image?: string;
+}
+const { locale, ...rest } = Astro.props;
+---
+<BaseLayout locale={locale} {...rest}>
+  <Nav slot="header" locale={locale} />
+  <slot />
+  <Footer slot="footer" locale={locale} />
+</BaseLayout>

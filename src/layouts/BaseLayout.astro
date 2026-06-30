@@ -1,0 +1,102 @@
+---
+import '../styles/global.css';
+import { site } from '../config/site';
+import { type Locale, useT, withLocale, withBase } from '../i18n/ui';
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  /** Path WITHOUT locale prefix, e.g. 'mariages/' or '' for home. Used for hreflang. */
+  path?: string;
+  dark?: boolean;
+  image?: string;
+}
+
+const { title, description, locale, path = '', dark = false, image } = Astro.props;
+const t = useT(locale);
+
+// withLocale() already includes the deployment base; canonical/og must add it explicitly.
+const canonical = new URL(withBase(`${locale}/${path}`), Astro.site).href;
+const altFr = new URL(withLocale(`/${locale}/${path}`, 'fr'), Astro.site).href;
+const altEn = new URL(withLocale(`/${locale}/${path}`, 'en'), Astro.site).href;
+const ogImage = image ?? new URL(withBase('/og/default.png'), Astro.site).href;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'TouristAttraction',
+  name: site.name,
+  description,
+  url: canonical,
+  foundingDate: String(site.founded),
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.address.street,
+    postalCode: site.address.postalCode,
+    addressLocality: site.address.city,
+    addressRegion: site.address.region,
+    addressCountry: site.address.countryCode,
+  },
+  geo: { '@type': 'GeoCoordinates', latitude: site.address.lat, longitude: site.address.lng },
+  telephone: site.contact.phoneEvents,
+  email: site.contact.email,
+  sameAs: [site.social.instagram, site.social.facebook, site.social.youtube],
+};
+---
+
+<!doctype html>
+<html lang={locale} class={dark ? 'is-dark' : undefined}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="fr" href={altFr} />
+    <link rel="alternate" hreflang="en" href={altEn} />
+    <link rel="alternate" hreflang="x-default" href={altFr} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={locale === 'fr' ? 'fr_FR' : 'en_US'} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="theme-color" content="#1a1714" />
+    <link rel="icon" href={withBase('/crest-lesigny.svg')} type="image/svg+xml" />
+    <!-- No-JS fallback: reveal-on-scroll elements must not stay hidden without JS. -->
+    <noscript><style>[data-reveal]{opacity:1 !important;transform:none !important;}</style></noscript>
+    <set:html value={`<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t('skip')}</a>
+    <slot name="header" />
+    <main id="main">
+      <slot />
+    </main>
+    <slot name="footer" />
+
+    <script>
+      // Lightweight scroll-reveal — no library. Honors reduced-motion via CSS.
+      const els = document.querySelectorAll('[data-reveal]');
+      if (els.length && 'IntersectionObserver' in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                e.target.classList.add('is-in');
+                io.unobserve(e.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -10% 0px', threshold: 0.08 }
+        );
+        els.forEach((el) => io.observe(el));
+      } else {
+        els.forEach((el) => el.classList.add('is-in'));
+      }
+    </script>
+  </body>
+</html>
