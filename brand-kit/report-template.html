@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chateau de Lesigny — Report</title>
+    <link rel="stylesheet" href="brand.css" />
+    <style>
+      body {
+        margin: 0;
+        font-family: var(--brand-font-body);
+        color: var(--brand-text);
+        background: var(--brand-bg);
+        line-height: 1.6;
+      }
+      header.brand-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1.25rem 2rem;
+        border-bottom: 3px solid var(--brand-primary);
+      }
+      .brand-logo { height: 40px; width: auto; }
+      .brand-wordmark { font-family: var(--brand-font-heading); font-size: 1.5rem; font-weight: 700; color: var(--brand-primary); }
+      main { max-width: 60rem; margin: 0 auto; padding: 2rem; }
+      h1, h2, h3 { font-family: var(--brand-font-heading); color: var(--brand-primary); }
+      a { color: var(--brand-accent); }
+      .brand-card {
+        border: 1px solid color-mix(in srgb, var(--brand-text) 12%, transparent);
+        border-radius: var(--brand-radius);
+        padding: 1.25rem 1.5rem;
+        margin: 1rem 0;
+      }
+      .brand-accent-bar { height: 4px; background: var(--brand-accent); border-radius: var(--brand-radius); }
+    </style>
+  </head>
+  <body>
+    <header class="brand-header">
+      <img src="logos/favicon-0.png" alt="Chateau de Lesigny logo" class="brand-logo" />
+      <strong>Chateau de Lesigny</strong>
+    </header>
+    <main>
+      <h1>Report title</h1>
+      <p>Replace this body with your generated report content. The colors, fonts,
+        and logo above are pulled from <code>https://www.chateaudelesigny.com/?lang=en</code>.</p>
+      <div class="brand-card">
+        <h2>Section</h2>
+        <p>Cards, headings, and links inherit the brand tokens automatically.</p>
+      </div>
+      <div class="brand-accent-bar"></div>
+    </main>
+  </body>
+</html>

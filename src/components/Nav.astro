@@ -1,0 +1,102 @@
+---
+import { type Locale, useT } from '../i18n/ui';
+import LangSwitcher from './LangSwitcher.astro';
+const locale = (Astro.props.locale ?? 'fr') as Locale;
+const t = useT(locale);
+const base = `/${locale}`;
+const links = [
+  { href: `${base}/le-domaine/`, label: t('nav.domaine') },
+  { href: `${base}/mariages/`, label: t('nav.mariages') },
+  { href: `${base}/tournages/`, label: t('nav.tournages') },
+  { href: `${base}/photographes/`, label: t('nav.photographes') },
+  { href: `${base}/histoire/`, label: t('nav.histoire') },
+  { href: `${base}/social/`, label: t('nav.social') },
+];
+const here = Astro.url.pathname;
+---
+<header class="nav" data-nav>
+  <div class="nav__inner wrap-wide">
+    <a class="nav__brand" href={`${base}/`} aria-label="Château de Lésigny">
+      <img class="nav__crest" src="/crest-lesigny.svg" alt="" width="40" height="44" />
+      <span class="nav__word">Château de Lésigny</span>
+    </a>
+
+    <nav class="nav__links" aria-label="Primary">
+      {links.map((l) => (
+        <a href={l.href} aria-current={here.startsWith(l.href) ? 'page' : undefined}>{l.label}</a>
+      ))}
+    </nav>
+
+    <div class="nav__actions">
+      <LangSwitcher />
+      <a class="btn btn--primary nav__cta" href={`${base}/contact/`}>{t('cta.inquiry')}</a>
+    </div>
+
+    <button class="nav__burger" aria-label="Menu" aria-expanded="false" data-burger>
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="nav__drawer" data-drawer hidden>
+    {links.map((l) => <a href={l.href}>{l.label}</a>)}
+    <a class="btn btn--primary" href={`${base}/contact/`}>{t('cta.inquiry')}</a>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--pierre) 86%, transparent);
+    backdrop-filter: blur(12px) saturate(1.1);
+    border-bottom: var(--hairline) solid var(--rule);
+  }
+  .nav__inner {
+    display: flex; align-items: center; gap: var(--space-m);
+    min-height: 4.5rem; padding-block: var(--space-2xs);
+  }
+  .nav__brand { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; }
+  .nav__crest { height: 2.7rem; width: auto; display: block; }
+  .nav__word {
+    font-family: var(--font-display); font-size: var(--step-1);
+    font-weight: 440; letter-spacing: -0.01em;
+  }
+  .nav__links { display: flex; gap: var(--space-m); margin-inline-start: auto; }
+  .nav__links a {
+    font-family: var(--font-ui); font-size: var(--step--1);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    text-decoration: none; padding-block: 0.3em;
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--dur-fast) var(--ease-soft);
+  }
+  .nav__links a:hover, .nav__links a[aria-current='page'] { border-color: var(--laiton); }
+  .nav__actions { display: flex; align-items: center; gap: var(--space-xs); }
+  .nav__burger { display: none; }
+
+  @media (max-width: 900px) {
+    .nav__word { display: none; }
+    .nav__links, .nav__cta { display: none; }
+    .nav__actions { margin-inline-start: auto; }
+    .nav__burger {
+      display: grid; gap: 5px; background: none; border: 0; cursor: pointer; padding: 0.5rem;
+    }
+    .nav__burger span { width: 24px; height: 2px; background: var(--encre); display: block; }
+    .nav__drawer {
+      display: grid; gap: var(--space-s); padding: var(--space-l) var(--gutter) var(--space-xl);
+      border-bottom: var(--hairline) solid var(--rule); background: var(--calcaire);
+    }
+    .nav__drawer a {
+      font-family: var(--font-display); font-size: var(--step-2); text-decoration: none;
+    }
+    .nav__drawer .btn { font-family: var(--font-ui); font-size: var(--step-0); width: max-content; }
+  }
+</style>
+
+<script>
+  const burger = document.querySelector('[data-burger]');
+  const drawer = document.querySelector('[data-drawer]');
+  burger?.addEventListener('click', () => {
+    const open = burger.getAttribute('aria-expanded') === 'true';
+    burger.setAttribute('aria-expanded', String(!open));
+    if (drawer) (drawer as HTMLElement).hidden = open;
+  });
+</script>

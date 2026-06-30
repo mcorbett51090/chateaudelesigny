@@ -1,0 +1,173 @@
+---
+/**
+ * DomaineSchematic — agent-authored architectural line-plan of the estate.
+ * Top-down site plan: boundary wall, château block + donjon, the moat (douves),
+ * the allée, La Ferme + courtyard, the orchard (verger) and the pond (étang).
+ * Thin brass/ink strokes on stone — a location-bible plate, not heraldry.
+ * Scroll-triggered stroke "draw-in"; fully disabled under reduced-motion.
+ */
+import type { Locale } from '../../i18n/ui';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const isFr = locale === 'fr';
+const aria = isFr
+  ? "Plan schématique du domaine : le château et son donjon ceints des douves, l’allée d’honneur, La Ferme et sa cour, le verger et l’étang, dans une enceinte de 54 hectares."
+  : 'Schematic site plan: the château and its keep ringed by the moat, the grand allée, La Ferme and its courtyard, the orchard and the pond, within a 54-hectare boundary.';
+---
+<figure class="schematic" data-reveal>
+  <svg
+    class="schematic__svg"
+    viewBox="0 0 920 560"
+    role="img"
+    aria-label={aria}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <!-- Estate boundary (the enceinte / wall) -->
+    <g id="zone-bounds">
+      <rect class="draw-line wall d0" x="24" y="24" width="872" height="512" rx="6" pathLength="1" />
+    </g>
+
+    <!-- L’Étang — the pond -->
+    <g id="zone-etang">
+      <ellipse class="draw-line water d1" cx="160" cy="120" rx="86" ry="44" pathLength="1" />
+      <text class="label" x="160" y="124" text-anchor="middle">L’ÉTANG</text>
+    </g>
+
+    <!-- La Ferme — block with inner courtyard -->
+    <g id="zone-ferme">
+      <rect class="draw-line d2" x="86" y="324" width="220" height="150" pathLength="1" />
+      <rect class="draw-line cour d3" x="132" y="362" width="128" height="74" pathLength="1" />
+      <text class="label" x="196" y="316" text-anchor="middle">LA FERME</text>
+      <text class="label label--sm" x="196" y="402" text-anchor="middle">COUR</text>
+    </g>
+
+    <!-- The allée d’honneur leading up from the south -->
+    <g id="zone-allee">
+      <line class="draw-line d4" x1="588" y1="346" x2="588" y2="520" pathLength="1" />
+      <line class="draw-line d4" x1="616" y1="346" x2="616" y2="520" pathLength="1" />
+      <g class="trees" aria-hidden="true">
+        <circle cx="572" cy="372" r="5" /><circle cx="632" cy="372" r="5" />
+        <circle cx="572" cy="410" r="5" /><circle cx="632" cy="410" r="5" />
+        <circle cx="572" cy="448" r="5" /><circle cx="632" cy="448" r="5" />
+        <circle cx="572" cy="486" r="5" /><circle cx="632" cy="486" r="5" />
+      </g>
+      <text class="label label--sm" x="602" y="534" text-anchor="middle">
+        {isFr ? 'VERS PARIS' : 'TO PARIS'}
+      </text>
+    </g>
+
+    <!-- Les Douves — the moat ring -->
+    <g id="zone-douves">
+      <rect class="draw-line moat d5" x="520" y="150" width="240" height="172" pathLength="1" />
+      <text class="label" x="640" y="142" text-anchor="middle">LES DOUVES</text>
+    </g>
+
+    <!-- La Château — main block, donjon, grand staircase -->
+    <g id="zone-chateau">
+      <rect class="draw-line block d6" x="548" y="178" width="184" height="116" pathLength="1" />
+      <rect class="draw-line d7" x="548" y="178" width="54" height="54" pathLength="1" />
+      <text class="label label--sm donjon" x="575" y="209" text-anchor="middle">DONJON</text>
+      <!-- grand escalier — steps at the south face -->
+      <g class="steps draw-line d7" aria-hidden="true">
+        <line x1="636" y1="294" x2="690" y2="294" pathLength="1" />
+        <line x1="640" y1="302" x2="686" y2="302" pathLength="1" />
+        <line x1="644" y1="310" x2="682" y2="310" pathLength="1" />
+      </g>
+      <text class="label label--lg" x="640" y="246" text-anchor="middle">LA CHÂTEAU</text>
+    </g>
+
+    <!-- Le Verger — orchard, regular planting grid -->
+    <g id="zone-verger">
+      <g class="orchard" aria-hidden="true">
+        <circle cx="552" cy="392" r="6" /><circle cx="600" cy="392" r="6" /><circle cx="648" cy="392" r="6" /><circle cx="696" cy="392" r="6" /><circle cx="744" cy="392" r="6" /><circle cx="792" cy="392" r="6" />
+        <circle cx="552" cy="432" r="6" /><circle cx="600" cy="432" r="6" /><circle cx="648" cy="432" r="6" /><circle cx="696" cy="432" r="6" /><circle cx="744" cy="432" r="6" /><circle cx="792" cy="432" r="6" />
+        <circle cx="552" cy="472" r="6" /><circle cx="600" cy="472" r="6" /><circle cx="648" cy="472" r="6" /><circle cx="696" cy="472" r="6" /><circle cx="744" cy="472" r="6" /><circle cx="792" cy="472" r="6" />
+      </g>
+      <text class="label" x="672" y="372" text-anchor="middle">LE VERGER</text>
+    </g>
+
+    <!-- Compass — decorative orientation -->
+    <g id="compass" class="compass" aria-hidden="true">
+      <line class="draw-line d1" x1="838" y1="118" x2="838" y2="70" pathLength="1" />
+      <path class="needle" d="M838 64 L832 82 L838 76 L844 82 Z" />
+      <text class="label label--sm" x="838" y="134" text-anchor="middle">N</text>
+    </g>
+
+    <!-- Scale bar -->
+    <g id="scale" class="scale" aria-hidden="true">
+      <line class="draw-line d2" x1="86" y1="500" x2="246" y2="500" pathLength="1" />
+      <line class="draw-line d2" x1="86" y1="495" x2="86" y2="505" pathLength="1" />
+      <line class="draw-line d2" x1="166" y1="495" x2="166" y2="505" pathLength="1" />
+      <line class="draw-line d2" x1="246" y1="495" x2="246" y2="505" pathLength="1" />
+      <text class="label label--sm" x="86" y="518" text-anchor="start">0</text>
+      <text class="label label--sm" x="246" y="518" text-anchor="end">100 M</text>
+    </g>
+  </svg>
+</figure>
+
+<style>
+  .schematic {
+    margin: 0;
+    background:
+      radial-gradient(120% 90% at 50% 0%, var(--calcaire), transparent 70%),
+      var(--pierre);
+    border: var(--hairline) solid var(--rule);
+    border-radius: var(--radius-m);
+    padding: clamp(1rem, 4vw, var(--space-xl));
+  }
+  .schematic__svg { width: 100%; height: auto; overflow: visible; }
+
+  /* --- Strokes --- */
+  .draw-line {
+    fill: none;
+    stroke: var(--encre-soft);
+    stroke-width: 1.25;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .wall  { stroke: color-mix(in srgb, var(--encre-soft) 55%, transparent); stroke-dasharray: 3 6; }
+  .moat  { stroke: var(--laiton); stroke-width: 1.5; }
+  .water { stroke: var(--laiton); }
+  .block { stroke-width: 1.5; }
+  .cour  { stroke: color-mix(in srgb, var(--encre-soft) 60%, transparent); }
+  .steps line { stroke-width: 1; }
+  .needle { fill: var(--sang); }
+
+  /* --- Plantings / decorative dots --- */
+  .trees circle   { fill: var(--laiton); opacity: 0.65; }
+  .orchard circle { fill: none; stroke: var(--laiton); stroke-width: 1; vector-effect: non-scaling-stroke; opacity: 0.8; }
+
+  /* --- Labels (Geist Mono) --- */
+  .label {
+    font-family: var(--font-slate);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    fill: var(--encre-soft);
+  }
+  .label--sm { font-size: 11px; fill: color-mix(in srgb, var(--encre-soft) 80%, transparent); }
+  .label--lg { font-size: 15px; fill: var(--encre); letter-spacing: 0.04em; }
+  .donjon { fill: color-mix(in srgb, var(--encre-soft) 75%, transparent); }
+
+  /* --- Draw-in: keyed off the reveal observer adding .is-in --- */
+  .schematic.is-in .draw-line {
+    animation: drawIn var(--dur-slow) var(--ease-cut) both;
+  }
+  .schematic.is-in .d1 .draw-line, .schematic.is-in .d1 { animation-delay: 120ms; }
+  .schematic.is-in .d2 { animation-delay: 220ms; }
+  .schematic.is-in .d3 { animation-delay: 320ms; }
+  .schematic.is-in .d4 { animation-delay: 420ms; }
+  .schematic.is-in .d5 { animation-delay: 520ms; }
+  .schematic.is-in .d6 { animation-delay: 620ms; }
+  .schematic.is-in .d7 { animation-delay: 720ms; }
+  .schematic.is-in .d7 line { animation-delay: 760ms; }
+
+  @keyframes drawIn {
+    from { stroke-dasharray: 1; stroke-dashoffset: 1; }
+    to   { stroke-dasharray: 1; stroke-dashoffset: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .schematic.is-in .draw-line { animation: none; }
+  }
+</style>

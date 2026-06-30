@@ -1,0 +1,999 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import Photo from '../../components/Photo.astro';
+import { site } from '../../config/site';
+import { locales, type Locale, useT } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return locales.map((locale) => ({ params: { locale } }));
+}
+
+const { locale } = Astro.params as { locale: Locale };
+const t = useT(locale);
+const base = `/${locale}`;
+const isFr = locale === 'fr';
+
+const decors = [
+  {
+    n: '01',
+    fr: 'Grand Escalier',
+    en: 'Grand Staircase',
+    img: 'grounds-moat',
+    altFr: 'Les douves du château de Lésigny',
+    altEn: 'The moat at Château de Lésigny',
+    descFr: 'Marbre, dorures et lumière zénithale — un décor intemporel pour la mode et le portrait.',
+    descEn: 'Marble, gilding and zenithal light — a timeless setting for fashion and portraiture.',
+  },
+  {
+    n: '02',
+    fr: 'Les Douves',
+    en: 'The Moat',
+    img: 'int-grand-staircase',
+    altFr: 'Le grand escalier intérieur du château',
+    altEn: 'The grand interior staircase of the château',
+    descFr: "La silhouette du château se reflète dans l’eau — un face-à-face avec l’histoire.",
+    descEn: 'The château silhouette reflected in still water — a face-to-face with history.',
+  },
+  {
+    n: '03',
+    fr: 'La Bibliothèque',
+    en: 'The Library',
+    img: 'int-paneled-salon',
+    altFr: 'Salon aux lambris dorés du château',
+    altEn: 'The gilded panelled salon of the château',
+    descFr: 'Rayonnages, cuir patiné et lumière tamisée pour des atmosphères intimistes.',
+    descEn: 'Shelves, aged leather and soft light for intimate atmospheres.',
+  },
+  {
+    n: '04',
+    fr: 'Les Sous-bois',
+    en: 'The Woodland',
+    img: 'grounds-forest',
+    altFr: 'Sous-bois du domaine de Lésigny',
+    altEn: 'Woodland of the Lésigny estate',
+    descFr: 'Lumière filtrée, mousse et silence : la forêt comme studio naturel.',
+    descEn: 'Filtered light, moss and silence: the forest as a natural studio.',
+  },
+];
+---
+
+<PageLayout
+  title={isFr ? `Séances photo — ${site.name}` : `Photo Shoots — ${site.name}`}
+  description={isFr
+    ? `Séances professionnelles et privées dans ${site.estate.decors}+ décors de caractère — intérieurs Renaissance, douves, forêt — à ${site.address.fromParisKm} km de Paris.`
+    : `Professional and private photo shoots across ${site.estate.decors}+ distinctive décors — Renaissance interiors, moat, woodland — ${site.address.fromParisKm} km from Paris.`}
+  locale={locale}
+  path="photographes/"
+>
+
+  <!-- ── 1. HERO ─────────────────────────────────────────────────────── -->
+  <section class="ph-hero">
+    <div class="ph-hero__inner wrap-wide">
+
+      <div class="ph-hero__copy" data-reveal>
+        <p class="eyebrow">
+          {isFr
+            ? `${site.estate.decors}+ décors · ${site.address.fromParisKm} km de Paris`
+            : `${site.estate.decors}+ décors · ${site.address.fromParisKm} km from Paris`}
+        </p>
+        <h1 class="ph-hero__title">
+          {isFr ? 'Le décor que vous cherchiez existe.' : 'The setting you were looking for exists.'}
+        </h1>
+        <p class="ph-hero__sub">
+          {isFr
+            ? `Séances professionnelles et privées au sein d’un domaine de ${site.estate.hectares} hectares : salles Renaissance, douves, forêt, ferme et bien plus.`
+            : `Professional and personal shoots within a ${site.estate.hectares}-hectare estate: Renaissance rooms, a moat, woodland, a farmhouse, and far more.`}
+        </p>
+        <div class="ph-hero__actions">
+          <a class="btn btn--primary" href={`${base}/contact/?stream=photo`}>
+            {isFr ? 'Demander un devis' : 'Request a quote'}
+          </a>
+          <a class="btn btn--ghost" href={`${base}/le-domaine/`}>{t('cta.seeDecors')}</a>
+        </div>
+      </div>
+
+      <!-- Asymmetric plate grid — decorative -->
+      <div class="ph-hero__plates" aria-hidden="true">
+        <div class="hp hp-1"><Photo fill name="bride-window" alt="Mariée dans la lumière / Bride in the window light" loading="eager" sizes="(max-width: 900px) 50vw, 33vw" /></div>
+        <div class="hp hp-2"><Photo fill name="grounds-moat" alt="Les douves du château / The château moat" sizes="(max-width: 900px) 50vw, 25vw" /></div>
+        <div class="hp hp-3"><Photo fill name="int-grand-staircase" alt="Le grand escalier / The grand staircase" sizes="(max-width: 900px) 50vw, 25vw" /></div>
+        <div class="hp hp-4"><Photo fill name="int-painted-ceiling" alt="Plafond peint Renaissance / Renaissance painted ceiling" sizes="(max-width: 900px) 50vw, 25vw" /></div>
+        <div class="hp hp-5"><Photo fill name="grounds-forest" alt="Sous-bois du domaine / The estate woodland" sizes="(max-width: 900px) 50vw, 50vw" /></div>
+        <div class="hp hp-6"><Photo fill name="couple-petals" alt="Couple sous les pétales / Couple with petals" sizes="(max-width: 900px) 50vw, 25vw" /></div>
+      </div>
+
+    </div>
+    <div class="wrap-wide"><hr class="rule ph-hero__rule" /></div>
+  </section>
+
+  <!-- ── 2. PRO / PERSONNEL TOGGLE ──────────────────────────────────── -->
+  <section class="section ph-toggle-section">
+    <div class="wrap" data-reveal>
+      <p class="eyebrow">{isFr ? 'Pour qui ?' : 'Who is it for?'}</p>
+      <h2 class="ph-section-label">{isFr ? 'Choisissez votre contexte.' : 'Choose your context.'}</h2>
+
+      <div class="ph-toggle" data-photo-toggle>
+
+        <div
+          class="ph-toggle__ctrl"
+          role="group"
+          aria-label={isFr ? 'Type de séance' : 'Shoot type'}
+        >
+          <button class="ph-toggle__btn" type="button" data-target="pro" aria-pressed="true">
+            {isFr ? 'Professionnel' : 'Professional'}
+          </button>
+          <button class="ph-toggle__btn" type="button" data-target="perso" aria-pressed="false">
+            {isFr ? 'Personnel' : 'Personal'}
+          </button>
+        </div>
+
+        <!-- Panel: Professional. Visible by default; hidden via JS when "Personnel" is active. -->
+        <div class="ph-toggle__panel" id="panel-pro" data-panel="pro">
+          <div class="ph-panel__body flow">
+            <h3 class="ph-panel__heading">
+              {isFr ? 'Mode, éditorial & marque' : 'Fashion, editorial & brand'}
+            </h3>
+            <p>
+              {isFr
+                ? `Un château du XVIᵉ siècle, des jardins à la française, des sous-bois et des douves mis à votre disposition en exclusivité. ${site.name} est régulièrement retenu pour des campagnes de mode, des look-books et des prises de vue institutionnelles.`
+                : `A 16th-century château, formal gardens, woodland and a moat placed at your exclusive disposal. ${site.name} is regularly chosen for fashion campaigns, look-books and brand image shoots.`}
+            </p>
+            <ul class="ph-use-list">
+              <li>{isFr ? 'Campagnes mode & prêt-à-porter' : 'Fashion & ready-to-wear campaigns'}</li>
+              <li>{isFr ? 'Look-books & catalogues' : 'Look-books & catalogues'}</li>
+              <li>{isFr ? 'Contenu de marque & institutionnel' : 'Brand & institutional content'}</li>
+              <li>{isFr ? 'Fine art & photographie d\'auteur' : 'Fine art & authored photography'}</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Panel: Personnel. Both panels readable with JS off (stacked). -->
+        <div class="ph-toggle__panel ph-toggle__panel--second" id="panel-perso" data-panel="perso">
+          <div class="ph-panel__body flow">
+            <h3 class="ph-panel__heading">
+              {isFr ? 'Couple, famille & maternité' : 'Couple, family & maternity'}
+            </h3>
+            <p>
+              {isFr
+                ? "Offrez-vous l’écrin d’un château privé pour immortaliser les instants qui comptent. La lumière dorée des jardins, la solennité du Grand Escalier ou la douceur des sous-bois composent un cadre unique — disponible à la demi-journée ou à la journée."
+                : "Give yourself the setting of a private château to capture the moments that matter. The golden light of the gardens, the grandeur of the Grand Escalier or the gentleness of the woodland form a unique backdrop — available by the half-day or full day."}
+            </p>
+            <ul class="ph-use-list">
+              <li>{isFr ? 'Séances couple & engagement' : 'Couple & engagement shoots'}</li>
+              <li>{isFr ? 'Portraits de famille' : 'Family portraits'}</li>
+              <li>{isFr ? 'Séances maternité & naissance' : 'Maternity & newborn shoots'}</li>
+              <li>{isFr ? 'Portraits individuels' : 'Individual portraits'}</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 3. RECOMMENDED DÉCORS ──────────────────────────────────────── -->
+  <section class="section ph-decors">
+    <div class="wrap-wide">
+      <header class="ph-decors__head" data-reveal>
+        <p class="eyebrow">{isFr ? 'Décors recommandés' : 'Recommended décors'}</p>
+        <h2 class="ph-decors__title">
+          {isFr ? 'Quatre espaces, quatre atmosphères.' : 'Four spaces, four atmospheres.'}
+        </h2>
+      </header>
+
+      <div class="ph-decors__grid">
+        {decors.map((d) => (
+          <div class="ph-dplate" data-reveal>
+            <div class="ph-dplate__img">
+              <Photo fill name={d.img} alt={isFr ? d.altFr : d.altEn} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" />
+            </div>
+            <div class="ph-dplate__info">
+              <h3 class="ph-dplate__name">{isFr ? d.fr : d.en}</h3>
+              <p class="ph-dplate__desc">{isFr ? d.descFr : d.descEn}</p>
+              <button
+                class="ph-dplate__more"
+                type="button"
+                aria-haspopup="dialog"
+                aria-controls={`dialog-decor-${d.n}`}
+                aria-label={isFr ? `Voir ${d.fr} en détail` : `View ${d.en} in detail`}
+              >
+                {isFr ? 'Voir' : 'View'} →
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Dialogs — pre-rendered for progressive enhancement; JS calls showModal() -->
+      {decors.map((d) => (
+        <dialog
+          id={`dialog-decor-${d.n}`}
+          class="ph-dialog"
+          aria-labelledby={`dialog-title-${d.n}`}
+        >
+          <div class="ph-dialog__inner">
+            <button
+              class="ph-dialog__close"
+              type="button"
+              aria-label={isFr ? 'Fermer cette fenêtre' : 'Close this window'}
+            >
+              <span aria-hidden="true">✕</span>
+            </button>
+            <div class="ph-dialog__media">
+              <Photo name={d.img} alt={isFr ? d.altFr : d.altEn} ratio="3/2" />
+            </div>
+            <div class="ph-dialog__body">
+              <p class="eyebrow">{d.n}</p>
+              <h2 id={`dialog-title-${d.n}`} class="ph-dialog__title">
+                {isFr ? d.fr : d.en}
+              </h2>
+              <p class="ph-dialog__desc">{isFr ? d.descFr : d.descEn}</p>
+              <a class="btn btn--primary" href={`${base}/contact/?stream=photo`}>
+                {isFr ? 'Réserver une séance' : 'Book a session'}
+              </a>
+            </div>
+          </div>
+        </dialog>
+      ))}
+
+      <!-- Section footer: genuine navigation CTA to full décors gallery -->
+      <div class="ph-decors__footer">
+        <a class="btn btn--ghost" href={`${base}/le-domaine/`}>
+          {isFr ? 'Voir tous les décors' : 'See all décors'} →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 4. PRACTICAL ────────────────────────────────────────────────── -->
+  <section class="section ph-practical is-dark" data-reveal>
+    <div class="wrap ph-practical__inner">
+
+      <header class="ph-practical__head">
+        <p class="eyebrow">{isFr ? 'Informations pratiques' : 'Practical information'}</p>
+        <h2 class="ph-practical__title">
+          {isFr ? 'Demi-journée ou journée complète.' : 'Half-day or full day.'}
+        </h2>
+        <p class="ph-practical__intro">
+          {isFr
+            ? "Chaque réservation est exclusive : aucun autre groupe ne sera présent pendant votre séance. Les tarifs sont établis sur devis, en fonction de la durée, du nombre de décors et de vos besoins spécifiques."
+            : "Every booking is exclusive: no other group will be on site during your shoot. Pricing is on request, based on duration, number of décors and your specific requirements."}
+        </p>
+      </header>
+
+      <div class="ph-practical__cards">
+        <div class="ph-pcard">
+          <span class="ph-pcard__glyph" aria-hidden="true">◑</span>
+          <h3 class="ph-pcard__label">{isFr ? 'Demi-journée' : 'Half-day'}</h3>
+          <p class="ph-pcard__dur slate">{isFr ? 'Environ 4 heures' : 'Approx. 4 hours'}</p>
+          <p class="ph-pcard__note">
+            {isFr
+              ? 'Idéal pour les portraits, séances couple ou l\'exploration d\'un espace de prédilection.'
+              : 'Ideal for portraits, couple shoots or exploring a single favourite space.'}
+          </p>
+          <p class="ph-pcard__price">{isFr ? 'Sur devis' : 'On request'}</p>
+        </div>
+
+        <div class="ph-pcard">
+          <span class="ph-pcard__glyph" aria-hidden="true">○</span>
+          <h3 class="ph-pcard__label">{isFr ? 'Journée complète' : 'Full day'}</h3>
+          <p class="ph-pcard__dur slate">{isFr ? 'Environ 8 heures' : 'Approx. 8 hours'}</p>
+          <p class="ph-pcard__note">
+            {isFr
+              ? 'Recommandée pour les tournages éditoriaux, campagnes de marque ou les familles souhaitant explorer plusieurs décors.'
+              : 'Recommended for editorial shoots, brand campaigns or families wishing to explore multiple décors.'}
+          </p>
+          <p class="ph-pcard__price">{isFr ? 'Sur devis' : 'On request'}</p>
+        </div>
+      </div>
+
+      <p class="ph-practical__footnote">
+        {isFr
+          ? "Accès aux vestiaires, parking et coordination sur place inclus. Les équipes coiffure, maquillage et stylisme sont les bienvenues sous réserve d’accord préalable."
+          : 'Changing rooms, parking and on-site coordination are included. Hair, makeup and styling teams are welcome subject to prior agreement.'}
+      </p>
+
+    </div>
+  </section>
+
+  <!-- ── 5. CLOSING CTA ──────────────────────────────────────────────── -->
+  <section class="section ph-cta">
+    <div class="wrap ph-cta__inner" data-reveal>
+      <hr class="rule" />
+      <p class="eyebrow">{isFr ? 'Votre prochain projet' : 'Your next project'}</p>
+      <h2 class="ph-cta__title">
+        {isFr ? 'Parlons de votre séance.' : "Let’s talk about your shoot."}
+      </h2>
+      <p class="ph-cta__sub">
+        {isFr
+          ? 'Décrivez-nous votre projet — type de séance, nombre de personnes, décors souhaités — et nous vous répondons sous 48 heures.'
+          : 'Tell us about your project — shoot type, headcount, preferred décors — and we will respond within 48 hours.'}
+      </p>
+      <div class="ph-cta__actions">
+        <a class="btn btn--primary" href={`${base}/contact/?stream=photo`}>
+          {isFr ? 'Demander un devis' : 'Request a quote'}
+        </a>
+        <a class="btn btn--ghost" href={`${base}/le-domaine/`}>{t('cta.seeDecors')} →</a>
+      </div>
+    </div>
+  </section>
+
+</PageLayout>
+
+<style>
+  /* ── HERO ─────────────────────────────────────────────────── */
+  .ph-hero {
+    background:
+      radial-gradient(110% 70% at 65% 0%, var(--calcaire-2), transparent 55%),
+      var(--pierre);
+    padding-block-start: clamp(3.5rem, 10vh, 8rem);
+    padding-block-end: 0;
+    overflow: hidden;
+  }
+
+  .ph-hero__inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xl);
+    align-items: start;
+  }
+
+  .ph-hero__copy {
+    padding-block: var(--space-l) var(--space-2xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+  }
+
+  .ph-hero__title {
+    /* Override global h1 size for this page context */
+    font-size: var(--step-4);
+    max-width: 18ch;
+  }
+
+  .ph-hero__sub {
+    font-size: var(--step-0);
+    color: var(--text-muted);
+    max-width: 42ch;
+  }
+
+  .ph-hero__actions {
+    display: flex;
+    gap: var(--space-s);
+    flex-wrap: wrap;
+    margin-top: var(--space-xs);
+  }
+
+  .ph-hero__rule {
+    margin-top: var(--space-2xl);
+  }
+
+  /* ── Hero plates: 3-col × 3-row asymmetric grid ─────────── */
+  .ph-hero__plates {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 0.85fr;
+    grid-template-rows: 168px 168px 192px;
+    gap: 5px;
+    align-self: end;
+    padding-block-start: var(--space-l);
+  }
+
+  /* Base plate style — CSS "photograph" placeholder */
+  .hp {
+    background: linear-gradient(
+      148deg,
+      var(--calcaire-2) 0%,
+      var(--calcaire) 55%,
+      color-mix(in srgb, var(--pierre) 75%, var(--encre) 25%) 100%
+    );
+    box-shadow: inset 0 0 0 var(--hairline) var(--laiton);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Inner brass hairline — the "mount" */
+  .hp::before {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border: var(--hairline) solid color-mix(in srgb, var(--laiton) 32%, transparent);
+    pointer-events: none;
+  }
+
+  /* Subtle vignette */
+  .hp::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(26, 23, 20, 0.08) 100%);
+    pointer-events: none;
+  }
+
+  .hp__id {
+    position: absolute;
+    bottom: var(--space-xs);
+    right: var(--space-xs);
+    font-size: 0.62rem;
+    color: color-mix(in srgb, var(--laiton) 55%, transparent);
+    z-index: 1;
+  }
+
+  /* Asymmetric placement */
+  .hp-1 { grid-column: 1;     grid-row: 1 / 3; }   /* tall left */
+  .hp-2 { grid-column: 2;     grid-row: 1;     }
+  .hp-3 { grid-column: 3;     grid-row: 1 / 3; }   /* tall right */
+  .hp-4 { grid-column: 2;     grid-row: 2;     }
+  .hp-5 { grid-column: 1 / 3; grid-row: 3;     }   /* wide bottom-left */
+  .hp-6 { grid-column: 3;     grid-row: 3;     }
+
+  /* ── TOGGLE SECTION ───────────────────────────────────────── */
+  .ph-toggle-section {
+    border-top: var(--hairline) solid var(--rule);
+  }
+
+  .ph-section-label {
+    font-size: var(--step-2);
+    margin-block: var(--space-xs) var(--space-l);
+  }
+
+  .ph-toggle {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* Segmented control */
+  .ph-toggle__ctrl {
+    display: inline-flex;
+    border: var(--hairline) solid var(--laiton);
+    border-radius: var(--radius-s);
+    overflow: hidden;
+    margin-bottom: var(--space-xl);
+    align-self: flex-start;
+  }
+
+  .ph-toggle__btn {
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.13em;
+    padding: 0.7em 1.7em;
+    background: transparent;
+    color: var(--text-muted);
+    border: 0;
+    border-inline-start: var(--hairline) solid var(--laiton);
+    cursor: pointer;
+    transition:
+      background var(--dur-fast) var(--ease-soft),
+      color var(--dur-fast) var(--ease-soft);
+  }
+
+  .ph-toggle__btn:first-child {
+    border-inline-start: 0;
+  }
+
+  .ph-toggle__btn[aria-pressed='true'] {
+    background: var(--encre);
+    color: var(--ivoire);
+  }
+
+  .ph-toggle__btn:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: -3px;
+    border-radius: 0;
+  }
+
+  /* Panels */
+  .ph-toggle__panel {
+    border-top: 2px solid var(--encre);
+    padding-top: var(--space-l);
+  }
+
+  /* No-JS: second panel is separated to read as a distinct section */
+  .ph-toggle__panel--second {
+    margin-top: var(--space-2xl);
+    border-top-color: var(--laiton);
+    border-top-width: var(--hairline);
+  }
+
+  /* When JS takes over, remove the extra margin (panels are mutually exclusive) */
+  .ph-toggle.is-js .ph-toggle__panel--second {
+    margin-top: 0;
+    border-top: 2px solid var(--encre);
+  }
+
+  .ph-panel__body {
+    max-width: 68ch;
+  }
+
+  .ph-panel__heading {
+    font-size: var(--step-3);
+    margin-bottom: var(--space-m);
+  }
+
+  .ph-use-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-xs) var(--space-l);
+    margin-top: var(--space-m);
+  }
+
+  .ph-use-list li {
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    padding-inline-start: var(--space-m);
+    border-inline-start: 2px solid var(--laiton);
+    line-height: 1.5;
+  }
+
+  /* ── RECOMMENDED DÉCORS ───────────────────────────────────── */
+  .ph-decors {
+    border-top: var(--hairline) solid var(--rule);
+  }
+
+  .ph-decors__head {
+    margin-bottom: var(--space-xl);
+  }
+
+  .ph-decors__title {
+    font-size: var(--step-3);
+    margin-top: var(--space-xs);
+  }
+
+  .ph-decors__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-m);
+  }
+
+  /* Décor plate: linked card */
+  .ph-dplate {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .ph-dplate:hover .ph-dplate__img {
+    box-shadow: inset 0 0 0 var(--hairline) var(--sang);
+  }
+
+  .ph-dplate:hover .ph-dplate__more {
+    color: var(--sang);
+  }
+
+  .ph-dplate__img {
+    aspect-ratio: 3 / 4;
+    background: linear-gradient(
+      162deg,
+      var(--calcaire-2) 0%,
+      var(--calcaire) 45%,
+      color-mix(in srgb, var(--pierre) 70%, var(--suie) 30%) 100%
+    );
+    box-shadow: inset 0 0 0 var(--hairline) var(--laiton);
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow var(--dur-mid) var(--ease-soft);
+    margin-bottom: var(--space-s);
+  }
+
+  /* Inner mount hairline */
+  .ph-dplate__img::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: var(--hairline) solid color-mix(in srgb, var(--laiton) 28%, transparent);
+    pointer-events: none;
+  }
+
+  .ph-dplate__num {
+    position: absolute;
+    top: var(--space-xs);
+    left: var(--space-xs);
+    font-size: 0.62rem;
+    color: color-mix(in srgb, var(--laiton) 60%, transparent);
+  }
+
+  .ph-dplate__info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+    padding-top: var(--space-xs);
+    border-top: 2px solid var(--encre);
+    flex: 1;
+  }
+
+  .ph-dplate__name {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-weight: 440;
+    font-variation-settings: 'SOFT' 30, 'WONK' 0, 'opsz' 72;
+    line-height: 1.15;
+    color: var(--text);
+  }
+
+  .ph-dplate__desc {
+    font-size: var(--step--1);
+    color: var(--text-muted);
+    max-width: 26ch;
+    margin-top: var(--space-3xs);
+  }
+
+  .ph-dplate__more {
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    letter-spacing: 0.04em;
+    margin-top: auto;
+    padding-top: var(--space-s);
+    transition: color var(--dur-fast) var(--ease-soft);
+    /* button reset */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding-inline: 0;
+    padding-bottom: 0;
+    text-align: left;
+    color: inherit;
+  }
+
+  .ph-dplate__more:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* ── PRACTICAL (dark band) ────────────────────────────────── */
+  .ph-practical {
+    background: var(--suie);
+    color: var(--ivoire);
+  }
+
+  .ph-practical__inner {
+    display: grid;
+    gap: var(--space-2xl);
+  }
+
+  .ph-practical__title {
+    font-size: var(--step-3);
+    color: var(--ivoire);
+    margin-block: var(--space-xs) var(--space-s);
+  }
+
+  .ph-practical__intro {
+    max-width: 54ch;
+    color: color-mix(in srgb, var(--ivoire) 68%, transparent);
+  }
+
+  .ph-practical__cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-l);
+  }
+
+  .ph-pcard {
+    padding: var(--space-l);
+    box-shadow: inset 0 0 0 var(--hairline) color-mix(in srgb, var(--laiton-soft) 45%, transparent);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .ph-pcard__glyph {
+    font-size: var(--step-3);
+    color: var(--laiton-soft);
+    line-height: 1;
+    font-family: var(--font-display);
+  }
+
+  .ph-pcard__label {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    color: var(--ivoire);
+    font-weight: 440;
+    font-variation-settings: 'SOFT' 30, 'WONK' 0, 'opsz' 72;
+    line-height: 1.15;
+  }
+
+  .ph-pcard__dur {
+    color: var(--laiton-soft);
+  }
+
+  .ph-pcard__note {
+    font-size: var(--step--1);
+    color: color-mix(in srgb, var(--ivoire) 65%, transparent);
+    max-width: 30ch;
+    flex: 1;
+  }
+
+  .ph-pcard__price {
+    font-family: var(--font-ui);
+    font-size: var(--step-0);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--laiton-soft);
+    padding-top: var(--space-m);
+    border-top: var(--hairline) solid color-mix(in srgb, var(--laiton-soft) 28%, transparent);
+    margin-top: auto;
+  }
+
+  .ph-practical__footnote {
+    font-size: var(--step--1);
+    color: color-mix(in srgb, var(--ivoire) 50%, transparent);
+    max-width: 58ch;
+    padding-top: var(--space-m);
+    border-top: var(--hairline) solid color-mix(in srgb, var(--laiton-soft) 25%, transparent);
+  }
+
+  /* ── CLOSING CTA ──────────────────────────────────────────── */
+  .ph-cta__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+    align-items: flex-start;
+    padding-top: var(--space-m);
+  }
+
+  .ph-cta__title {
+    font-size: var(--step-4);
+    max-width: 22ch;
+  }
+
+  .ph-cta__sub {
+    max-width: 50ch;
+    color: var(--text-muted);
+  }
+
+  .ph-cta__actions {
+    display: flex;
+    gap: var(--space-s);
+    flex-wrap: wrap;
+    margin-top: var(--space-xs);
+  }
+
+  /* ── DÉCOR SECTION FOOTER ────────────────────────────────── */
+  .ph-decors__footer {
+    margin-top: var(--space-xl);
+    padding-top: var(--space-l);
+    border-top: var(--hairline) solid var(--rule);
+  }
+
+  /* ── DÉCOR DIALOGS ────────────────────────────────────────── */
+  .ph-dialog {
+    border: none;
+    padding: 0;
+    background: var(--calcaire);
+    color: var(--encre);
+    max-width: min(90vw, 680px);
+    width: 100%;
+    position: relative;
+    box-shadow:
+      inset 0 0 0 var(--hairline) var(--laiton),
+      0 20px 60px rgba(26, 23, 20, 0.4);
+  }
+
+  .ph-dialog::backdrop {
+    background: rgba(26, 23, 20, 0.68);
+    backdrop-filter: blur(3px);
+  }
+
+  .ph-dialog__inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ph-dialog__close {
+    position: absolute;
+    top: var(--space-s);
+    right: var(--space-s);
+    z-index: 10;
+    width: 2rem;
+    height: 2rem;
+    border: var(--hairline) solid var(--laiton);
+    background: var(--calcaire);
+    color: var(--encre);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    transition:
+      background var(--dur-fast) var(--ease-soft),
+      color var(--dur-fast) var(--ease-soft);
+  }
+
+  .ph-dialog__close:hover {
+    background: var(--encre);
+    color: var(--ivoire);
+  }
+
+  .ph-dialog__close:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  .ph-dialog__media {
+    overflow: hidden;
+  }
+
+  .ph-dialog__media .photo {
+    height: 100%;
+    min-height: 260px;
+  }
+
+  .ph-dialog__body {
+    padding: var(--space-xl) var(--space-l) var(--space-l);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+  }
+
+  .ph-dialog__title {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    font-weight: 440;
+    font-variation-settings: 'SOFT' 30, 'WONK' 0, 'opsz' 72;
+    line-height: 1.15;
+    color: var(--encre);
+  }
+
+  .ph-dialog__desc {
+    font-size: var(--step-0);
+    color: var(--text-muted);
+    line-height: 1.65;
+    flex: 1;
+  }
+
+  /* ── RESPONSIVE ───────────────────────────────────────────── */
+  @media (max-width: 1024px) {
+    .ph-decors__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-l);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .ph-hero__inner {
+      grid-template-columns: 1fr;
+      gap: var(--space-l);
+    }
+
+    /* Simplified 2-col plate grid on tablet */
+    .ph-hero__plates {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 140px 140px 140px;
+      padding-block-start: 0;
+      padding-block-end: var(--space-l);
+    }
+
+    .hp-1 { grid-column: 1; grid-row: 1 / 3; }
+    .hp-2 { grid-column: 2; grid-row: 1;     }
+    .hp-3 { grid-column: 2; grid-row: 2;     }
+    .hp-4 { grid-column: 1; grid-row: 3;     }
+    .hp-5 { grid-column: 2; grid-row: 3;     }
+    .hp-6 { display: none;                   }
+
+    .ph-practical__cards {
+      grid-template-columns: 1fr;
+    }
+
+    .ph-use-list {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .ph-hero__plates {
+      grid-template-rows: 110px 110px 110px;
+    }
+
+    .ph-decors__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .ph-toggle__ctrl {
+      width: 100%;
+    }
+
+    .ph-toggle__btn {
+      flex: 1;
+      text-align: center;
+    }
+
+    .ph-cta__title {
+      font-size: var(--step-3);
+    }
+
+    .ph-dialog__inner {
+      grid-template-columns: 1fr;
+    }
+
+    .ph-dialog__media .photo {
+      min-height: 0;
+      aspect-ratio: 3 / 2;
+    }
+  }
+</style>
+
+<script>
+  // Toggle: progressive enhancement.
+  // Without JS both panels are readable (stacked).
+  // With JS, panels become mutually exclusive; buttons are fully keyboard-operable.
+  (function () {
+    const containers = document.querySelectorAll<HTMLElement>('[data-photo-toggle]');
+    containers.forEach((container) => {
+      const btns = Array.from(container.querySelectorAll<HTMLButtonElement>('[data-target]'));
+      const panels = Array.from(container.querySelectorAll<HTMLElement>('[data-panel]'));
+      if (!btns.length || !panels.length) return;
+
+      // Signal JS is active — collapses no-JS second-panel margin
+      container.classList.add('is-js');
+
+      // Determine initial active target from aria-pressed="true"
+      const initialBtn = btns.find((b) => b.getAttribute('aria-pressed') === 'true') ?? btns[0];
+      const activeTarget = initialBtn.dataset.target!;
+
+      // Hide all inactive panels
+      panels.forEach((p) => {
+        if (p.dataset.panel !== activeTarget) p.hidden = true;
+      });
+
+      function activate(target: string) {
+        btns.forEach((b) =>
+          b.setAttribute('aria-pressed', String(b.dataset.target === target))
+        );
+        panels.forEach((p) => {
+          p.hidden = p.dataset.panel !== target;
+        });
+      }
+
+      btns.forEach((btn) => {
+        btn.addEventListener('click', () => activate(btn.dataset.target!));
+      });
+    });
+  })();
+</script>
+
+<script>
+  // Décor popup dialogs — progressive enhancement.
+  // Without JS: plates show their descriptions inline; dialogs stay closed.
+  // With JS: each plate’s "Voir / View" button opens a native <dialog> as a modal.
+  (function () {
+    const triggers = document.querySelectorAll<HTMLButtonElement>('[aria-haspopup="dialog"]');
+
+    triggers.forEach((trigger) => {
+      const dialogId = trigger.getAttribute('aria-controls');
+      if (!dialogId) return;
+      const dialog = document.getElementById(dialogId) as HTMLDialogElement | null;
+      if (!(dialog instanceof HTMLDialogElement)) return;
+
+      const closeBtn = dialog.querySelector<HTMLButtonElement>('.ph-dialog__close');
+
+      // Open
+      trigger.addEventListener('click', () => {
+        dialog.showModal();
+        // Move focus into the dialog — prefer the close button
+        const firstFocusable =
+          closeBtn ?? dialog.querySelector<HTMLElement>('button, a[href], [tabindex]');
+        firstFocusable?.focus();
+      });
+
+      // Close via close button
+      closeBtn?.addEventListener('click', () => dialog.close());
+
+      // Close via backdrop click (pointer lands on <dialog> element, not inner content)
+      dialog.addEventListener('click', (e: MouseEvent) => {
+        if (e.target === dialog) dialog.close();
+      });
+
+      // Restore focus on close (handles close button, Escape key, and backdrop)
+      dialog.addEventListener('close', () => trigger.focus());
+    });
+  })();
+</script>
