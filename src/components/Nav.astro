@@ -71,6 +71,8 @@ const here = Astro.url.pathname;
   .nav__links a:hover, .nav__links a[aria-current='page'] { border-color: var(--laiton); }
   .nav__actions { display: flex; align-items: center; gap: var(--space-xs); }
   .nav__burger { display: none; }
+  /* Drawer is a mobile-only affordance; keep it hidden on desktop even if JS left it open. */
+  .nav__drawer { display: none; }
 
   @media (max-width: 900px) {
     .nav__word { display: none; }
@@ -84,6 +86,9 @@ const here = Astro.url.pathname;
       display: grid; gap: var(--space-s); padding: var(--space-l) var(--gutter) var(--space-xl);
       border-bottom: var(--hairline) solid var(--rule); background: var(--calcaire);
     }
+    /* The `display: grid` above overrides the UA `[hidden]` rule, so re-assert it:
+       without this the drawer is permanently open on mobile and the burger appears dead. */
+    .nav__drawer[hidden] { display: none; }
     .nav__drawer a {
       font-family: var(--font-display); font-size: var(--step-2); text-decoration: none;
     }
