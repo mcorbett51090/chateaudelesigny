@@ -116,20 +116,26 @@ img, picture, svg, video { display: block; max-width: 100%; height: auto; }
 }
 [data-reveal].is-in { opacity: 1; transform: none; }
 
-/* --- Landing zone: every page's first section is a full-viewport "concept",
-   with a gentle magnetic snap so the hero feels sticky as you scroll down.
-   Targets the first <section> of every page → no per-page markup needed. --- */
+/* --- Landing zone: every page's first section is a full-viewport "concept". --- */
 main > section:first-of-type {
   min-height: 100vh;       /* fallback */
   min-height: 100svh;      /* avoids mobile URL-bar jump */
-  scroll-snap-align: start;
-  scroll-snap-stop: normal;
 }
+
+/* --- Scroll snapping: the page settles at each major section as you scroll —
+   a series of preset stops. Uses `proximity` (not `mandatory`) so sections
+   taller than the viewport scroll through freely and then catch at the next
+   section's top, rather than trapping the scroll. scroll-padding-top keeps the
+   snapped heading clear of the sticky nav. Disabled under reduced-motion. --- */
 @media (prefers-reduced-motion: no-preference) {
-  html { scroll-snap-type: y proximity; scroll-padding-top: 0; }
-  /* the detail section right after the hero is also a soft snap target,
-     so the reveal "catches" once, then scrolls freely */
-  main > section:first-of-type + section { scroll-snap-align: start; }
+  html {
+    scroll-snap-type: y proximity;
+    scroll-padding-top: var(--nav-h);
+  }
+  main > section {
+    scroll-snap-align: start;
+    scroll-snap-stop: normal;
+  }
 }
 
 /* --- Motion discipline: respect reduced-motion globally --- */

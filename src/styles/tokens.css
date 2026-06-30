@@ -59,6 +59,7 @@
   --width-content: 1180px;
   --width-wide: 1480px;
   --gutter: clamp(1.25rem, 5vw, 4rem);
+  --nav-h: 4.5rem;           /* sticky nav height — scroll-snap padding offset */
 
   /* --- Radii / lines --- */
   --radius-s: 2px;
