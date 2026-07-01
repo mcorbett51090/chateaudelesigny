@@ -8,6 +8,14 @@ reasoning: [`.ravenclaude/runs/forge/dashboard-sso/plan.md`](../.ravenclaude/run
 > the DoD at the bottom is green. Turning it on before the repo is private auto-commits real
 > conversion numbers into a public repo (the "live fuse"). Nothing has leaked yet — keep it that way.
 
+> **Domain note (verified):** the private repo, the Cloudflare Pages hosting, and the dashboard demo
+> need **no domain**. But the real SSO wall (Cloudflare Access) needs the app hostname to be a domain
+> **in your Cloudflare account** — a bare `*.pages.dev` production URL can't be gated (the built-in
+> Pages toggle only protects *preview* builds). That domain can be **any domain you control** (a cheap
+> throwaway or one you own) for building/demoing — it does **not** have to be `chateaudelesigny.com`.
+> The owners' domain is only needed at the final public cutover (Phase 4). So you can demo the fully
+> working, gated dashboard before asking the owners for anything.
+
 Legend: **[you]** = clicks in Cloudflare/GitHub · **[dev]** = a code change (ping me, I do it).
 
 ## Phase 0 — done ✅
