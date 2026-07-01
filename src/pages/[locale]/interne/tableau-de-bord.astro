@@ -97,10 +97,15 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
               <p class="db__hint slate">{isFr ? 'Cliquez une mesure pour l’ajouter/retirer. Chaque courbe est à l’échelle de sa propre plage — comparez les tendances. Chiffres échantillonnés.' : 'Click a metric to add/remove it. Each line is scaled to its own range — compare trends. Sampled figures.'}</p>
             </div>
 
-            <aside class="db__events" aria-label={isFr ? 'Événements' : 'Events'}>
-              <div class="db__ev-head">
-                <span>{isFr ? 'Événements' : 'Events'}</span>
-                <button type="button" id="db-ev-all" class="db__ev-all">{isFr ? 'Tout' : 'All'}</button>
+            <details class="db__events">
+              <summary class="db__ev-toggle">
+                <span class="db__ev-toggle-l">{isFr ? 'Événements' : 'Events'}</span>
+                <span class="db__ev-count" id="db-ev-count" aria-hidden="true"></span>
+                <span class="db__ev-chev" aria-hidden="true">▾</span>
+              </summary>
+              <div class="db__ev-panel">
+              <div class="db__ev-actions">
+                <button type="button" id="db-ev-all" class="db__ev-all">{isFr ? 'Tout afficher / masquer' : 'Toggle all'}</button>
               </div>
               <div class="db__ev-body">
               <ul class="db__ev-list" id="db-ev-list"></ul>
@@ -125,7 +130,8 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
               </details>
               </div>
               </div>
-            </aside>
+              </div>
+            </details>
           </div>
         </div>
       )}
@@ -282,6 +288,8 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
 
       function renderEventList() {
         const list = $('db-ev-list');
+        const cnt = $('db-ev-count');
+        if (cnt) cnt.textContent = allEvents().length ? '· ' + allEvents().length : '';
         list.innerHTML = allEvents().map((e) => {
           const id = evId(e), on = !off.has(id);
           return `<li class="db__ev">
@@ -418,8 +426,24 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
   .db__chart { width: 100%; min-width: 0; }
   .db__hint { margin: var(--space-s) 0 0; font-size: var(--step--2); max-width: 62ch; }
   /* Events panel — full width below the chart, list in a multi-column grid */
-  .db__events { margin-top: var(--space-l); border: var(--hairline) solid var(--rule); border-radius: var(--radius-s); padding: var(--space-m); background: var(--calcaire-2); font-size: var(--step--1); }
-  .db__ev-head { display: flex; justify-content: space-between; align-items: center; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; font-size: var(--step--2); color: var(--text-muted); }
+  /* Collapsible events panel: collapses to a single small pill button (the <summary>). */
+  .db__events { margin-top: var(--space-l); font-size: var(--step--1); }
+  .db__ev-toggle {
+    display: inline-flex; align-items: center; gap: 0.45rem; width: max-content;
+    cursor: pointer; list-style: none; user-select: none;
+    padding: 0.4rem 0.9rem; border: var(--hairline) solid var(--rule); border-radius: 99px;
+    background: var(--calcaire-2); color: var(--text-muted);
+    transition: border-color var(--dur-fast) var(--ease-soft), color var(--dur-fast) var(--ease-soft);
+  }
+  .db__ev-toggle::-webkit-details-marker { display: none; }
+  .db__ev-toggle:hover, .db__events[open] .db__ev-toggle { border-color: var(--laiton); color: var(--text); }
+  .db__ev-toggle:focus-visible { outline: 2px solid var(--laiton); outline-offset: 2px; }
+  .db__ev-toggle-l { font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; font-size: var(--step--2); }
+  .db__ev-count { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .db__ev-chev { font-size: 0.7em; transition: transform var(--dur-fast) var(--ease-soft); }
+  .db__events[open] .db__ev-chev { transform: rotate(180deg); }
+  .db__ev-panel { margin-top: var(--space-s); border: var(--hairline) solid var(--rule); border-radius: var(--radius-s); padding: var(--space-m); background: var(--calcaire-2); }
+  .db__ev-actions { display: flex; justify-content: flex-end; margin-bottom: var(--space-s); }
   .db__ev-all { appearance: none; border: var(--hairline) solid var(--rule); background: var(--calcaire); border-radius: 99px; font: inherit; font-size: var(--step--2); padding: 0.1rem 0.55rem; cursor: pointer; color: var(--text-muted); }
   .db__ev-body { display: grid; grid-template-columns: 1fr 18rem; gap: var(--space-l); align-items: start; margin-top: var(--space-s); }
   .db__ev-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 0.1rem 1rem; align-content: start; }
