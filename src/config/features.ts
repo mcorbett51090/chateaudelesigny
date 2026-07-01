@@ -99,10 +99,17 @@ export const features = {
     shop: isDemo ? DEMO.vouchers.shop : first(env.PUBLIC_VOUCHER_SHOP_URL),
   },
 
-  // --- Reviews (real data ONLY in production; demo figures in preview) -----------
+  // --- Reviews — REAL, sourced from Mariages.net (4.9/5, 76 avis, re-verified
+  //     2026-07-01). Rating + count only; no quotes are fabricated (the frame shows
+  //     stars + count + a link to the platform). Demo adds sample quotes for preview.
   reviews: isDemo
     ? DEMO.reviews
-    : { ratingValue: 0, reviewCount: 0, url: '', items: [] as Review[] },
+    : {
+        ratingValue: 4.9,
+        reviewCount: 76,
+        url: 'https://www.mariages.net/chateau-mariage/chateau-de-lesigny--e141033',
+        items: [] as Review[],
+      },
 
   // --- 360 virtual tour (Kuula/Panoee embed URL) — consent-gated ----------------
   tour360Url: isDemo ? DEMO.tour360Url : first(env.PUBLIC_TOUR360_URL),
