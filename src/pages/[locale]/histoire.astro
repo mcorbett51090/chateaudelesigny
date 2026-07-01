@@ -9,6 +9,8 @@ import portraitCatherine from '../../assets/history/catherine-de-medicis.jpg';
 import portraitConcini from '../../assets/history/concino-concini.jpg';
 import carteHero from '../../assets/history/carte-isle-de-france-1746.jpg';
 import { site } from '../../config/site';
+import CompareSlider from '../../components/CompareSlider.astro';
+import { features } from '../../config/features';
 import { locales, type Locale, useT, localeBase } from '../../i18n/ui';
 
 export function getStaticPaths() {
@@ -731,7 +733,39 @@ const todayEntry = timelineEntries[timelineEntries.length - 1];
     </div>
   </section>
 
+  {/* Before/after restoration — renders only when owner-supplied, rights-cleared
+      image pairs exist in features.beforeAfter (no empty shell otherwise). */}
+  {features.beforeAfter.length > 0 && (
+    <section class="section ba-section" aria-labelledby="ba-h2">
+      <div class="wrap">
+        <p class="eyebrow" data-reveal>{isFr ? 'Restauration' : 'Restoration'}</p>
+        <h2 id="ba-h2" data-reveal>{isFr ? 'Avant / après.' : 'Before / after.'}</h2>
+        <p class="ba-lede" data-reveal>
+          {isFr
+            ? 'La renaissance du domaine, salle après salle — glissez pour comparer.'
+            : 'The estate’s renaissance, room by room — drag to compare.'}
+        </p>
+        <div class="ba-grid" data-reveal>
+          {features.beforeAfter.map((pair) => (
+            <CompareSlider
+              before={pair.before}
+              after={pair.after}
+              label={isFr ? pair.labelFr : pair.labelEn}
+              beforeLabel={isFr ? 'Avant' : 'Before'}
+              afterLabel={isFr ? 'Après' : 'After'}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
 </PageLayout>
+
+<style>
+  .ba-lede { color: var(--text-muted); max-width: 52ch; margin-top: var(--space-s); }
+  .ba-grid { display: grid; gap: var(--space-l); margin-top: var(--space-l); }
+</style>
 
 <script>
   // Highlight the condensed rail’s active year as its narrative entry scrolls

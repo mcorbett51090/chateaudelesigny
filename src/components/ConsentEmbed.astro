@@ -1,0 +1,128 @@
+---
+/**
+ * ConsentEmbed — CNIL click-to-load wrapper for any third-party iframe.
+ * NOTHING is requested from the third party until the visitor clicks "load":
+ * the iframe `src` lives in a data-attribute, not on an <iframe>, so no
+ * cookie/beacon fires pre-consent. The choice is remembered per provider in
+ * localStorage so a returning visitor who consented sees it auto-load.
+ * With JS off, the placeholder shows a plain link to the content (no embed).
+ */
+import { type Locale, useT } from '../i18n/ui';
+
+interface Props {
+  src: string;
+  provider: string; // e.g. 'Kuula', 'YouTube'
+  title: string;
+  locale: Locale;
+  ratio?: string; // e.g. '16/9'
+}
+const { src, provider, title, locale, ratio = '16/9' } = Astro.props;
+const t = useT(locale);
+---
+<div
+  class="consent-embed"
+  data-consent-embed
+  data-src={src}
+  data-provider={provider}
+  data-title={title}
+  style={`aspect-ratio:${ratio}`}
+>
+  <button type="button" class="consent-embed__btn" data-consent-load>
+    <span class="consent-embed__provider">{provider}</span>
+    <span class="consent-embed__cta">{t('consent.load')}</span>
+    <span class="consent-embed__note">{t('consent.note')}</span>
+  </button>
+  <noscript>
+    <a class="consent-embed__fallback" href={src} target="_blank" rel="noopener noreferrer">
+      {title} ↗ ({provider})
+    </a>
+  </noscript>
+</div>
+
+<script>
+  const boxes = document.querySelectorAll<HTMLElement>('[data-consent-embed]');
+  for (const box of boxes) {
+    const src = box.dataset.src;
+    const provider = box.dataset.provider ?? 'embed';
+    const title = box.dataset.title ?? '';
+    if (!src) continue;
+    const key = `consent:${provider}`;
+
+    const load = () => {
+      const iframe = document.createElement('iframe');
+      iframe.src = src;
+      iframe.title = title;
+      iframe.loading = 'lazy';
+      iframe.setAttribute('allow', 'fullscreen; xr-spatial-tracking; gyroscope; accelerometer');
+      iframe.setAttribute('allowfullscreen', 'true');
+      iframe.className = 'consent-embed__frame';
+      box.replaceChildren(iframe);
+      try { localStorage.setItem(key, '1'); } catch { /* private mode — ignore */ }
+    };
+
+    let consented = false;
+    try { consented = localStorage.getItem(key) === '1'; } catch { /* ignore */ }
+    if (consented) {
+      load();
+    } else {
+      box.querySelector('[data-consent-load]')?.addEventListener('click', load);
+    }
+  }
+</script>
+
+<style>
+  .consent-embed {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: var(--radius-s);
+    border: var(--hairline) solid var(--rule);
+    background: var(--suie);
+  }
+  .consent-embed__btn {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2xs);
+    text-align: center;
+    padding: var(--space-l);
+    background: none;
+    border: 0;
+    cursor: pointer;
+    color: var(--ivoire);
+  }
+  .consent-embed__provider {
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--laiton-soft);
+  }
+  .consent-embed__cta {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 460;
+    color: var(--ivoire);
+    border-bottom: var(--hairline) solid var(--laiton);
+    padding-bottom: 2px;
+    transition: color var(--dur-fast) var(--ease-soft), border-color var(--dur-fast) var(--ease-soft);
+  }
+  .consent-embed__btn:hover .consent-embed__cta { color: var(--laiton-soft); border-color: var(--laiton-soft); }
+  .consent-embed__note {
+    font-size: var(--step--2);
+    color: color-mix(in srgb, var(--ivoire) 62%, transparent);
+    max-width: 40ch;
+    margin-top: var(--space-2xs);
+  }
+  .consent-embed__fallback {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ivoire); text-decoration: underline; padding: var(--space-l); text-align: center;
+  }
+  .consent-embed :global(.consent-embed__frame) {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block;
+  }
+</style>

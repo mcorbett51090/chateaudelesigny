@@ -4,6 +4,7 @@ import Photo from '../../components/Photo.astro';
 import { site } from '../../config/site';
 import { locales, type Locale, useT, localeBase } from '../../i18n/ui';
 import { siteOrigin, lodgingNode } from '../../lib/schema';
+import { features } from '../../config/features';
 
 export function getStaticPaths() {
   return locales.map((locale) => ({ params: { locale } }));
@@ -131,6 +132,26 @@ const ld = [
     </div>
   </section>
 
+  <!-- ③b Gift voucher (self-hides until a Stripe Payment Link is configured) -->
+  {features.vouchers.stay && (
+    <section class="section sj-voucher" aria-labelledby="sj-voucher-h2">
+      <div class="wrap sj-voucher__inner">
+        <p class="eyebrow">{isFr ? 'Idée cadeau' : 'Gift idea'}</p>
+        <h2 id="sj-voucher-h2" class="sj-voucher__title">
+          {isFr ? 'Offrez une nuit au château.' : 'Give a night at the château.'}
+        </h2>
+        <p class="sj-voucher__sub">
+          {isFr
+            ? 'Un bon cadeau pour une nuit dans le colombier — paiement sécurisé, valable à la date de votre choix.'
+            : 'A gift voucher for a night in the dovecote — secure checkout, redeemable on a date of your choosing.'}
+        </p>
+        <a class="btn btn--primary" href={features.vouchers.stay} target="_blank" rel="noopener noreferrer">
+          {isFr ? 'Offrir ce séjour' : 'Give this stay'}
+        </a>
+      </div>
+    </section>
+  )}
+
   <!-- ④ CTA ----------------------------------------------------------------- -->
   <section class="section sj-cta">
     <div class="wrap sj-cta__inner" data-reveal>
@@ -206,6 +227,17 @@ const ld = [
   .sj-extra__note { margin-top: var(--space-s); font-size: var(--step--1); color: var(--text-muted); }
   /* On the dark band the first column should read as ivory copy */
   .sj-extra__copy { color: var(--ivoire); }
+
+  /* --- ③b Gift voucher ----------------------------------------------------- */
+  .sj-voucher { background: var(--suie); }
+  .sj-voucher__inner {
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    gap: var(--space-s);
+  }
+  .sj-voucher .eyebrow { color: var(--laiton-soft); }
+  .sj-voucher__title { font-size: var(--step-3); color: var(--ivoire); max-width: 22ch; }
+  .sj-voucher__sub { color: color-mix(in srgb, var(--ivoire) 72%, transparent); max-width: 48ch; }
+  .sj-voucher .btn { margin-top: var(--space-s); }
 
   /* --- ④ CTA --------------------------------------------------------------- */
   .sj-cta__inner {

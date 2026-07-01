@@ -1,10 +1,22 @@
 ---
 import PageLayout from '../../layouts/PageLayout.astro';
 import { site } from '../../config/site';
+import { features } from '../../config/features';
 import { locales, type Locale, useT, localeBase } from '../../i18n/ui';
 export function getStaticPaths() { return locales.map((locale) => ({ params: { locale } })); }
 const { locale } = Astro.params as { locale: Locale };
 const t = useT(locale); const base = localeBase(locale); const isFr = locale === 'fr';
+
+// This policy describes exactly the data flows that are ACTIVE in this build.
+// Each toggle below mirrors src/config/features.ts, so enabling a third-party
+// service can never leave the policy asserting the opposite (critic CE-1/R1).
+const analyticsOn = Boolean(features.cloudflareBeacon || features.plausibleDomain);
+const analyticsName = features.cloudflareBeacon ? 'Cloudflare Web Analytics' : 'Plausible Analytics';
+const formProcessor = features.web3formsKey ? 'Web3Forms' : features.inquiryEndpoint ? (isFr ? 'notre prestataire de formulaire' : 'our form provider') : '';
+const newsletterOn = Boolean(features.newsletterUrl);
+const vouchersOn = Boolean(features.vouchers.stay || features.vouchers.shop);
+const embedsOn = Boolean(features.tour360Url);
+const anyThirdParty = analyticsOn || Boolean(formProcessor) || newsletterOn || vouchersOn || embedsOn;
 ---
 <PageLayout
   title={isFr ? `Politique de confidentialité — ${site.name}` : `Privacy Policy — ${site.name}`}
@@ -63,7 +75,7 @@ const t = useT(locale); const base = localeBase(locale); const isFr = locale ===
       <!-- 2. Données collectées -->
       <section class="legal-section" aria-labelledby="s-donnees">
         <h2 id="s-donnees">{isFr ? '2. Données collectées lors de la navigation' : '2. Data Collected During Browsing'}</h2>
-        {isFr && (
+        {isFr && !analyticsOn && (
           <Fragment>
             <p class="legal-para">
               Ce site ne déploie <strong>aucun outil d&rsquo;analyse d&rsquo;audience</strong>, aucun cookie de traçage et aucun dispositif de collecte automatique de données personnelles lors de votre navigation. Votre adresse IP n&rsquo;est pas enregistrée à des fins d&rsquo;identification. Aucune donnée n&rsquo;est transmise à des régies publicitaires ou à des plateformes tierces de mesure.
@@ -73,13 +85,33 @@ const t = useT(locale); const base = localeBase(locale); const isFr = locale ===
             </p>
           </Fragment>
         )}
-        {!isFr && (
+        {isFr && analyticsOn && (
+          <Fragment>
+            <p class="legal-para">
+              Ce site utilise <strong>{analyticsName}</strong>, un outil de mesure d&rsquo;audience <strong>respectueux de la vie privée</strong>&nbsp;: il <strong>ne dépose aucun cookie</strong>, n&rsquo;enregistre aucune donnée personnelle identifiante et ne pratique aucun suivi entre les sites. Seules des statistiques agrégées et anonymes (pages vues, provenance) sont collectées.
+            </p>
+            <p class="legal-para">
+              Cette mesure d&rsquo;audience relevant de l&rsquo;exemption de consentement prévue par la CNIL, <strong>aucun bandeau de consentement n&rsquo;est requis</strong> pour cet outil. Aucune donnée n&rsquo;est transmise à des régies publicitaires.
+            </p>
+          </Fragment>
+        )}
+        {!isFr && !analyticsOn && (
           <Fragment>
             <p class="legal-para">
               This website deploys <strong>no audience analytics tools</strong>, no tracking cookies, and no automatic personal data collection systems during your browsing. Your IP address is not recorded for identification purposes. No data is passed to advertising networks or third-party measurement platforms.
             </p>
             <p class="legal-para">
               Your visit to this site is, by default, <strong>untracked</strong>.
+            </p>
+          </Fragment>
+        )}
+        {!isFr && analyticsOn && (
+          <Fragment>
+            <p class="legal-para">
+              This website uses <strong>{analyticsName}</strong>, a <strong>privacy-friendly</strong> audience-measurement tool that <strong>sets no cookies</strong>, records no identifying personal data, and performs no cross-site tracking. Only aggregated, anonymous statistics (page views, referrers) are collected.
+            </p>
+            <p class="legal-para">
+              As this audience measurement falls within the CNIL consent exemption, <strong>no consent banner is required</strong> for this tool. No data is passed to advertising networks.
             </p>
           </Fragment>
         )}
@@ -95,9 +127,16 @@ const t = useT(locale); const base = localeBase(locale); const isFr = locale ===
             <p class="legal-para">
               La seule collecte de données intervient lorsque vous remplissez volontairement le formulaire de contact ou de demande. Les informations que vous fournissez &mdash; prénom, nom, adresse e-mail, numéro de téléphone et message &mdash; sont utilisées <strong>exclusivement pour répondre à votre demande</strong>.
             </p>
-            <p class="legal-para">
-              Ces données sont transmises par e-mail à l&rsquo;équipe du {site.name}. Elles ne font l&rsquo;objet d&rsquo;aucun enregistrement dans une base de données, d&rsquo;aucune cession à un tiers et d&rsquo;aucune utilisation à des fins commerciales ou publicitaires.
-            </p>
+            {!formProcessor && (
+              <p class="legal-para">
+                Ces données sont transmises par e-mail à l&rsquo;équipe du {site.name}. Elles ne font l&rsquo;objet d&rsquo;aucun enregistrement dans une base de données, d&rsquo;aucune cession à un tiers et d&rsquo;aucune utilisation à des fins commerciales ou publicitaires.
+              </p>
+            )}
+            {formProcessor && (
+              <p class="legal-para">
+                Pour acheminer votre message jusqu&rsquo;à l&rsquo;équipe du {site.name}, le formulaire fait appel au sous-traitant <strong>{formProcessor}</strong>, qui transmet votre demande par e-mail sans l&rsquo;exploiter à d&rsquo;autres fins. Vos données ne sont ni revendues, ni utilisées à des fins publicitaires. Si votre navigateur ne peut joindre ce service, le message bascule automatiquement vers votre propre messagerie&nbsp;: aucune donnée n&rsquo;est alors transmise à un tiers.
+              </p>
+            )}
           </Fragment>
         )}
         {!isFr && (
@@ -105,9 +144,16 @@ const t = useT(locale); const base = localeBase(locale); const isFr = locale ===
             <p class="legal-para">
               The only data collection occurs when you voluntarily complete the contact or enquiry form. The information you provide &mdash; first name, last name, email address, phone number and message &mdash; is used <strong>solely to respond to your request</strong>.
             </p>
-            <p class="legal-para">
-              This data is sent by email to the {site.name} team. It is not stored in a database, not transferred to any third party, and not used for commercial or advertising purposes.
-            </p>
+            {!formProcessor && (
+              <p class="legal-para">
+                This data is sent by email to the {site.name} team. It is not stored in a database, not transferred to any third party, and not used for commercial or advertising purposes.
+              </p>
+            )}
+            {formProcessor && (
+              <p class="legal-para">
+                To deliver your message to the {site.name} team, the form uses the processor <strong>{formProcessor}</strong>, which forwards your enquiry by email without using it for any other purpose. Your data is never sold or used for advertising. If your browser cannot reach that service, the message falls back to your own mail client &mdash; in which case no data is transferred to any third party.
+              </p>
+            )}
           </Fragment>
         )}
       </section>
@@ -210,9 +256,26 @@ const t = useT(locale); const base = localeBase(locale); const isFr = locale ===
         </h2>
         {isFr && (
           <Fragment>
-            <p class="legal-para">
-              Ce site n&rsquo;intègre <strong>aucun cookie provenant de services tiers</strong> &mdash; réseaux sociaux, régies publicitaires ou outils de mesure d&rsquo;audience. Aucun bandeau de consentement aux cookies n&rsquo;est donc requis.
-            </p>
+            {!embedsOn && !vouchersOn && !newsletterOn && (
+              <p class="legal-para">
+                Ce site n&rsquo;intègre <strong>aucun cookie provenant de services tiers</strong> &mdash; réseaux sociaux, régies publicitaires ou outils de mesure d&rsquo;audience. Aucun bandeau de consentement aux cookies n&rsquo;est donc requis.
+              </p>
+            )}
+            {embedsOn && (
+              <p class="legal-para">
+                Certains contenus immersifs (visite virtuelle à 360°) proviennent de services tiers susceptibles de déposer des cookies. Conformément aux recommandations de la CNIL, ils <strong>ne se chargent qu&rsquo;après un clic explicite de votre part</strong> («&nbsp;charger le contenu&nbsp;»)&nbsp;: <strong>aucun cookie tiers n&rsquo;est déposé avant votre consentement</strong>. Votre choix est mémorisé localement dans votre navigateur.
+              </p>
+            )}
+            {vouchersOn && (
+              <p class="legal-para">
+                Les achats de bons cadeaux sont traités par <strong>Stripe</strong> sur une page de paiement sécurisée hébergée par ce prestataire&nbsp;: le site ne manipule aucune donnée bancaire.
+              </p>
+            )}
+            {newsletterOn && (
+              <p class="legal-para">
+                L&rsquo;inscription à la lettre d&rsquo;information est gérée par <strong>Brevo</strong> (hébergement dans l&rsquo;Union européenne), avec double opt-in et désinscription à tout moment. Vos coordonnées ne sont utilisées que pour vous envoyer cette lettre.
+              </p>
+            )}
             <p class="legal-para">
               Les liens vers nos profils sur les réseaux sociaux (Instagram, Facebook, YouTube) ouvrent des sites tiers soumis à leurs propres politiques de confidentialité. Nous vous invitons à les consulter directement.
             </p>
@@ -220,9 +283,26 @@ const t = useT(locale); const base = localeBase(locale); const isFr = locale ===
         )}
         {!isFr && (
           <Fragment>
-            <p class="legal-para">
-              This website integrates <strong>no third-party cookies</strong> &mdash; no social networks, advertising networks, or audience measurement tools. No cookie-consent banner is therefore required.
-            </p>
+            {!embedsOn && !vouchersOn && !newsletterOn && (
+              <p class="legal-para">
+                This website integrates <strong>no third-party cookies</strong> &mdash; no social networks, advertising networks, or audience measurement tools. No cookie-consent banner is therefore required.
+              </p>
+            )}
+            {embedsOn && (
+              <p class="legal-para">
+                Some immersive content (the 360° virtual tour) is provided by third parties that may set cookies. In line with CNIL guidance, it <strong>loads only after you explicitly click to load it</strong>: <strong>no third-party cookie is set before your consent</strong>. Your choice is remembered locally in your browser.
+              </p>
+            )}
+            {vouchersOn && (
+              <p class="legal-para">
+                Gift-voucher purchases are handled by <strong>Stripe</strong> on a secure checkout page hosted by that provider &mdash; this website never handles any card data.
+              </p>
+            )}
+            {newsletterOn && (
+              <p class="legal-para">
+                Newsletter sign-up is handled by <strong>Brevo</strong> (hosted in the European Union), with double opt-in and unsubscribe at any time. Your details are used only to send you that newsletter.
+              </p>
+            )}
             <p class="legal-para">
               Links to our social media profiles (Instagram, Facebook, YouTube) open third-party sites subject to their own privacy policies. We invite you to consult those directly.
             </p>

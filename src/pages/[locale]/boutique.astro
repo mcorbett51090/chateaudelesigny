@@ -3,6 +3,7 @@ import PageLayout from '../../layouts/PageLayout.astro';
 import Photo from '../../components/Photo.astro';
 import { locales, type Locale, useT, localeBase } from '../../i18n/ui';
 import { siteOrigin, productNode } from '../../lib/schema';
+import { features } from '../../config/features';
 
 export function getStaticPaths() {
   return locales.map((locale) => ({ params: { locale } }));
@@ -217,9 +218,16 @@ const payments = [
             ? 'Catalogue complet, tailles et paiement sur notre boutique en ligne officielle.'
             : 'Full catalogue, sizing and payment on our official online store.'}
         </p>
-        <a class="btn btn--ghost bt-trust__cta" href={STORE} target="_blank" rel="noopener noreferrer">
-          {isFr ? 'Ouvrir la boutique ↗' : 'Open the store ↗'}
-        </a>
+        <div class="bt-trust__ctas">
+          <a class="btn btn--ghost bt-trust__cta" href={STORE} target="_blank" rel="noopener noreferrer">
+            {isFr ? 'Ouvrir la boutique ↗' : 'Open the store ↗'}
+          </a>
+          {features.vouchers.shop && (
+            <a class="btn btn--ghost bt-trust__cta" href={features.vouchers.shop} target="_blank" rel="noopener noreferrer">
+              {isFr ? 'Offrir un bon cadeau ↗' : 'Give a gift voucher ↗'}
+            </a>
+          )}
+        </div>
       </div>
       <div class="bt-trust__pay" aria-label={isFr ? 'Moyens de paiement acceptés' : 'Accepted payment methods'}>
         <p class="bt-trust__pay-label slate">

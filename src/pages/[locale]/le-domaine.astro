@@ -4,8 +4,10 @@ import { site } from '../../config/site';
 import { locales, type Locale, useT, localeBase } from '../../i18n/ui';
 import DomaineSchematic from '../../components/domaine/DomaineSchematic.astro';
 import DomaineIndex from '../../components/domaine/DomaineIndex.astro';
+import ConsentEmbed from '../../components/ConsentEmbed.astro';
 import Photo from '../../components/Photo.astro';
 import Lightbox from '../../components/Lightbox.astro';
+import { features } from '../../config/features';
 
 export function getStaticPaths() { return locales.map((locale) => ({ params: { locale } })); }
 
@@ -104,6 +106,30 @@ const structures = [
       </div>
     </div>
   </section>
+
+  <!-- 360° virtual tour — consent-gated; renders only when a tour URL is set -->
+  {features.tour360Url && (
+    <section class="section vt-section" aria-labelledby="vt-h2">
+      <div class="wrap-wide">
+        <p class="eyebrow" data-reveal>{isFr ? 'Visite immersive' : 'Immersive visit'}</p>
+        <h2 id="vt-h2" data-reveal>{isFr ? 'La visite à 360°.' : 'The 360° tour.'}</h2>
+        <p class="vt-lede slate" data-reveal>
+          {isFr
+            ? 'Parcourez les intérieurs comme si vous y étiez.'
+            : 'Walk the interiors as if you were there.'}
+        </p>
+        <div class="vt-embed" data-reveal style="max-width: 1040px; margin-top: var(--space-l);">
+          <ConsentEmbed
+            src={features.tour360Url}
+            provider="Kuula"
+            title={isFr ? 'Visite 360° du Château de Lésigny' : 'Château de Lésigny 360° tour'}
+            locale={locale}
+            ratio="16/9"
+          />
+        </div>
+      </div>
+    </section>
+  )}
 
   <!-- Curated décor index (filterable) -->
   <DomaineIndex locale={locale} />

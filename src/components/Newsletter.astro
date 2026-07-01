@@ -1,0 +1,70 @@
+---
+/**
+ * Newsletter — footer email capture, POSTing to a Brevo (EU-hosted) form.
+ * Self-hides entirely when `features.newsletterUrl` is empty (no dead form).
+ * Double opt-in + unsubscribe are handled by Brevo under French law; consent
+ * is captured with an explicit required checkbox. No cookies, no client SDK.
+ */
+import { type Locale, useT } from '../i18n/ui';
+import { features } from '../config/features';
+
+const locale = (Astro.props.locale ?? 'fr') as Locale;
+const t = useT(locale);
+---
+{features.newsletterUrl && (
+  <form class="nl" method="POST" action={features.newsletterUrl} target="_blank" rel="noopener">
+    <h2 class="ft__h">{t('newsletter.title')}</h2>
+    <div class="nl__row">
+      <label class="visually-hidden" for="nl-email">{t('newsletter.placeholder')}</label>
+      <input
+        class="nl__input"
+        id="nl-email"
+        type="email"
+        name="EMAIL"
+        required
+        autocomplete="email"
+        placeholder={t('newsletter.placeholder')}
+      />
+      <button class="nl__btn" type="submit">{t('newsletter.submit')}</button>
+    </div>
+    <label class="nl__consent">
+      <input type="checkbox" name="OPT_IN" value="1" required />
+      <span>{t('newsletter.consent')}</span>
+    </label>
+  </form>
+)}
+
+<style>
+  .nl { display: flex; flex-direction: column; gap: var(--space-2xs); }
+  .nl__row { display: flex; gap: var(--space-2xs); flex-wrap: wrap; }
+  .nl__input {
+    flex: 1 1 12rem;
+    min-width: 0;
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    padding: 0.55em 0.7em;
+    color: var(--ivoire);
+    background: color-mix(in srgb, var(--ivoire) 8%, transparent);
+    border: var(--hairline) solid var(--rule);
+    border-radius: var(--radius-s);
+  }
+  .nl__input::placeholder { color: color-mix(in srgb, var(--ivoire) 50%, transparent); }
+  .nl__input:focus-visible { outline: 2px solid var(--laiton-soft); outline-offset: 1px; }
+  .nl__btn {
+    font-family: var(--font-ui); font-size: var(--step--1); font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 0.55em 1em; cursor: pointer;
+    color: var(--suie); background: var(--laiton-soft);
+    border: 0; border-radius: var(--radius-s);
+    transition: background var(--dur-fast) var(--ease-soft);
+  }
+  .nl__btn:hover { background: var(--ivoire); }
+  .nl__consent {
+    display: flex; gap: 0.5em; align-items: flex-start;
+    font-size: var(--step--2);
+    color: var(--text-muted);
+    max-width: 34ch;
+    margin-top: var(--space-3xs);
+  }
+  .nl__consent input { margin-top: 0.2em; flex-shrink: 0; }
+</style>

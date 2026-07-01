@@ -1,5 +1,6 @@
 ---
 import { site } from '../config/site';
+import Newsletter from './Newsletter.astro';
 import { type Locale, useT, localeBase, withBase } from '../i18n/ui';
 const locale = (Astro.props.locale ?? 'fr') as Locale;
 const t = useT(locale);
@@ -69,6 +70,7 @@ const waText = encodeURIComponent(
       <a href={site.social.instagram} target="_blank" rel="noopener">Instagram</a>
       <a href={site.social.facebook} target="_blank" rel="noopener">Facebook</a>
       <a href={site.social.youtube} target="_blank" rel="noopener">YouTube</a>
+      <Newsletter locale={locale} />
     </div>
   </div>
 

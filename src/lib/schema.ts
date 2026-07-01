@@ -12,6 +12,7 @@
  *     (FAQ answers, product copy) can't break the document `<head>`.
  */
 import { site } from '../config/site';
+import { features, hasReviews } from '../config/features';
 
 /** Keep a value only if it's a real string (drop owner `TODO:` placeholders). */
 const real = (v: unknown): string | undefined =>
@@ -57,6 +58,21 @@ export function venueNode(origin: string, description: string) {
     sameAs: [site.social.instagram, site.social.facebook, site.social.youtube],
     // legalName only if the owner has filled it in (else omitted, never "TODO:").
     ...(real(site.legal.entityName) ? { legalName: real(site.legal.entityName) } : {}),
+    // aggregateRating/review ONLY when real reviews are entered (never fabricated).
+    ...(hasReviews
+      ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: features.reviews.ratingValue,
+            reviewCount: features.reviews.reviewCount,
+          },
+          review: features.reviews.items.map((r) => ({
+            '@type': 'Review',
+            author: { '@type': 'Person', name: r.author },
+            reviewBody: r.text,
+          })),
+        }
+      : {}),
   };
 }
 

@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import { type Locale, useT, withLocale, withBase } from '../i18n/ui';
 import { siteOrigin, venueNode, jsonLdScript } from '../lib/schema';
+import { features } from '../config/features';
 
 interface Props {
   title: string;
@@ -56,6 +57,20 @@ const ldScript = jsonLdScript([venueNode(origin, description), ...jsonLd]);
 
     <meta name="theme-color" content="#1a1714" />
     <link rel="icon" href={withBase('/crest-lesigny.svg')} type="image/svg+xml" />
+
+    {/* Cookieless, privacy-friendly analytics — no cookies, no PII, no consent
+        banner required (CNIL audience-measurement exemption). Emitted only when
+        a token/domain is configured. */}
+    {features.cloudflareBeacon && (
+      <script
+        defer
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon={`{"token": "${features.cloudflareBeacon}"}`}
+      ></script>
+    )}
+    {features.plausibleDomain && (
+      <script defer data-domain={features.plausibleDomain} src="https://plausible.io/js/script.js"></script>
+    )}
     <!-- No-JS fallback: reveal-on-scroll elements must not stay hidden without JS. -->
     <noscript><style>[data-reveal]{opacity:1 !important;transform:none !important;}</style></noscript>
     <Fragment set:html={ldScript} />

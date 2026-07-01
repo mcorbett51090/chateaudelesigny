@@ -1,0 +1,113 @@
+---
+/**
+ * CompareSlider — before/after image wipe (the "Castle Impossible" restoration
+ * differentiator). Pure CSS clip + a range input; no library. The "before" layer
+ * is clipped to the slider position over the "after" layer. Keyboard-operable via
+ * the native range. Used only with owner rights-cleared image pairs.
+ */
+import Photo from './Photo.astro';
+
+interface Props {
+  before: string; // image key in src/assets/images.ts
+  after: string;
+  label: string;
+  beforeLabel?: string;
+  afterLabel?: string;
+}
+const { before, after, label, beforeLabel = 'Avant', afterLabel = 'Après' } = Astro.props;
+---
+<figure class="cmp" data-cmp>
+  <div class="cmp__pane cmp__after">
+    <Photo name={after} alt="" sizes="(max-width: 900px) 100vw, 60vw" widths={[600, 1000, 1600]} />
+    <span class="cmp__tag cmp__tag--after">{afterLabel}</span>
+  </div>
+  <div class="cmp__pane cmp__before" data-cmp-before>
+    <Photo name={before} alt="" sizes="(max-width: 900px) 100vw, 60vw" widths={[600, 1000, 1600]} />
+    <span class="cmp__tag cmp__tag--before">{beforeLabel}</span>
+  </div>
+  <span class="cmp__divider" data-cmp-divider aria-hidden="true"></span>
+  <input
+    class="cmp__range"
+    type="range"
+    min="0"
+    max="100"
+    value="50"
+    aria-label={label}
+    data-cmp-range
+  />
+  <figcaption class="cmp__label">{label}</figcaption>
+</figure>
+
+<script>
+  for (const cmp of document.querySelectorAll<HTMLElement>('[data-cmp]')) {
+    const before = cmp.querySelector<HTMLElement>('[data-cmp-before]');
+    const divider = cmp.querySelector<HTMLElement>('[data-cmp-divider]');
+    const range = cmp.querySelector<HTMLInputElement>('[data-cmp-range]');
+    if (!before || !range) continue;
+    const set = (v: number) => {
+      before.style.clipPath = `inset(0 ${100 - v}% 0 0)`;
+      if (divider) divider.style.left = `${v}%`;
+    };
+    set(50);
+    range.addEventListener('input', () => set(Number(range.value)));
+  }
+</script>
+
+<style>
+  .cmp {
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    border-radius: var(--radius-m);
+    border: var(--hairline) solid var(--rule);
+    aspect-ratio: 3 / 2;
+    background: var(--suie);
+    isolation: isolate;
+  }
+  .cmp__pane { position: absolute; inset: 0; }
+  .cmp__pane :global(.photo),
+  .cmp__pane :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  .cmp__before { clip-path: inset(0 50% 0 0); z-index: 2; }
+  .cmp__after { z-index: 1; }
+
+  .cmp__tag {
+    position: absolute; top: var(--space-s);
+    font-family: var(--font-ui); font-size: var(--step--2); font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ivoire); background: color-mix(in srgb, var(--encre) 55%, transparent);
+    padding: 0.3em 0.7em; border-radius: 2px; z-index: 3;
+  }
+  .cmp__tag--before { left: var(--space-s); }
+  .cmp__tag--after { right: var(--space-s); }
+
+  .cmp__divider {
+    position: absolute; top: 0; bottom: 0; left: 50%;
+    width: 2px; background: var(--ivoire); z-index: 4; transform: translateX(-1px);
+    pointer-events: none; box-shadow: 0 0 0 1px color-mix(in srgb, var(--encre) 40%, transparent);
+  }
+
+  /* The range spans the whole figure; only its thumb is visible as the handle. */
+  .cmp__range {
+    position: absolute; inset: 0; width: 100%; height: 100%; margin: 0;
+    background: transparent; -webkit-appearance: none; appearance: none;
+    cursor: ew-resize; z-index: 5;
+  }
+  .cmp__range::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--ivoire); border: 2px solid var(--laiton-deep);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3); cursor: ew-resize;
+  }
+  .cmp__range::-moz-range-thumb {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--ivoire); border: 2px solid var(--laiton-deep); cursor: ew-resize;
+  }
+  .cmp__range:focus-visible { outline: 2px solid var(--laiton-soft); outline-offset: 2px; }
+
+  .cmp__label {
+    position: absolute; bottom: var(--space-s); left: 50%; transform: translateX(-50%);
+    font-family: var(--font-ui); font-size: var(--step--1);
+    color: var(--ivoire); background: color-mix(in srgb, var(--encre) 55%, transparent);
+    padding: 0.35em 0.9em; border-radius: 999px; z-index: 3; white-space: nowrap;
+  }
+</style>
