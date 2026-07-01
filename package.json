@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "dev:demo": "PUBLIC_DEMO=1 astro dev",
+    "dev:demo": "PUBLIC_DEMO=1 PREVIEW_ROOT=1 astro dev --host",
     "prebuild": "node scripts/check-todos.mjs",
     "build": "astro build",
     "build:demo": "PUBLIC_DEMO=1 astro build",

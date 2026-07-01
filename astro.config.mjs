@@ -14,7 +14,10 @@ import sitemap from '@astrojs/sitemap';
 // All internal links route through withBase()/localeBase() (src/i18n/ui.ts), so these
 // two lines are the only change needed to move between the two.
 const SITE = 'https://mcorbett51090.github.io';
-const BASE = '/chateaudelesigny';
+// PREVIEW_ROOT=1 serves the site at the ROOT path (base '/') — used by `npm run dev:demo`
+// so the forwarded Codespace URL works without the /chateaudelesigny/ prefix. Production
+// builds (env unset) keep the GitHub-Pages subpath base.
+const BASE = process.env.PREVIEW_ROOT === '1' ? '/' : '/chateaudelesigny';
 
 export default defineConfig({
   site: SITE,
