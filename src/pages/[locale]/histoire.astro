@@ -35,16 +35,22 @@ const timelineEntries = [
     year: 'v. 1550',
     fr: 'Charles de Pierrevive et Charlotte Briçonnet font reconstruire la demeure dans le goût de la Renaissance : c’est, pour l’essentiel, le château que vous découvrez aujourd’hui. En 1573, Catherine de Médicis y séjourne quelques jours.',
     en: 'Charles de Pierrevive and Charlotte Briçonnet rebuild the residence in the Renaissance taste — in essence the château you see today. In 1573, Catherine de’ Medici stays here for several days.',
+    portrait: portraitCatherine,
+    cap: 'Catherine de Médicis',
   },
   {
     year: '1613',
     fr: 'Léonora Dori, dite « la Galigaï » — épouse de Concini, futur maréchal d’Ancre, et confidente de Marie de Médicis — achète Lésigny pour 95 000 livres. Elle y mène de grands travaux : orangerie, jardins et une chapelle consacrée en 1615. La reine mère s’y rend la même année.',
     en: 'Léonora Dori, known as “la Galigaï” — wife of Concini, the future Maréchal d’Ancre, and confidante of Marie de’ Medici — buys Lésigny for 95,000 livres. She undertakes major works: an orangery, gardens, and a chapel consecrated in 1615. The Queen Mother visits that same year.',
+    portrait: portraitGaligai,
+    cap: 'Léonora Galigaï',
   },
   {
     year: '1617',
     fr: 'La disgrâce est brutale : Concini est assassiné au Louvre, la Galigaï exécutée. Le domaine échoit à Charles d’Albert de Luynes, favori de Louis XIII. Le roi et Anne d’Autriche y séjournent en 1618 ; Marie de Rohan s’y marie dans la chapelle du château.',
     en: 'The fall is brutal: Concini is assassinated at the Louvre and la Galigaï executed. The estate passes to Charles d’Albert de Luynes, favourite of Louis XIII. The king and Anne of Austria lodge here in 1618; Marie de Rohan is married in the château’s chapel.',
+    portrait: portraitLouis,
+    cap: 'Louis XIII',
   },
   {
     year: 'XVIIIᵉ s.',
@@ -191,7 +197,13 @@ const todayEntry = timelineEntries[timelineEntries.length - 1];
       <div class="timeline-grid">
         <ol class="timeline" role="list">
           {beats.map((entry, i) => (
-            <li class="timeline__entry" id={`tl-entry-${i}`} data-tl-index={i} data-reveal>
+            <li class:list={['timeline__entry', { 'timeline__entry--portrait': entry.portrait }]} id={`tl-entry-${i}`} data-tl-index={i} data-reveal>
+              {entry.portrait && (
+                <figure class="timeline__portrait">
+                  <Image src={entry.portrait} alt={entry.cap} widths={[96, 192]} sizes="96px" />
+                  <figcaption>{entry.cap}</figcaption>
+                </figure>
+              )}
               <p class="timeline__year" aria-label={isFr ? `Année ${entry.year}` : `Year ${entry.year}`}>
                 {entry.year}
               </p>
@@ -912,6 +924,37 @@ const todayEntry = timelineEntries[timelineEntries.length - 1];
     max-width: 56ch;
   }
 
+  /* Period portraits pinned to the years they belong to (Catherine de Médicis,
+     Galigaï, Louis XIII) — brass-framed, matching the hero collage. */
+  .timeline__entry--portrait {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    column-gap: var(--space-m);
+    align-items: start;
+  }
+  .timeline__portrait {
+    grid-row: 1 / span 2;
+    margin: 0;
+    width: 96px;
+    padding: 3px;
+    border: 1px solid var(--laiton);
+    background: linear-gradient(135deg,
+      color-mix(in srgb, var(--laiton) 22%, transparent),
+      color-mix(in srgb, var(--laiton-soft) 10%, transparent));
+    box-shadow: 0 14px 30px -18px rgba(20, 16, 12, 0.6);
+  }
+  .timeline__portrait :global(img) {
+    display: block; width: 100%; height: auto;
+    border: 1px solid color-mix(in srgb, var(--laiton-soft) 55%, transparent);
+  }
+  .timeline__portrait figcaption {
+    font-family: var(--font-slate);
+    font-size: 10px; letter-spacing: 0.02em;
+    color: var(--text-muted); text-align: center; margin-top: 5px;
+  }
+  .timeline__entry--portrait .timeline__year,
+  .timeline__entry--portrait .timeline__prose { grid-column: 2; }
+
   /* RIGHT — condensed sticky rail */
   .timeline-rail {
     position: sticky;
@@ -1194,6 +1237,11 @@ const todayEntry = timelineEntries[timelineEntries.length - 1];
     .timeline__entry + .timeline__entry {
       border-top: var(--hairline) solid var(--rule);
     }
+    /* Stack the period portrait above the text on narrow screens. */
+    .timeline__entry--portrait { grid-template-columns: 1fr; }
+    .timeline__portrait { grid-row: auto; grid-column: 1; margin-bottom: var(--space-2xs); }
+    .timeline__entry--portrait .timeline__year,
+    .timeline__entry--portrait .timeline__prose { grid-column: 1; }
 
     .feature-wrap { grid-template-columns: 1fr; gap: var(--space-xl); }
     .treasure-wrap { grid-template-columns: 1fr; gap: var(--space-xl); }
