@@ -29,6 +29,35 @@ npm run dev      # http://localhost:4321
 npm run build    # static output → dist/
 ```
 
+## Preview all features (demo mode)
+
+Most high-value features are **off by default** (they need real keys, content, or assets — see
+[Optional features](#optional-features)). To **see every one of them at once** with realistic
+placeholder data — no keys required — run the demo server:
+
+```bash
+npm run dev:demo          # dev server with PUBLIC_DEMO=1  →  http://localhost:4321
+# or build a static demo:
+npm run build:demo        # → dist/  (then: npm run preview)
+```
+
+Then open the pages below to find each demo feature:
+
+| Demo feature | Where to look (add `/fr/` or `/en/`) |
+|---|---|
+| ⭐ **Review stars + quotes** (+ `AggregateRating` schema) | `/mariages/` — below the "Weddings at the château" gallery |
+| 🖼 **Before/after restoration slider** (drag to compare) | `/histoire/` — near the end, before the closing CTA |
+| 🌐 **360° virtual-tour card** (CNIL click-to-load) | `/le-domaine/` — above the décor index |
+| 🎁 **Gift-voucher buttons** (Stripe) | `/sejour/` (stay voucher) and `/boutique/` (shop voucher) |
+| ✉️ **Newsletter signup form** (Brevo) | the **footer** of any page |
+| 📄 **Filled Mentions légales / Confidentialité** | `/mentions-legales/` and `/confidentialite/` |
+
+> **Demo data never ships.** It only appears with `PUBLIC_DEMO=1`; the default `npm run dev` /
+> `npm run build` show none of it (features stay hidden, no fabricated `AggregateRating`, legal
+> pages stay `noindex`). The [`check-todos`](scripts/check-todos.mjs) launch gate **fails a
+> production build if `PUBLIC_DEMO` is set**, so placeholder data can't reach the live site.
+> (The video/drone hero is the one feature left off even in demo — it needs a real `.mp4`.)
+
 ## Optional features
 
 Several higher-value features are **off by default** and switch on via configuration — no
@@ -64,12 +93,8 @@ clause) appears. Leaving them empty is a fully supported, honest state.
 > service (Web3Forms) that works on any static host. To run your own `/api/*` function instead,
 > deploy to Cloudflare Pages / Netlify and point `PUBLIC_INQUIRY_ENDPOINT` at it.
 
-**3. Preview everything at once** — `npm run dev:demo` (or `build:demo`) sets `PUBLIC_DEMO=1`,
-which populates *every* gated feature with realistic demo data so you can see them without any
-keys/assets: review stars + quotes, the before/after restoration slider, the 360° tour card,
-gift-voucher buttons, the newsletter form, and a filled-in Mentions légales. Demo data is
-preview-only — the [`check-todos`](scripts/check-todos.mjs) launch gate **fails a production build
-while `PUBLIC_DEMO` is set**, so it can never ship live.
+**3. Preview them all without keys** — run `npm run dev:demo`; see
+[Preview all features (demo mode)](#preview-all-features-demo-mode) above for the per-page map.
 
 > **Launch gate:** `npm run build` runs `scripts/check-todos.mjs` first. On the interim
 > github.io preview it only warns about unfilled legal `TODO:` fields; on a production build
