@@ -121,20 +121,17 @@ const timelineEntries = [
 const beats = timelineEntries.slice(0, -1);
 const todayEntry = timelineEntries[timelineEntries.length - 1];
 
-// Room-by-room restoration documented by HGTV's "Castle Impossible". We LINK to
-// HGTV's own before/after galleries rather than re-hosting their (copyrighted)
-// stills. Rooms + article URLs verified via HGTV search 2026-07-01.
-const hgtvRestorations = [
-  {
-    fr: 'La salle de bain d’apparat',
-    en: 'The bathing chamber',
-    url: 'https://www.hgtv.com/shows/castle-impossible/articles/the-chateaus-bathing-chamber-renovation',
-  },
-  {
-    fr: 'Le château rénové, pièce par pièce',
-    en: 'The renovated château, room by room',
-    url: 'https://www.hgtv.com/shows/castle-impossible/articles/french-chateau-before-and-after',
-  },
+// Room-by-room before/after restoration. We LINK to the owners' OWN reveal videos
+// (The Beau Chateau — rights-clean) and to HGTV's own before/after galleries, rather
+// than re-hosting copyrighted stills or off-brand social thumbnails. Rooms + URLs
+// verified 2026-07-01 (YouTube "The Beau Chateau" + HGTV Castle Impossible).
+const restorations = [
+  { fr: 'La chambre', en: 'The bedroom', src: 'The Beau Chateau', url: 'https://www.youtube.com/watch?v=0ZH8N4CDmZY' },
+  { fr: 'La salle de bain', en: 'The bathroom', src: 'The Beau Chateau', url: 'https://www.youtube.com/watch?v=gc1Toy7749I' },
+  { fr: 'La chambre d’enfant', en: 'The nursery', src: 'The Beau Chateau', url: 'https://www.youtube.com/watch?v=-tVIOSibu54' },
+  { fr: 'Le Grand Salon', en: 'The Grand Salon', src: 'The Beau Chateau', url: 'https://www.youtube.com/watch?v=0vD4gmEqjPo' },
+  { fr: 'La salle de bain d’apparat', en: 'The bathing chamber', src: 'HGTV', url: 'https://www.hgtv.com/shows/castle-impossible/articles/the-chateaus-bathing-chamber-renovation' },
+  { fr: 'Le château rénové', en: 'The renovated château', src: 'HGTV', url: 'https://www.hgtv.com/shows/castle-impossible/articles/french-chateau-before-and-after' },
 ];
 const hgtvShowUrl = 'https://www.hgtv.com/shows/castle-impossible';
 ---
@@ -776,11 +773,13 @@ const hgtvShowUrl = 'https://www.hgtv.com/shows/castle-impossible';
       )}
 
       <ul class="ba-links" data-reveal role="list">
-        {hgtvRestorations.map((r) => (
+        {restorations.map((r) => (
           <li class="ba-link">
             <a href={r.url} target="_blank" rel="noopener noreferrer">
               <span class="ba-link__room">{isFr ? r.fr : r.en}</span>
-              <span class="ba-link__meta slate">{isFr ? 'Avant / après sur HGTV ↗' : 'Before / after on HGTV ↗'}</span>
+              <span class="ba-link__meta slate">
+                {isFr ? 'Avant / après' : 'Before / after'} · {r.src} ↗
+              </span>
             </a>
           </li>
         ))}
@@ -824,8 +823,9 @@ const hgtvShowUrl = 'https://www.hgtv.com/shows/castle-impossible';
   .ba-grid { display: grid; gap: var(--space-l); margin-top: var(--space-l); }
   .ba-links {
     list-style: none; padding: 0; margin: var(--space-l) 0 0;
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-m);
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-m);
   }
+  @media (max-width: 900px) { .ba-links { grid-template-columns: repeat(2, 1fr); } }
   .ba-link a {
     display: flex; flex-direction: column; gap: var(--space-3xs);
     padding: var(--space-m);
