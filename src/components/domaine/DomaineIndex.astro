@@ -214,6 +214,22 @@ for (const d of decors) {
         const visible = okSpace && okUse;
         el.hidden = !visible;
         if (visible) shown++;
+        // Keep PhotoSwipe (children: a[data-pswp-width]) in sync with the filter:
+        // strip the dims off hidden plates so the lightbox doesn't page through them.
+        const a = el.querySelector<HTMLAnchorElement>('a.pswp-item');
+        if (a) {
+          if (visible && a.dataset.pswpOff) {
+            a.setAttribute('data-pswp-width', a.dataset.w ?? '1600');
+            a.setAttribute('data-pswp-height', a.dataset.h ?? '1067');
+            delete a.dataset.pswpOff;
+          } else if (!visible && a.hasAttribute('data-pswp-width')) {
+            a.dataset.w = a.getAttribute('data-pswp-width') ?? '';
+            a.dataset.h = a.getAttribute('data-pswp-height') ?? '';
+            a.removeAttribute('data-pswp-width');
+            a.removeAttribute('data-pswp-height');
+            a.dataset.pswpOff = '1';
+          }
+        }
       }
       if (countEl) countEl.textContent = `${shown} ${countLabel}`;
       if (emptyEl) emptyEl.hidden = shown !== 0;

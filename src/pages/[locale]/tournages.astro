@@ -98,6 +98,7 @@ const decorLightbox: (LightboxTarget | null)[] = await Promise.all(
         ? 'Acteurs en costume Renaissance devant une caméra de cinéma au château de Lésigny'
         : 'Renaissance-costumed actors with a film camera at Château de Lésigny'}
       loading="eager"
+      fetchpriority="high"
       sizes="100vw"
       widths={[800, 1440, 2200]}
     />

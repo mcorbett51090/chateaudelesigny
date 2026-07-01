@@ -8,8 +8,9 @@
  *  2. Never publish owner-only `TODO:` placeholders as machine-readable data
  *     (`real()` filters them) — legal fields in site.ts are still TODO.
  *  3. Never emit `aggregateRating`/`Review` without real reviews (we have none).
- *  4. `jsonLdScript()` escapes `</script>` and U+2028/2029 so editorial free-text
- *     (FAQ answers, product copy) can't break the document `<head>`.
+ *  4. `jsonLdScript()` escapes `<` so a literal `</script>` in editorial free-text
+ *     (FAQ answers, product copy) can't close the tag early. The payload is parsed
+ *     as JSON (not executed as JS), so no further escaping is needed.
  */
 import { site } from '../config/site';
 import { features, hasReviews } from '../config/features';
@@ -42,14 +43,19 @@ export function siteOrigin(astroSite: URL | undefined, base: string): string {
 /** Stable @id for the one venue entity every page's nodes reference. */
 export const venueId = (origin: string) => `${origin}/#venue`;
 
-/** Canonical LocalBusiness + EventVenue node (identical on every page). */
-export function venueNode(origin: string, description: string) {
+/**
+ * Canonical LocalBusiness + EventVenue node — byte-identical on every page.
+ * `description` MUST be a fixed site-level string (not a per-page meta description)
+ * so the one `@id` never carries conflicting values across the graph.
+ */
+export function venueNode(origin: string, description: string, image?: string) {
   return {
     '@type': ['LocalBusiness', 'EventVenue'],
     '@id': venueId(origin),
     name: site.name,
     description,
     url: `${origin}/`,
+    ...(image ? { image } : {}),
     telephone: site.contact.phoneEvents,
     email: site.contact.email,
     foundingDate: String(site.founded),
@@ -98,12 +104,15 @@ export function productNode(opts: {
   description: string;
   priceEUR: number;
   availability?: string;
+  image?: string | string[];
+  priceValidUntil?: string;
 }) {
   return {
     '@type': 'Product',
     name: opts.name,
     description: opts.description,
     url: opts.url,
+    ...(opts.image ? { image: opts.image } : {}),
     brand: { '@type': 'Brand', name: 'The Beau Chateau' },
     offers: {
       '@type': 'Offer',
@@ -111,6 +120,7 @@ export function productNode(opts: {
       priceCurrency: 'EUR',
       availability: opts.availability ?? 'https://schema.org/PreOrder',
       url: opts.url,
+      ...(opts.priceValidUntil ? { priceValidUntil: opts.priceValidUntil } : {}),
     },
   };
 }

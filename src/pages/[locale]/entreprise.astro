@@ -63,7 +63,7 @@ const activities = [
 
 <PageLayout
   title={isFr
-    ? 'Séminaires & événements d’entreprise · Château de Lésigny'
+    ? 'Séminaires & événements · Château de Lésigny'
     : 'Corporate events & seminars · Château de Lésigny'}
   description={isFr
     ? 'Séminaires, team-building, galas et réceptions d’entreprise au Château de Lésigny — salons modulables à 24 km de Paris, dans un parc boisé de 54 hectares.'
@@ -79,6 +79,9 @@ const activities = [
       name="event-cocktail"
       alt={isFr ? 'Cocktail d’entreprise dans les salons du Château de Lésigny' : 'Corporate cocktail reception in the salons of Château de Lésigny'}
       loading="eager"
+      fetchpriority="high"
+      sizes="100vw"
+      widths={[800, 1600, 2400]}
     />
     <div class="en-hero__scrim" aria-hidden="true"></div>
     <div class="wrap-wide en-hero__inner">

@@ -46,7 +46,8 @@ const t = useT(locale);
     const provider = box.dataset.provider ?? 'embed';
     const title = box.dataset.title ?? '';
     if (!src) continue;
-    const key = `consent:${provider}`;
+    // Key by provider AND src so two same-provider embeds don't share consent.
+    const key = `consent:${provider}:${src}`;
 
     const load = () => {
       const iframe = document.createElement('iframe');
@@ -56,7 +57,11 @@ const t = useT(locale);
       iframe.setAttribute('allow', 'fullscreen; xr-spatial-tracking; gyroscope; accelerometer');
       iframe.setAttribute('allowfullscreen', 'true');
       iframe.className = 'consent-embed__frame';
+      iframe.tabIndex = -1;
       box.replaceChildren(iframe);
+      // The focused "load" button was just removed; move focus onto the iframe so
+      // keyboard/AT focus isn't dropped to <body> (WCAG 2.4.3).
+      iframe.focus();
       try { localStorage.setItem(key, '1'); } catch { /* private mode — ignore */ }
     };
 

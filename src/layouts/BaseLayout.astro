@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { site } from '../config/site';
 import { type Locale, useT, withLocale, withBase } from '../i18n/ui';
 import { siteOrigin, venueNode, jsonLdScript } from '../lib/schema';
 import { features } from '../config/features';
@@ -15,9 +16,11 @@ interface Props {
   /** Extra JSON-LD nodes for this page (e.g. FAQPage, Product, LodgingBusiness).
    *  Merged into ONE @graph with the canonical venue node — no duplicate entities. */
   jsonLd?: object[];
+  /** Emit robots noindex (e.g. legal pages carrying unfilled TODO placeholders). */
+  noindex?: boolean;
 }
 
-const { title, description, locale, path = '', dark = false, image, jsonLd = [] } = Astro.props;
+const { title, description, locale, path = '', dark = false, image, jsonLd = [], noindex = false } = Astro.props;
 const t = useT(locale);
 
 // withLocale() already includes the deployment base; canonical/og must add it explicitly.
@@ -29,7 +32,10 @@ const ogImage = image ?? new URL(withBase('/og/default.png'), Astro.site).href;
 // One canonical LocalBusiness+EventVenue entity (stable @id) + any per-page nodes,
 // serialized into a single <script> @graph. Replaces the old TouristAttraction-only block.
 const origin = siteOrigin(Astro.site, import.meta.env.BASE_URL);
-const ldScript = jsonLdScript([venueNode(origin, description), ...jsonLd]);
+// The venue node carries a FIXED site-level description (not this page's meta
+// description) so its single @id never holds conflicting values across the graph.
+const venueDescription = locale === 'fr' ? site.tagline.fr : site.tagline.en;
+const ldScript = jsonLdScript([venueNode(origin, venueDescription, ogImage), ...jsonLd]);
 ---
 
 <!doctype html>
@@ -39,6 +45,7 @@ const ldScript = jsonLdScript([venueNode(origin, description), ...jsonLd]);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
     <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang="fr" href={altFr} />
     <link rel="alternate" hreflang="en" href={altEn} />

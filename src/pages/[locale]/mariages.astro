@@ -5,7 +5,7 @@ import Photo from '../../components/Photo.astro';
 import Lightbox from '../../components/Lightbox.astro';
 import ReviewsFrame from '../../components/ReviewsFrame.astro';
 import { site } from '../../config/site';
-import { features } from '../../config/features';
+import { features, hasReviews } from '../../config/features';
 import { locales, type Locale, useT, localeBase, withBase } from '../../i18n/ui';
 import { photos } from '../../assets/images';
 
@@ -35,7 +35,7 @@ const eventTypes = [
     n: '02',
     fr: 'Anniversaire',
     en: 'Birthday',
-    frDesc: 'Célébrations privées dans un écrin sans pareil, de l\'intime au grand rassemblement.',
+    frDesc: 'Célébrations privées dans un écrin sans pareil, de l’intime au grand rassemblement.',
     enDesc: 'Private celebrations in an unrivalled setting, from intimate gatherings to grand parties.',
   },
   {
@@ -47,7 +47,7 @@ const eventTypes = [
   },
   {
     n: '04',
-    fr: 'Séminaire d\'entreprise',
+    fr: 'Séminaire d’entreprise',
     en: 'Corporate',
     frDesc: 'Team building, séminaires résidentiels et dîners de gala dans un cadre mémorable.',
     enDesc: 'Team building, residential seminars and gala dinners in a memorable setting.',
@@ -70,7 +70,7 @@ const eventTypes = [
     n: '07',
     fr: 'Bar & Bat Mitsvah',
     en: 'Bar & Bat Mitzvah',
-    frDesc: 'Réceptions de tradition dans un cadre d\'exception à moins de 30 minutes de Paris.',
+    frDesc: 'Réceptions de tradition dans un cadre d’exception à moins de 30 minutes de Paris.',
     enDesc: 'Traditional celebrations in an exceptional setting less than 30 minutes from Paris.',
   },
 ];
@@ -79,7 +79,7 @@ const partners = [
   {
     fr: 'Traiteur',
     en: 'Catering',
-    frDesc: 'Gastronomie sur mesure et cocktails d\'exception.',
+    frDesc: 'Gastronomie sur mesure et cocktails d’exception.',
     enDesc: 'Bespoke gastronomy and exceptional cocktail receptions.',
     photo: 'catering-canapes',
     frAlt: 'Canapés gastronomiques pour cocktail de mariage',
@@ -112,7 +112,7 @@ const partners = [
     frDesc: 'Musiciens, groupes, DJ et prestations artistiques.',
     enDesc: 'Musicians, bands, DJs and live performances.',
     photo: 'music-sax',
-    frAlt: 'Saxophoniste lors d\'une réception de mariage',
+    frAlt: 'Saxophoniste lors d’une réception de mariage',
     enAlt: 'Saxophonist at a wedding reception',
     anchor: 'animation',
   },
@@ -139,12 +139,12 @@ const galleryPlates = [
     enAlt: 'Grand hall of the château set for a gala dinner',
   },
   {
-    fr: 'Le Salon d\'Honneur',
+    fr: 'Le Salon d’Honneur',
     en: 'The Honour Salon',
     frSub: 'Parquet & cheminées sculptées',
     enSub: 'Parquet & carved stone mantels',
     photo: 'int-reception-set',
-    frAlt: 'Salon d\'Honneur dressé pour une réception',
+    frAlt: 'Salon d’Honneur dressé pour une réception',
     enAlt: 'Honour Salon set for a reception',
   },
   {
@@ -159,10 +159,10 @@ const galleryPlates = [
   {
     fr: 'Le Salon aux Cheminées',
     en: 'The Fireplace Salon',
-    frSub: 'Cheminée sculptée & parquet d\'époque',
+    frSub: 'Cheminée sculptée & parquet d’époque',
     enSub: 'Carved stone mantel & period parquet',
     photo: 'int-fireplace-parquet',
-    frAlt: 'Cheminée de pierre sculptée et parquet d\'époque',
+    frAlt: 'Cheminée de pierre sculptée et parquet d’époque',
     enAlt: 'Carved stone fireplace and period parquet',
   },
   {
@@ -218,7 +218,7 @@ const weddingLightbox: (LightboxTarget | null)[] = await Promise.all(
     ? 'Mariages & Événements · Château de Lésigny'
     : 'Weddings & Events · Château de Lésigny'}
   description={isFr
-    ? 'Organisez votre mariage au Château de Lésigny — intérieurs Renaissance, jusqu\'à 350 invités, à 24 km de Paris. À partir de 3 350 €.'
+    ? 'Organisez votre mariage au Château de Lésigny — intérieurs Renaissance, jusqu’à 350 invités, à 24 km de Paris. À partir de 3 350 €.'
     : 'Plan your wedding at Château de Lésigny — Renaissance interiors, up to 350 guests, 24 km from Paris. From €3,350.'}
   locale={locale}
   path="mariages/"
@@ -231,6 +231,9 @@ const weddingLightbox: (LightboxTarget | null)[] = await Promise.all(
       name="exterior-ceremony-lawn"
       alt={isFr ? 'Cérémonie en plein air sur la pelouse du Château de Lésigny' : 'Outdoor ceremony on the lawn at Château de Lésigny'}
       loading="eager"
+      fetchpriority="high"
+      sizes="100vw"
+      widths={[800, 1600, 2400]}
     />
     {features.heroVideo && (
       <video
@@ -242,7 +245,7 @@ const weddingLightbox: (LightboxTarget | null)[] = await Promise.all(
         preload="none"
         aria-hidden="true"
       >
-        <source src={withBase(features.heroVideo)} type="video/mp4" />
+        <source src={features.heroVideo.startsWith('http') ? features.heroVideo : withBase(features.heroVideo)} type="video/mp4" />
       </video>
     )}
     <div class="m-hero__scrim" aria-hidden="true"></div>
@@ -254,7 +257,7 @@ const weddingLightbox: (LightboxTarget | null)[] = await Promise.all(
       </p>
       <h1 id="m-hero-title" class="m-hero__title" data-reveal>
         {isFr
-          ? 'Créez le souvenir d\'une vie.'
+          ? 'Créez le souvenir d’une vie.'
           : 'Create the memory of a lifetime.'}
       </h1>
       <p class="m-hero__lede" data-reveal>
@@ -277,7 +280,7 @@ const weddingLightbox: (LightboxTarget | null)[] = await Promise.all(
   <!-- ② Capacities band ----------------------------------------------------- -->
   <section
     class="m-caps is-dark"
-    aria-label={isFr ? 'Capacités d\'accueil' : 'Venue capacity'}
+    aria-label={isFr ? 'Capacités d’accueil' : 'Venue capacity'}
   >
     <div class="wrap-wide m-caps__grid">
       <div class="m-cap" data-reveal>
@@ -361,10 +364,10 @@ const weddingLightbox: (LightboxTarget | null)[] = await Promise.all(
                     ? `Agrandir : ${plate.fr}`
                     : `Enlarge: ${plate.en}`}
                 >
-                  <Photo fill name={plate.photo} alt={isFr ? plate.frAlt : plate.enAlt} />
+                  <Photo fill name={plate.photo} alt={isFr ? plate.frAlt : plate.enAlt} sizes="(max-width: 820px) 50vw, 33vw" widths={[480, 800, 1200]} />
                 </a>
               ) : (
-                <Photo fill name={plate.photo} alt={isFr ? plate.frAlt : plate.enAlt} />
+                <Photo fill name={plate.photo} alt={isFr ? plate.frAlt : plate.enAlt} sizes="(max-width: 820px) 50vw, 33vw" widths={[480, 800, 1200]} />
               )}
               <div class="m-plate__inner">
                 <p class="m-plate__name">{isFr ? plate.fr : plate.en}</p>
@@ -481,30 +484,30 @@ const weddingLightbox: (LightboxTarget | null)[] = await Promise.all(
   <!-- ⑤c Reviews (renders only when real reviews are configured) ------------ -->
   <ReviewsFrame locale={locale} />
 
-  <!-- ⑥ Testimonials -------------------------------------------------------- -->
-  <section class="section m-testimonials" aria-labelledby="m-testi-label">
-    <div class="wrap">
-      <p id="m-testi-label" class="eyebrow m-testimonials__eyebrow" data-reveal>
-        {isFr ? 'Témoignages' : 'Testimonials'}
-      </p>
-      <!-- Real, attributed testimonials will live here. The live site has none to
-           seed yet, so we point couples to the venue's actual review channels
-           rather than ship fabricated quotes. -->
-      <p class="m-testi__lead" data-reveal style="max-width:58ch;color:var(--text-muted);line-height:1.7;">
-        {isFr
-          ? 'Les retours de nos couples vivent sur nos réseaux et nos plateformes partenaires. De véritables témoignages, attribués, seront mis à l’honneur ici prochainement.'
-          : 'Our couples’ words live on our social channels and partner platforms. Real, attributed testimonials will be featured here soon.'}
-      </p>
-      <div class="m-testi__actions" data-reveal style="display:flex;gap:var(--space-s);flex-wrap:wrap;margin-top:var(--space-m);">
-        <a class="btn btn--primary" href={site.social.instagram} target="_blank" rel="noopener noreferrer">
-          {isFr ? 'Nos mariages sur Instagram' : 'Our weddings on Instagram'}
-        </a>
-        <a class="btn btn--ghost" href={site.social.mariagesnet} target="_blank" rel="noopener noreferrer">
-          {isFr ? 'Avis · Mariages.net' : 'Reviews · Mariages.net'}
-        </a>
+  <!-- ⑥ Testimonials — the honest "reviews live elsewhere" pointer, shown only
+       while no real reviews are configured (ReviewsFrame above replaces it). -->
+  {!hasReviews && (
+    <section class="section m-testimonials" aria-labelledby="m-testi-label">
+      <div class="wrap">
+        <p id="m-testi-label" class="eyebrow m-testimonials__eyebrow" data-reveal>
+          {isFr ? 'Témoignages' : 'Testimonials'}
+        </p>
+        <p class="m-testi__lead" data-reveal style="max-width:58ch;color:var(--text-muted);line-height:1.7;">
+          {isFr
+            ? 'Les retours de nos couples vivent sur nos réseaux et nos plateformes partenaires. De véritables témoignages, attribués, seront mis à l’honneur ici prochainement.'
+            : 'Our couples’ words live on our social channels and partner platforms. Real, attributed testimonials will be featured here soon.'}
+        </p>
+        <div class="m-testi__actions" data-reveal style="display:flex;gap:var(--space-s);flex-wrap:wrap;margin-top:var(--space-m);">
+          <a class="btn btn--ghost" href={site.social.instagram} target="_blank" rel="noopener noreferrer">
+            {isFr ? 'Nos mariages sur Instagram' : 'Our weddings on Instagram'}
+          </a>
+          <a class="btn btn--ghost" href={site.social.mariagesnet} target="_blank" rel="noopener noreferrer">
+            {isFr ? 'Avis · Mariages.net' : 'Reviews · Mariages.net'}
+          </a>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  )}
 
   <!-- ⑦ Closing CTA band ---------------------------------------------------- -->
   <section class="m-cta is-dark" aria-labelledby="m-cta-title">
@@ -519,7 +522,7 @@ const weddingLightbox: (LightboxTarget | null)[] = await Promise.all(
       <p class="eyebrow">{isFr ? 'Réservez votre date' : 'Reserve your date'}</p>
       <h2 id="m-cta-title" class="m-cta__title">
         {isFr
-          ? 'Votre histoire mérite un cadre d\'exception.'
+          ? 'Votre histoire mérite un cadre d’exception.'
           : 'Your story deserves an exceptional setting.'}
       </h2>
       <p class="m-cta__sub">
@@ -571,6 +574,11 @@ const weddingLightbox: (LightboxTarget | null)[] = await Promise.all(
     height: 100%;
     object-fit: cover;
     z-index: 0; /* above the poster Photo (which is the fallback), below the scrim */
+  }
+  /* Respect reduced-motion: hide the autoplaying loop; the poster Photo shows
+     through beneath it (WCAG 2.2.2 Pause, Stop, Hide). */
+  @media (prefers-reduced-motion: reduce) {
+    .m-hero__video { display: none; }
   }
 
   .m-hero__scrim {

@@ -708,33 +708,9 @@ const todayEntry = timelineEntries[timelineEntries.length - 1];
 
 
 
-  <!-- ═══════════════════════════════════════════════
-       7. SOFT CTA → le-domaine
-       ═══════════════════════════════════════════════ -->
-  <section class="section cta-section" aria-labelledby="cta-heading">
-    <div class="wrap cta-wrap" data-reveal>
-      <hr class="rule cta-rule" />
-      <p class="eyebrow cta-eyebrow">
-        {isFr ? 'Prochaine étape' : 'Next step'}
-      </p>
-      <h2 id="cta-heading" class="cta-title">
-        {isFr
-          ? 'Explorez le domaine dans son intégralité'
-          : 'Explore the estate in its entirety'}
-      </h2>
-      <p class="cta-body">
-        {isFr
-          ? `${site.estate.decors}+ décors répartis sur ${site.estate.hectares} hectares, à ${site.address.fromParisKm} km de Paris. Découvrez chaque espace.`
-          : `${site.estate.decors}+ décors across ${site.estate.hectares} hectares, ${site.address.fromParisKm} km from Paris. Discover every space.`}
-      </p>
-      <a class="btn btn--primary cta-btn" href={`${base}/le-domaine/`}>
-        {isFr ? 'Découvrir le domaine' : 'Discover the estate'} →
-      </a>
-    </div>
-  </section>
-
   {/* Before/after restoration — renders only when owner-supplied, rights-cleared
-      image pairs exist in features.beforeAfter (no empty shell otherwise). */}
+      image pairs exist in features.beforeAfter (no empty shell otherwise).
+      Placed BEFORE the closing CTA so the CTA stays the page's final beat. */}
   {features.beforeAfter.length > 0 && (
     <section class="section ba-section" aria-labelledby="ba-h2">
       <div class="wrap">
@@ -759,6 +735,31 @@ const todayEntry = timelineEntries[timelineEntries.length - 1];
       </div>
     </section>
   )}
+
+  <!-- ═══════════════════════════════════════════════
+       7. SOFT CTA → le-domaine
+       ═══════════════════════════════════════════════ -->
+  <section class="section cta-section" aria-labelledby="cta-heading">
+    <div class="wrap cta-wrap" data-reveal>
+      <hr class="rule cta-rule" />
+      <p class="eyebrow cta-eyebrow">
+        {isFr ? 'Prochaine étape' : 'Next step'}
+      </p>
+      <h2 id="cta-heading" class="cta-title">
+        {isFr
+          ? 'Explorez le domaine dans son intégralité'
+          : 'Explore the estate in its entirety'}
+      </h2>
+      <p class="cta-body">
+        {isFr
+          ? `${site.estate.decors}+ décors répartis sur ${site.estate.hectares} hectares, à ${site.address.fromParisKm} km de Paris. Découvrez chaque espace.`
+          : `${site.estate.decors}+ décors across ${site.estate.hectares} hectares, ${site.address.fromParisKm} km from Paris. Discover every space.`}
+      </p>
+      <a class="btn btn--primary cta-btn" href={`${base}/le-domaine/`}>
+        {isFr ? 'Découvrir le domaine' : 'Discover the estate'} →
+      </a>
+    </div>
+  </section>
 
 </PageLayout>
 

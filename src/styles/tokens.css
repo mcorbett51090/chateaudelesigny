@@ -28,7 +28,7 @@
   --text-muted: var(--encre-soft);
   --accent: var(--sang);
   --rule: color-mix(in srgb, var(--laiton) 55%, transparent);
-  --focus: #3f8a97;          /* teal focus ring — visible on stone & dark (AA); ≥3:1 on --suie and --pierre */
+  --focus: #367883;          /* teal focus ring — visible on stone & dark; ≥3.5:1 on --pierre for headroom (SC 1.4.11) */
 
   /* --- Type families (self-hosted via @fontsource) --- */
   --font-display: 'Fraunces Variable', 'Fraunces', Georgia, serif;
@@ -37,6 +37,7 @@
   --font-slate: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
 
   /* --- Type scale (fluid; 1.250 major-third base) --- */
+  --step--2: clamp(0.69rem, 0.67rem + 0.10vw, 0.75rem);  /* micro-labels: badges, chips, tags, legal fine print */
   --step--1: clamp(0.83rem, 0.80rem + 0.15vw, 0.91rem);
   --step-0:  clamp(1.02rem, 0.98rem + 0.22vw, 1.15rem);
   --step-1:  clamp(1.28rem, 1.20rem + 0.40vw, 1.55rem);

@@ -48,6 +48,9 @@ const ld = [
       name="exterior-evening"
       alt={isFr ? 'Le Château de Lésigny au crépuscule' : 'Château de Lésigny at dusk'}
       loading="eager"
+      fetchpriority="high"
+      sizes="100vw"
+      widths={[800, 1600, 2400]}
     />
     <div class="sj-hero__scrim" aria-hidden="true"></div>
     <div class="wrap sj-hero__inner">
@@ -134,7 +137,7 @@ const ld = [
 
   <!-- ③b Gift voucher (self-hides until a Stripe Payment Link is configured) -->
   {features.vouchers.stay && (
-    <section class="section sj-voucher" aria-labelledby="sj-voucher-h2">
+    <section class="section sj-voucher is-dark" aria-labelledby="sj-voucher-h2">
       <div class="wrap sj-voucher__inner">
         <p class="eyebrow">{isFr ? 'Idée cadeau' : 'Gift idea'}</p>
         <h2 id="sj-voucher-h2" class="sj-voucher__title">
@@ -229,7 +232,9 @@ const ld = [
   .sj-extra__copy { color: var(--ivoire); }
 
   /* --- ③b Gift voucher ----------------------------------------------------- */
-  .sj-voucher { background: var(--suie); }
+  /* Sits directly after the dark "petit plus" band — a brass hairline keeps the
+     two dark sections from merging into one undivided slab. */
+  .sj-voucher { background: var(--suie); border-top: var(--hairline) solid var(--rule); }
   .sj-voucher__inner {
     display: flex; flex-direction: column; align-items: center; text-align: center;
     gap: var(--space-s);

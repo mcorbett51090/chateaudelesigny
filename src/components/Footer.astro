@@ -37,7 +37,7 @@ const waText = encodeURIComponent(
       <p class="ft__tag">{locale === 'fr' ? site.tagline.fr : site.tagline.en}</p>
     </div>
 
-    <nav class="ft__col" aria-label={t('footer.explore')}>
+    <nav class="ft__col ft__col--explore" aria-label={t('footer.explore')}>
       <h2 class="ft__h">{t('footer.explore')}</h2>
       {links.map((l) => <a href={l.href}>{l.label}</a>)}
     </nav>
@@ -114,6 +114,10 @@ const waText = encodeURIComponent(
   .ft__word { font-family: var(--font-display); font-size: var(--step-2); }
   .ft__tag { color: var(--text-muted); margin-block: 0.6rem; max-width: 30ch; }
   .ft__col { display: flex; flex-direction: column; gap: 0.45rem; }
+  /* The Explore list carries 12 links — lay them in two balanced sub-columns so
+     the column isn't far taller than the brand/contact/follow columns beside it. */
+  .ft__col--explore { display: grid; grid-template-columns: repeat(2, auto); gap: 0.45rem var(--space-l); align-content: start; }
+  .ft__col--explore .ft__h { grid-column: 1 / -1; }
   .ft__h {
     font-family: var(--font-ui); font-size: var(--step--1); text-transform: uppercase;
     letter-spacing: 0.16em; color: var(--laiton-soft); margin-bottom: 0.4rem; font-weight: 600;

@@ -72,7 +72,8 @@
       "Bash(sed -n '1,50p' src/pages/[locale]/boutique.astro)",
       "Bash(grep -nA20 \"legal\\\\|contact\\\\|address\")",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "Bash(cat)"
+      "Bash(cat)",
+      "Bash(grep -v \":1$\")"
     ]
   }
 }

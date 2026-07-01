@@ -111,7 +111,7 @@ const ld = [faqNode(faqs.map((f) => ({ q: isFr ? f.qFr : f.qEn, a: isFr ? f.aFr 
           <li class="faq-item" data-reveal>
             <details open={i === 0}>
               <summary class="faq-q">
-                <span>{isFr ? f.qFr : f.qEn}</span>
+                <h3 class="faq-q__text">{isFr ? f.qFr : f.qEn}</h3>
                 <span class="faq-q__mark" aria-hidden="true"></span>
               </summary>
               <p class="faq-a">{isFr ? f.aFr : f.aEn}</p>
@@ -175,6 +175,9 @@ const ld = [faqNode(faqs.map((f) => ({ q: isFr ? f.qFr : f.qEn, a: isFr ? f.aFr 
   }
   .faq-q::-webkit-details-marker { display: none; }
   .faq-q:hover { color: var(--sang); }
+  /* The question is a real <h3> for AT heading-navigation, but must look identical
+     to the summary text (inherit, no default heading margin/size). */
+  .faq-q__text { font: inherit; color: inherit; margin: 0; font-weight: inherit; }
 
   /* +/– toggle */
   .faq-q__mark {

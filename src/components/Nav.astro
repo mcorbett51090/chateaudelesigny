@@ -34,7 +34,7 @@ const here = Astro.url.pathname;
       <a class="btn btn--primary nav__cta" href={`${base}/contact/`}>{t('cta.inquiry')}</a>
     </div>
 
-    <button class="nav__burger" aria-label="Menu" aria-expanded="false" aria-controls="nav-drawer" data-burger>
+    <button class="nav__burger" aria-label={t('nav.menu')} aria-expanded="false" aria-controls="nav-drawer" data-burger>
       <span></span><span></span><span></span>
     </button>
   </div>

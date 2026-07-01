@@ -5,6 +5,8 @@ import { locales, type Locale, useT, localeBase } from '../../i18n/ui';
 export function getStaticPaths() { return locales.map((locale) => ({ params: { locale } })); }
 const { locale } = Astro.params as { locale: Locale };
 const t = useT(locale); const base = localeBase(locale); const isFr = locale === 'fr';
+// noindex while mandatory identity fields are still TODO placeholders (visible text).
+const legalTodo = Object.values(site.legal).some((v) => typeof v === 'string' && v.startsWith('TODO:'));
 ---
 <PageLayout
   title={isFr ? `Mentions légales — ${site.name}` : `Legal Notice — ${site.name}`}
@@ -13,6 +15,7 @@ const t = useT(locale); const base = localeBase(locale); const isFr = locale ===
     : `Legal notice for the ${site.name} website: publisher, host, and intellectual property.`}
   locale={locale}
   path="mentions-legales/"
+  noindex={legalTodo}
 >
 
   <div class="legal-page">

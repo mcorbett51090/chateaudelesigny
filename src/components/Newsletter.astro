@@ -35,7 +35,14 @@ const t = useT(locale);
 )}
 
 <style>
-  .nl { display: flex; flex-direction: column; gap: var(--space-2xs); }
+  /* .ft__h is defined in Footer's scoped styles and won't reach this component's
+     own heading (different Astro scope id), so restate it here to keep the footer
+     column labels visually identical. */
+  .nl .ft__h {
+    font-family: var(--font-ui); font-size: var(--step--1); text-transform: uppercase;
+    letter-spacing: 0.16em; color: var(--laiton-soft); margin-bottom: 0.4rem; font-weight: 600;
+  }
+  .nl { display: flex; flex-direction: column; gap: var(--space-2xs); margin-top: var(--space-s); }
   .nl__row { display: flex; gap: var(--space-2xs); flex-wrap: wrap; }
   .nl__input {
     flex: 1 1 12rem;
