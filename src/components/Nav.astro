@@ -9,6 +9,7 @@ const links = [
   { href: `${base}/mariages/`, label: t('nav.mariages') },
   { href: `${base}/tournages/`, label: t('nav.tournages') },
   { href: `${base}/photographes/`, label: t('nav.photographes') },
+  { href: `${base}/partenaires/`, label: t('nav.partenaires') },
   { href: `${base}/histoire/`, label: t('nav.histoire') },
   { href: `${base}/boutique/`, label: t('nav.boutique') },
   { href: `${base}/social/`, label: t('nav.social') },
@@ -81,14 +82,14 @@ const here = Astro.url.pathname;
   /* Drawer is a mobile-only affordance; keep it hidden on desktop even if JS left it open. */
   .nav__drawer { display: none; }
 
-  /* Buffer zone above the burger breakpoint: the full link set + lang pill + CTA
-     can still be tight here, so drop the brand wordmark first to reclaim width
+  /* Buffer zone above the burger breakpoint: the full link set (8 items) + lang
+     pill + CTA gets tight here, so drop the brand wordmark first to reclaim width
      before anything is forced to wrap/overflow. */
-  @media (max-width: 1200px) {
+  @media (max-width: 1320px) {
     .nav__word { display: none; }
   }
 
-  @media (max-width: 1100px) {
+  @media (max-width: 1200px) {
     .nav__links, .nav__cta { display: none; }
     .nav__actions { margin-inline-start: auto; }
     .nav__burger {
