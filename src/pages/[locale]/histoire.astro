@@ -120,6 +120,23 @@ const timelineEntries = [
 // rendered as a minimal terminus that pops out into the present-day HGTV section.
 const beats = timelineEntries.slice(0, -1);
 const todayEntry = timelineEntries[timelineEntries.length - 1];
+
+// Room-by-room restoration documented by HGTV's "Castle Impossible". We LINK to
+// HGTV's own before/after galleries rather than re-hosting their (copyrighted)
+// stills. Rooms + article URLs verified via HGTV search 2026-07-01.
+const hgtvRestorations = [
+  {
+    fr: 'La salle de bain d’apparat',
+    en: 'The bathing chamber',
+    url: 'https://www.hgtv.com/shows/castle-impossible/articles/the-chateaus-bathing-chamber-renovation',
+  },
+  {
+    fr: 'Le château rénové, pièce par pièce',
+    en: 'The renovated château, room by room',
+    url: 'https://www.hgtv.com/shows/castle-impossible/articles/french-chateau-before-and-after',
+  },
+];
+const hgtvShowUrl = 'https://www.hgtv.com/shows/castle-impossible';
 ---
 
 <PageLayout
@@ -729,19 +746,22 @@ const todayEntry = timelineEntries[timelineEntries.length - 1];
 
 
 
-  {/* Before/after restoration — renders only when owner-supplied, rights-cleared
-      image pairs exist in features.beforeAfter (no empty shell otherwise).
-      Placed BEFORE the closing CTA so the CTA stays the page's final beat. */}
-  {features.beforeAfter.length > 0 && (
-    <section class="section ba-section" aria-labelledby="ba-h2">
-      <div class="wrap">
-        <p class="eyebrow" data-reveal>{isFr ? 'Restauration' : 'Restoration'}</p>
-        <h2 id="ba-h2" data-reveal>{isFr ? 'Avant / après.' : 'Before / after.'}</h2>
-        <p class="ba-lede" data-reveal>
-          {isFr
-            ? 'La renaissance du domaine, salle après salle — glissez pour comparer.'
-            : 'The estate’s renaissance, room by room — drag to compare.'}
-        </p>
+  {/* Restoration — the château's renovation is documented by HGTV's "Castle
+      Impossible". The drag-to-compare slider shows the OWNER's own rights-cleared
+      before/after pairs (features.beforeAfter); the accurate room-by-room
+      before/after content is otherwise surfaced via links to HGTV's own galleries
+      (we don't re-host copyrighted broadcast stills). Placed before the closing CTA. */}
+  <section class="section ba-section" aria-labelledby="ba-h2">
+    <div class="wrap">
+      <p class="eyebrow" data-reveal>{isFr ? 'Restauration · Castle Impossible' : 'Restoration · Castle Impossible'}</p>
+      <h2 id="ba-h2" data-reveal>{isFr ? 'Avant / après.' : 'Before / after.'}</h2>
+      <p class="ba-lede" data-reveal>
+        {isFr
+          ? 'La renaissance du domaine est filmée pour HGTV, salle après salle. Découvrez les transformations avant / après.'
+          : 'The estate’s renaissance is filmed for HGTV, room by room. Explore the before / after transformations.'}
+      </p>
+
+      {features.beforeAfter.length > 0 && (
         <div class="ba-grid" data-reveal>
           {features.beforeAfter.map((pair) => (
             <CompareSlider
@@ -753,9 +773,24 @@ const todayEntry = timelineEntries[timelineEntries.length - 1];
             />
           ))}
         </div>
-      </div>
-    </section>
-  )}
+      )}
+
+      <ul class="ba-links" data-reveal role="list">
+        {hgtvRestorations.map((r) => (
+          <li class="ba-link">
+            <a href={r.url} target="_blank" rel="noopener noreferrer">
+              <span class="ba-link__room">{isFr ? r.fr : r.en}</span>
+              <span class="ba-link__meta slate">{isFr ? 'Avant / après sur HGTV ↗' : 'Before / after on HGTV ↗'}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <a class="btn btn--ghost ba-watch" href={hgtvShowUrl} target="_blank" rel="noopener noreferrer" data-reveal>
+        {isFr ? 'Voir Castle Impossible sur HGTV / HBO Max' : 'Watch Castle Impossible on HGTV / HBO Max'}
+      </a>
+    </div>
+  </section>
 
   <!-- ═══════════════════════════════════════════════
        7. SOFT CTA → le-domaine
@@ -787,6 +822,23 @@ const todayEntry = timelineEntries[timelineEntries.length - 1];
 <style>
   .ba-lede { color: var(--text-muted); max-width: 52ch; margin-top: var(--space-s); }
   .ba-grid { display: grid; gap: var(--space-l); margin-top: var(--space-l); }
+  .ba-links {
+    list-style: none; padding: 0; margin: var(--space-l) 0 0;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-m);
+  }
+  .ba-link a {
+    display: flex; flex-direction: column; gap: var(--space-3xs);
+    padding: var(--space-m);
+    border: var(--hairline) solid var(--rule); border-top: 2px solid var(--laiton);
+    border-radius: var(--radius-s); text-decoration: none;
+    background: var(--calcaire);
+    transition: border-color var(--dur-fast) var(--ease-soft), background var(--dur-fast) var(--ease-soft);
+  }
+  .ba-link a:hover { border-top-color: var(--sang); background: var(--calcaire-2); }
+  .ba-link__room { font-family: var(--font-display); font-size: var(--step-1); font-weight: 460; color: var(--text); }
+  .ba-link__meta { font-size: var(--step--1); }
+  .ba-watch { margin-top: var(--space-l); }
+  @media (max-width: 560px) { .ba-links { grid-template-columns: 1fr; } }
 </style>
 
 <script>

@@ -66,10 +66,11 @@ const DEMO = {
   },
   newsletterUrl: 'https://example.sibforms.com/serve/demo-newsletter',
   tour360Url: 'https://kuula.co/share/hqZL7',
-  beforeAfter: [
-    { before: 'int-empty-fireplace', after: 'int-fireplace-parquet', labelFr: 'Le Salon aux Cheminées', labelEn: 'The Fireplace Salon' },
-    { before: 'int-attic', after: 'int-green-room', labelFr: 'Une chambre restaurée', labelEn: 'A restored bedroom' },
-  ] as BeforeAfterPair[],
+  // Empty on purpose: the slider only shows REAL, rights-cleared before/after pairs
+  // the OWNER supplies (their own renovation photos). We do NOT re-host HGTV/HBO Max
+  // stills (Discovery/WBD copyright); the accurate before/after content is surfaced via
+  // links to HGTV's own galleries in the history page's Restoration section.
+  beforeAfter: [] as BeforeAfterPair[],
   legal: {
     entityName: 'SARL Château de Lésigny — DONNÉES DE DÉMONSTRATION',
     legalForm: 'SARL',
