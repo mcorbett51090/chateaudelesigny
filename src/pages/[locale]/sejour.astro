@@ -3,6 +3,7 @@ import PageLayout from '../../layouts/PageLayout.astro';
 import Photo from '../../components/Photo.astro';
 import { site } from '../../config/site';
 import { locales, type Locale, useT, localeBase } from '../../i18n/ui';
+import { siteOrigin, lodgingNode } from '../../lib/schema';
 
 export function getStaticPaths() {
   return locales.map((locale) => ({ params: { locale } }));
@@ -12,6 +13,19 @@ const { locale } = Astro.params as { locale: Locale };
 const t = useT(locale);
 const base = localeBase(locale);
 const isFr = locale === 'fr';
+
+// Structured data: the overnight stay as a LodgingBusiness tied to the venue.
+const origin = siteOrigin(Astro.site, import.meta.env.BASE_URL);
+const ld = [
+  lodgingNode(
+    origin,
+    `${origin}/${locale}/sejour/`,
+    isFr ? 'Château de Lésigny — Le Colombier' : 'Château de Lésigny — The Dovecote',
+    isFr
+      ? 'Une nuit au château : une chambre dans le colombier, face à la façade de brique rouge, avec massage sur demande dans les salons.'
+      : 'A night at the château: a room in the dovecote facing the red-brick façade, with an on-request massage in the salons.'
+  ),
+];
 ---
 
 <PageLayout
@@ -23,6 +37,7 @@ const isFr = locale === 'fr';
     : 'Spend a night at Château de Lésigny — a room in the dovecote facing the red-brick façade, with massages in the estate’s salons.'}
   locale={locale}
   path="sejour/"
+  jsonLd={ld}
 >
 
   <!-- ① Hero ---------------------------------------------------------------- -->

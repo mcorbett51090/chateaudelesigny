@@ -1,0 +1,222 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { site } from '../../config/site';
+import { locales, type Locale, useT, localeBase } from '../../i18n/ui';
+import { faqNode } from '../../lib/schema';
+
+export function getStaticPaths() {
+  return locales.map((locale) => ({ params: { locale } }));
+}
+
+const { locale } = Astro.params as { locale: Locale };
+const t = useT(locale);
+const base = localeBase(locale);
+const isFr = locale === 'fr';
+
+const priceFr = new Intl.NumberFormat('fr-FR').format(site.weddings.priceFromEUR) + ' €';
+const priceEn = '€' + new Intl.NumberFormat('en-GB').format(site.weddings.priceFromEUR);
+const priceStr = isFr ? priceFr : priceEn;
+
+// Real Q&A drawn from facts already in site.ts — no invented claims.
+const faqs = [
+  {
+    qFr: 'Où se trouve le Château de Lésigny ?',
+    qEn: 'Where is Château de Lésigny?',
+    aFr: `Le domaine se situe à Lésigny (${site.address.postalCode}), en ${site.address.region}, à ${site.address.fromParisKm} km de Paris — environ 30 minutes du centre.`,
+    aEn: `The estate is in Lésigny (${site.address.postalCode}), ${site.address.region}, ${site.address.fromParisKm} km from Paris — about 30 minutes from the centre.`,
+  },
+  {
+    qFr: 'Quelle est la capacité d’accueil ?',
+    qEn: 'What is the venue capacity?',
+    aFr: `Jusqu’à ${site.weddings.capacityCocktail} personnes en cocktail, ${site.weddings.capacityDinner} en dîner assis et ${site.weddings.capacityCeremony} en cérémonie, dans 300 m² de salles communicantes.`,
+    aEn: `Up to ${site.weddings.capacityCocktail} guests for a cocktail reception, ${site.weddings.capacityDinner} for a seated dinner and ${site.weddings.capacityCeremony} for a ceremony, across 300 m² of communicating rooms.`,
+  },
+  {
+    qFr: 'Quel est le tarif de location ?',
+    qEn: 'How much does it cost to hire?',
+    aFr: `La location du domaine est proposée à partir de ${priceStr}. Chaque projet étant unique, un devis personnalisé vous est établi selon la date, le nombre d’invités et le programme.`,
+    aEn: `Venue hire starts from ${priceStr}. As every project is unique, a tailored quote is prepared based on your date, guest count and programme.`,
+  },
+  {
+    qFr: 'Peut-on y célébrer une cérémonie ?',
+    qEn: 'Can we hold a ceremony on site?',
+    aFr: 'Oui — cérémonie laïque en plein air sur les pelouses, ou réception dans les intérieurs Renaissance. Le domaine se privatise de façon exclusive pour votre événement.',
+    aEn: 'Yes — a secular ceremony outdoors on the lawns, or a reception within the Renaissance interiors. The estate is hired exclusively for your event.',
+  },
+  {
+    qFr: 'Le traiteur est-il imposé ?',
+    qEn: 'Is catering imposed?',
+    aFr: 'Nous travaillons avec un réseau de traiteurs partenaires — cuisine classique, halal et casher — ainsi que fleuristes, artistes et photographes. Découvrez-les sur notre page Partenaires.',
+    aEn: 'We work with a network of partner caterers — classic, halal and kosher — plus florists, performers and photographers. See them on our Partners page.',
+  },
+  {
+    qFr: 'Peut-on dormir sur place ?',
+    qEn: 'Can we stay overnight?',
+    aFr: 'Oui : une nuit au château est proposée dans le colombier, avec massage sur demande dans les salons. Voir la page Séjour.',
+    aEn: 'Yes: a night at the château is offered in the dovecote, with an on-request massage in the salons. See the Stay page.',
+  },
+  {
+    qFr: 'Organisez-vous des événements d’entreprise ?',
+    qEn: 'Do you host corporate events?',
+    aFr: 'Oui — séminaires, team-building, galas et réceptions d’entreprise, avec des salons modulables. Voir la page Entreprise.',
+    aEn: 'Yes — seminars, team-building, galas and corporate receptions, with adaptable salons. See the Corporate page.',
+  },
+  {
+    qFr: 'Le château accueille-t-il des tournages et séances photo ?',
+    qEn: 'Do you host film shoots and photo sessions?',
+    aFr: `Oui. Le domaine est un lieu de tournage depuis ${site.cinema.yearsAsLocation} ans (plus de ${site.cinema.productions} productions), dont la série Castle Impossible sur HGTV, et accueille des séances photo dans plus de 70 décors.`,
+    aEn: `Yes. The estate has been a filming location for ${site.cinema.yearsAsLocation} years (over ${site.cinema.productions} productions), including HGTV's Castle Impossible, and hosts photo shoots across 70+ décors.`,
+  },
+  {
+    qFr: 'Comment visiter le domaine ou réserver une date ?',
+    qEn: 'How do we visit or book a date?',
+    aFr: 'Écrivez-nous via la page Contact pour organiser une visite privée. Notre équipe vous répond et construit avec vous le programme de votre événement.',
+    aEn: 'Write to us via the Contact page to arrange a private visit. Our team will reply and build your event programme with you.',
+  },
+];
+
+const ld = [faqNode(faqs.map((f) => ({ q: isFr ? f.qFr : f.qEn, a: isFr ? f.aFr : f.aEn })))];
+---
+
+<PageLayout
+  title={isFr ? 'Questions fréquentes · Château de Lésigny' : 'Frequently asked questions · Château de Lésigny'}
+  description={isFr
+    ? 'Capacité, tarifs, cérémonie, traiteurs, séjour, événements d’entreprise et tournages : les réponses aux questions les plus fréquentes sur le Château de Lésigny.'
+    : 'Capacity, pricing, ceremonies, catering, overnight stay, corporate events and filming: answers to the most common questions about Château de Lésigny.'}
+  locale={locale}
+  path="faq/"
+  jsonLd={ld}
+>
+
+  <section class="faq-hero section" aria-labelledby="faq-h1">
+    <div class="wrap">
+      <p class="eyebrow faq-hero__eyebrow" data-reveal>{isFr ? 'Informations pratiques' : 'Practical information'}</p>
+      <h1 id="faq-h1" class="faq-hero__title" data-reveal>
+        {isFr ? 'Questions fréquentes' : 'Frequently asked questions'}
+      </h1>
+      <p class="faq-hero__lead" data-reveal>
+        {isFr
+          ? 'L’essentiel pour préparer votre événement au château. Une question sans réponse ci-dessous ? Écrivez-nous.'
+          : 'The essentials for planning your event at the château. A question not answered below? Write to us.'}
+      </p>
+    </div>
+  </section>
+
+  <div class="wrap-wide"><hr class="rule" /></div>
+
+  <section class="section faq-list" aria-label={isFr ? 'Liste des questions' : 'List of questions'}>
+    <div class="wrap">
+      <ul class="faq-items" role="list">
+        {faqs.map((f, i) => (
+          <li class="faq-item" data-reveal>
+            <details open={i === 0}>
+              <summary class="faq-q">
+                <span>{isFr ? f.qFr : f.qEn}</span>
+                <span class="faq-q__mark" aria-hidden="true"></span>
+              </summary>
+              <p class="faq-a">{isFr ? f.aFr : f.aEn}</p>
+            </details>
+          </li>
+        ))}
+      </ul>
+
+      <div class="faq-cta" data-reveal>
+        <p class="faq-cta__text">
+          {isFr ? 'Vous ne trouvez pas votre réponse ?' : 'Can’t find your answer?'}
+        </p>
+        <div class="faq-cta__actions">
+          <a class="btn btn--primary" href={`${base}/contact/`}>
+            {isFr ? 'Nous contacter' : 'Contact us'}
+          </a>
+          <a class="btn btn--ghost" href={`${base}/partenaires/`}>
+            {isFr ? 'Nos partenaires' : 'Our partners'}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</PageLayout>
+
+<style>
+  .faq-hero {
+    background:
+      radial-gradient(110% 70% at 50% -5%, var(--calcaire-2), transparent 55%),
+      linear-gradient(180deg, var(--calcaire-2), var(--pierre));
+    padding-block: clamp(4rem, 11vh, 8rem) var(--space-xl);
+    min-height: auto;
+  }
+  .faq-hero__eyebrow { margin-bottom: var(--space-m); }
+  .faq-hero__title { max-width: 20ch; }
+  .faq-hero__lead {
+    font-size: var(--step-1);
+    color: var(--text-muted);
+    max-width: 54ch;
+    margin-top: var(--space-m);
+  }
+
+  .faq-items { list-style: none; padding: 0; margin: 0; max-width: 76ch; }
+  .faq-item { border-top: var(--hairline) solid var(--rule); }
+  .faq-item:last-child { border-bottom: var(--hairline) solid var(--rule); }
+
+  .faq-item details { padding: 0; }
+  .faq-q {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-m);
+    padding: var(--space-m) 0;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-weight: 460;
+    color: var(--text);
+  }
+  .faq-q::-webkit-details-marker { display: none; }
+  .faq-q:hover { color: var(--sang); }
+
+  /* +/– toggle */
+  .faq-q__mark {
+    position: relative;
+    flex-shrink: 0;
+    width: 1.1rem; height: 1.1rem;
+  }
+  .faq-q__mark::before,
+  .faq-q__mark::after {
+    content: '';
+    position: absolute;
+    background: var(--laiton-deep);
+    transition: opacity var(--dur-fast) var(--ease-soft), transform var(--dur-fast) var(--ease-soft);
+  }
+  .faq-q__mark::before { top: 50%; left: 0; right: 0; height: 2px; transform: translateY(-50%); }
+  .faq-q__mark::after { left: 50%; top: 0; bottom: 0; width: 2px; transform: translateX(-50%); }
+  details[open] .faq-q__mark::after { opacity: 0; }
+
+  .faq-a {
+    color: var(--text-muted);
+    max-width: 68ch;
+    padding-bottom: var(--space-m);
+    line-height: 1.65;
+  }
+
+  .faq-cta {
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-l);
+    border-top: var(--hairline) solid var(--rule);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+    align-items: flex-start;
+  }
+  .faq-cta__text {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    color: var(--text);
+  }
+  .faq-cta__actions { display: flex; gap: var(--space-s); flex-wrap: wrap; }
+
+  @media (max-width: 540px) {
+    .faq-q { font-size: var(--step-0); }
+  }
+</style>

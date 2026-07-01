@@ -187,6 +187,28 @@ const galleryLightbox: (LightboxTarget | null)[] = await Promise.all(
     return { src: big.src, w: 1600, h };
   })
 );
+
+// Featured weddings — real photography from the estate. Honest scene captions only;
+// no invented couple names or quotes (those are owner-supplied, consented, later).
+const weddingPlates = [
+  { photo: 'couple-staircase', frAlt: 'Couple sur le grand escalier de marbre', enAlt: 'Couple on the grand marble staircase' },
+  { photo: 'couple-petals', frAlt: 'Sortie sous une pluie de pétales', enAlt: 'Exit beneath a shower of petals' },
+  { photo: 'event-banquet-sparklers', frAlt: 'Dîner de gala aux cierges magiques', enAlt: 'Gala dinner with sparklers' },
+  { photo: 'couple-fireplace', frAlt: 'Les mariés devant une cheminée Renaissance', enAlt: 'The couple before a Renaissance fireplace' },
+  { photo: 'couple-window', frAlt: 'Portrait à contre-jour devant les hautes fenêtres', enAlt: 'Backlit portrait at the tall windows' },
+  { photo: 'exterior-vintage-car', frAlt: 'Voiture de collection dans la cour d’honneur', enAlt: 'Vintage car in the cour d’honneur' },
+  { photo: 'event-cocktail', frAlt: 'Cocktail de réception dans les salons', enAlt: 'Reception cocktail in the salons' },
+  { photo: 'couple-salon', frAlt: 'Les mariés dans un salon d’apparat', enAlt: 'The couple in a state salon' },
+];
+const weddingLightbox: (LightboxTarget | null)[] = await Promise.all(
+  weddingPlates.map(async (plate) => {
+    const meta = photos[plate.photo];
+    if (!meta) return null;
+    const big = await getImage({ src: meta, width: 1600, format: 'webp' });
+    const h = Math.round(1600 * meta.height / meta.width);
+    return { src: big.src, w: 1600, h };
+  })
+);
 ---
 
 <PageLayout
@@ -399,6 +421,45 @@ const galleryLightbox: (LightboxTarget | null)[] = await Promise.all(
           </li>
         ))}
       </ul>
+    </div>
+  </section>
+
+  <!-- ⑤b Featured weddings gallery ----------------------------------------- -->
+  <section class="section m-weddings" aria-labelledby="m-weddings-title">
+    <div class="wrap-wide">
+      <div class="m-weddings__header" data-reveal>
+        <p class="eyebrow">{isFr ? 'Mariages au château' : 'Weddings at the château'}</p>
+        <h2 id="m-weddings-title">
+          {isFr ? 'Quelques instants célébrés ici.' : 'A few moments celebrated here.'}
+        </h2>
+      </div>
+      <div class="m-weddings__grid" data-reveal data-pswp-gallery>
+        {weddingPlates.map((plate, i) => {
+          const lb = weddingLightbox[i];
+          return lb ? (
+            <a
+              class="m-wed pswp-item"
+              href={lb.src}
+              data-pswp-width={lb.w}
+              data-pswp-height={lb.h}
+              target="_blank"
+              rel="noopener"
+              aria-label={isFr ? `Agrandir : ${plate.frAlt}` : `Enlarge: ${plate.enAlt}`}
+            >
+              <Photo
+                name={plate.photo}
+                alt={isFr ? plate.frAlt : plate.enAlt}
+                ratio="4/5"
+                sizes="(max-width: 560px) 50vw, (max-width: 900px) 33vw, 25vw"
+              />
+            </a>
+          ) : (
+            <div class="m-wed">
+              <Photo name={plate.photo} alt={isFr ? plate.frAlt : plate.enAlt} ratio="4/5" />
+            </div>
+          );
+        })}
+      </div>
     </div>
   </section>
 
@@ -851,6 +912,27 @@ const galleryLightbox: (LightboxTarget | null)[] = await Promise.all(
     color: color-mix(in srgb, var(--ivoire) 65%, transparent);
     max-width: none;
   }
+
+  /* --- ⑤b Featured weddings ------------------------------------------------ */
+  .m-weddings__header { max-width: var(--measure); margin-bottom: var(--space-xl); }
+  .m-weddings__header h2 { margin-top: var(--space-3xs); }
+  .m-weddings__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-s);
+  }
+  .m-wed {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: var(--radius-s);
+  }
+  .m-wed :global(img) { transition: transform var(--dur-mid) var(--ease-soft); }
+  .m-wed:hover :global(img) { transform: scale(1.05); }
+  .m-wed.pswp-item { cursor: zoom-in; }
+  .m-wed:focus-visible { outline: 2px solid var(--laiton-soft); outline-offset: 2px; }
+  @media (max-width: 900px) { .m-weddings__grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 560px) { .m-weddings__grid { grid-template-columns: repeat(2, 1fr); } }
 
   /* --- ⑥ Testimonials ------------------------------------------------------ */
   .m-testimonials__eyebrow {

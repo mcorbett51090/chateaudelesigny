@@ -64,7 +64,15 @@
       "Bash(curl -s -m 15 https://www.chateaudelesigny.com/sitemap.xml)",
       "Bash(curl *)",
       "Bash(grep -o '\"text\":\"[^\"]\\\\{40,400\\\\}\"' /tmp/claude-1000/-workspaces-chateaudelesigny/f43830f5-3bfb-4e88-b7bd-517d856c992e/scratchpad/lesigny-home.html)",
-      "WebFetch(domain:store.chateaudelesigny.com)"
+      "WebFetch(domain:store.chateaudelesigny.com)",
+      "Bash(gh repo *)",
+      "Bash(grep -ivE 'node_modules|\\\\.md$')",
+      "Bash(git merge *)",
+      "Bash(sed -n '1,40p' src/pages/[locale]/sejour.astro)",
+      "Bash(sed -n '1,50p' src/pages/[locale]/boutique.astro)",
+      "Bash(grep -nA20 \"legal\\\\|contact\\\\|address\")",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(cat)"
     ]
   }
 }

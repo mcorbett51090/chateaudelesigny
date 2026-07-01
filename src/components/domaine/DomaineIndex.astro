@@ -219,18 +219,34 @@ for (const d of decors) {
       if (emptyEl) emptyEl.hidden = shown !== 0;
     };
 
-    for (const chip of chips) {
-      chip.addEventListener('click', () => {
-        const group = chip.dataset.group;       // 'space' | 'use'
-        const value = chip.dataset.value ?? 'tous';
-        for (const c of chips) {
-          if (c.dataset.group === group) c.setAttribute('aria-pressed', String(c === chip));
+    // Single source of truth for applying a filter, reused by the chips AND by
+    // external triggers (the clickable estate map) via a document CustomEvent.
+    // Setting grid.dataset alone does NOT re-run apply() — the filter state lives
+    // in this closure — so cross-component filtering MUST go through here.
+    const setFilter = (group: string | undefined, value: string) => {
+      if (group !== 'space' && group !== 'use') return;
+      for (const c of chips) {
+        if (c.dataset.group === group) {
+          c.setAttribute('aria-pressed', String((c.dataset.value ?? 'tous') === value));
         }
-        if (group === 'space') grid.dataset.space = value;
-        if (group === 'use') grid.dataset.use = value;
-        apply();
-      });
+      }
+      if (group === 'space') grid.dataset.space = value;
+      if (group === 'use') grid.dataset.use = value;
+      apply();
+    };
+
+    for (const chip of chips) {
+      chip.addEventListener('click', () => setFilter(chip.dataset.group, chip.dataset.value ?? 'tous'));
     }
+
+    // Clickable estate map (DomaineSchematic) dispatches this to filter + reveal.
+    document.addEventListener('domaine:filter', (e) => {
+      const detail = (e as CustomEvent<{ group?: string; value?: string }>).detail;
+      if (!detail?.group) return;
+      setFilter(detail.group, detail.value ?? 'tous');
+      const section = grid.closest('.index');
+      section?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   }
 </script>
 

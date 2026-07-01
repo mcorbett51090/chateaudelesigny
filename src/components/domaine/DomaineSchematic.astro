@@ -62,7 +62,15 @@ const aria = isFr
     </g>
 
     <!-- Le Château — long corps-de-logis, four round corner towers, south stair -->
-    <g id="zone-chateau">
+    <g
+      id="zone-chateau"
+      class="zone-hit"
+      role="button"
+      tabindex="0"
+      data-domaine-zone="chateau"
+      aria-label={isFr ? 'Filtrer l’index sur La Château' : 'Filter the index to The Château'}
+    >
+      <rect class="zone-hitbox" x="308" y="342" width="304" height="140" rx="6" />
       <rect class="draw-line block d5" x="330" y="360" width="260" height="92" pathLength="1" />
       <line class="draw-line inner d6" x1="404" y1="360" x2="404" y2="452" pathLength="1" />
       <line class="draw-line inner d6" x1="460" y1="360" x2="460" y2="452" pathLength="1" />
@@ -97,7 +105,15 @@ const aria = isFr
     </g>
 
     <!-- La Ferme — courtyard block in the eastern park -->
-    <g id="zone-ferme">
+    <g
+      id="zone-ferme"
+      class="zone-hit"
+      role="button"
+      tabindex="0"
+      data-domaine-zone="ferme"
+      aria-label={isFr ? 'Filtrer l’index sur La Ferme' : 'Filter the index to The Farm'}
+    >
+      <rect class="zone-hitbox" x="684" y="326" width="162" height="150" rx="6" />
       <rect class="draw-line d4" x="690" y="346" width="150" height="120" pathLength="1" />
       <rect class="draw-line cour d4" x="722" y="380" width="86" height="54" pathLength="1" />
       <text class="label" x="765" y="338" text-anchor="middle">{isFr ? 'LA FERME' : 'THE FARM'}</text>
@@ -130,7 +146,29 @@ const aria = isFr
       <text class="label label--sm" x="240" y="578" text-anchor="end">100 M</text>
     </g>
   </svg>
+  <p class="schematic__hint slate" aria-hidden="true">
+    {isFr ? 'Cliquez le château ou la ferme pour filtrer les décors ci-dessous.' : 'Click the château or the farm to filter the décors below.'}
+  </p>
 </figure>
+
+<script>
+  // Clickable estate map: each interactive zone filters the décor index (a
+  // separate component) via a document-level CustomEvent. Keyboard-operable.
+  // With JS off, the zones are inert plain SVG (no regression).
+  const zones = document.querySelectorAll<SVGGElement>('[data-domaine-zone]');
+  for (const z of zones) {
+    const value = z.getAttribute('data-domaine-zone') ?? 'tous';
+    const fire = () =>
+      document.dispatchEvent(new CustomEvent('domaine:filter', { detail: { group: 'space', value } }));
+    z.addEventListener('click', fire);
+    z.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        fire();
+      }
+    });
+  }
+</script>
 
 <style>
   .schematic {
@@ -146,6 +184,26 @@ const aria = isFr
     overflow-x: auto;
   }
   .schematic__svg { width: 100%; height: auto; overflow: visible; min-width: 660px; }
+
+  /* --- Interactive zones (clickable estate map) --- */
+  .zone-hitbox { fill: transparent; pointer-events: all; }
+  .zone-hit { cursor: pointer; }
+  .zone-hit:hover .label,
+  .zone-hit:focus-visible .label { fill: var(--sang); }
+  .zone-hit:hover .block,
+  .zone-hit:hover .d4 { stroke: var(--sang); }
+  .zone-hit:focus-visible { outline: 2px solid var(--laiton-deep); outline-offset: 3px; border-radius: 4px; }
+  .zone-hit:focus { outline: none; } /* only show ring for keyboard focus */
+
+  .schematic__hint {
+    text-align: center;
+    font-size: var(--step--1);
+    color: var(--text-muted);
+    margin-top: var(--space-s);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .zone-hit .label { transition: fill var(--dur-fast) var(--ease-soft); }
+  }
 
   /* --- Strokes --- */
   .draw-line {

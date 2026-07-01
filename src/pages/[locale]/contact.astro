@@ -434,22 +434,39 @@ const desc = isFr
       // (likely bots) — but always continue to the mailto path below so a
       // genuine fast/autofilled submission still reaches the visitor's own
       // mail client instead of being silently dropped.
+      const href = `mailto:${toEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lastBody)}`;
+
+      // UPGRADE: set PUBLIC_INQUIRY_ENDPOINT to deliver server-side instead of
+      // opening the mail client. We confirm ONLY on a real 2xx response and then
+      // stop — a configured backend that succeeds must never ALSO pop the mail
+      // client (the previous code dual-fired: POST *and* mailto, and showed the
+      // "ready to send" screen unconditionally even when the POST failed).
+      // On a non-OK status or a network error we fall through to the mailto
+      // path so a genuine inquiry is never silently dropped.
       const endpoint = (import.meta.env as Record<string, string | undefined>).PUBLIC_INQUIRY_ENDPOINT;
       if (endpoint && !isTooFast) {
         try {
-          await fetch(endpoint, {
+          const res = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ stream, subject, ...d }),
           });
-        } catch { /* fall through to mailto so the user is never stuck */ }
+          if (res.ok) {
+            reveal(stream);
+            return;
+          }
+          // eslint-disable-next-line no-console
+          console.error('Inquiry endpoint returned', res.status, '— falling back to mailto');
+        } catch (err) {
+          // eslint-disable-next-line no-console
+          console.error('Inquiry endpoint unreachable — falling back to mailto', err);
+        }
       }
 
       // Default, account-free path: open the user’s mail client, pre-filled.
-      const href = `mailto:${toEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lastBody)}`;
       window.location.href = href;
 
-      // Always show the confirmation + copy fallback (mailto can’t be detected reliably).
+      // Show the confirmation + copy fallback (mailto can’t be detected reliably).
       reveal(stream);
     });
   }

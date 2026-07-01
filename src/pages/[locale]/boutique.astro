@@ -2,6 +2,7 @@
 import PageLayout from '../../layouts/PageLayout.astro';
 import Photo from '../../components/Photo.astro';
 import { locales, type Locale, useT, localeBase } from '../../i18n/ui';
+import { siteOrigin, productNode } from '../../lib/schema';
 
 export function getStaticPaths() {
   return locales.map((locale) => ({ params: { locale } }));
@@ -11,6 +12,20 @@ const { locale } = Astro.params as { locale: Locale };
 const t = useT(locale);
 const base = localeBase(locale);
 const isFr = locale === 'fr';
+
+// Structured data: the one shop product (real price, no fabricated rating).
+const origin = siteOrigin(Astro.site, import.meta.env.BASE_URL);
+const ld = [
+  productNode({
+    url: `${origin}/${locale}/boutique/`,
+    name: 'The Beau Chapeau',
+    description: isFr
+      ? 'Chapeau en toile olive et cuir gravé, fabriqué en France — signé The Beau Chateau, inspiré du Château de Lésigny.'
+      : 'Olive-canvas and etched-leather hat, made in France — by The Beau Chateau, inspired by Château de Lésigny.',
+    priceEUR: 39.99,
+    availability: 'https://schema.org/PreOrder',
+  }),
+];
 
 // The shop lives on a separate Shopify storefront (store.chateaudelesigny.com).
 // This page mirrors its catalogue; the purchase / secure checkout happens there.
@@ -46,6 +61,7 @@ const payments = [
     : 'The Château de Lésigny shop — limited-edition pieces by The Beau Chateau, starting with The Beau Chapeau, an olive-canvas hat made in France.'}
   locale={locale}
   path="boutique/"
+  jsonLd={ld}
 >
 
   <!-- ① Hero ---------------------------------------------------------------- -->

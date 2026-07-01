@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
-import { site } from '../config/site';
 import { type Locale, useT, withLocale, withBase } from '../i18n/ui';
+import { siteOrigin, venueNode, jsonLdScript } from '../lib/schema';
 
 interface Props {
   title: string;
@@ -11,9 +11,12 @@ interface Props {
   path?: string;
   dark?: boolean;
   image?: string;
+  /** Extra JSON-LD nodes for this page (e.g. FAQPage, Product, LodgingBusiness).
+   *  Merged into ONE @graph with the canonical venue node — no duplicate entities. */
+  jsonLd?: object[];
 }
 
-const { title, description, locale, path = '', dark = false, image } = Astro.props;
+const { title, description, locale, path = '', dark = false, image, jsonLd = [] } = Astro.props;
 const t = useT(locale);
 
 // withLocale() already includes the deployment base; canonical/og must add it explicitly.
@@ -22,26 +25,10 @@ const altFr = new URL(withLocale(`/${locale}/${path}`, 'fr'), Astro.site).href;
 const altEn = new URL(withLocale(`/${locale}/${path}`, 'en'), Astro.site).href;
 const ogImage = image ?? new URL(withBase('/og/default.png'), Astro.site).href;
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'TouristAttraction',
-  name: site.name,
-  description,
-  url: canonical,
-  foundingDate: String(site.founded),
-  address: {
-    '@type': 'PostalAddress',
-    streetAddress: site.address.street,
-    postalCode: site.address.postalCode,
-    addressLocality: site.address.city,
-    addressRegion: site.address.region,
-    addressCountry: site.address.countryCode,
-  },
-  geo: { '@type': 'GeoCoordinates', latitude: site.address.lat, longitude: site.address.lng },
-  telephone: site.contact.phoneEvents,
-  email: site.contact.email,
-  sameAs: [site.social.instagram, site.social.facebook, site.social.youtube],
-};
+// One canonical LocalBusiness+EventVenue entity (stable @id) + any per-page nodes,
+// serialized into a single <script> @graph. Replaces the old TouristAttraction-only block.
+const origin = siteOrigin(Astro.site, import.meta.env.BASE_URL);
+const ldScript = jsonLdScript([venueNode(origin, description), ...jsonLd]);
 ---
 
 <!doctype html>
@@ -71,7 +58,7 @@ const jsonLd = {
     <link rel="icon" href={withBase('/crest-lesigny.svg')} type="image/svg+xml" />
     <!-- No-JS fallback: reveal-on-scroll elements must not stay hidden without JS. -->
     <noscript><style>[data-reveal]{opacity:1 !important;transform:none !important;}</style></noscript>
-    <set:html value={`<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`} />
+    <Fragment set:html={ldScript} />
   </head>
   <body>
     <a class="skip-link" href="#main">{t('skip')}</a>
