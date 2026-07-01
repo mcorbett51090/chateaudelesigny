@@ -1,0 +1,47 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import { localeBase, withBase } from '../i18n/ui';
+// GitHub Pages serves this as /404.html for any unmatched path. Bilingual-friendly:
+// FR-primary copy with an English link. noindex (it's an error page).
+const base = localeBase('fr');
+---
+<PageLayout
+  title="Page introuvable · Château de Lésigny"
+  description="La page demandée n’existe pas ou a été déplacée."
+  locale="fr"
+  path="404/"
+  noindex={true}
+>
+  <section class="nf section" aria-labelledby="nf-h1">
+    <div class="wrap nf__inner">
+      <p class="eyebrow" data-reveal>Erreur 404 · Page not found</p>
+      <h1 id="nf-h1" class="nf__title" data-reveal>
+        Cette page s’est perdue dans le domaine.
+      </h1>
+      <p class="nf__lede" data-reveal>
+        La page que vous cherchez n’existe pas ou a été déplacée.
+        <br />
+        <span class="slate">The page you’re looking for doesn’t exist or has moved.</span>
+      </p>
+      <div class="nf__actions" data-reveal>
+        <a class="btn btn--primary" href={`${base}/`}>Retour à l’accueil</a>
+        <a class="btn btn--ghost" href={withBase('/en/')}>English home</a>
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .nf {
+    background:
+      radial-gradient(110% 70% at 50% -5%, var(--calcaire-2), transparent 55%),
+      linear-gradient(180deg, var(--calcaire-2), var(--pierre));
+    min-height: 62vh;
+    display: flex;
+    align-items: center;
+  }
+  .nf__inner { text-align: center; }
+  .nf__title { max-width: 20ch; margin: var(--space-m) auto 0; }
+  .nf__lede { color: var(--text-muted); font-size: var(--step-1); max-width: 46ch; margin: var(--space-m) auto 0; }
+  .nf__actions { display: flex; gap: var(--space-s); justify-content: center; flex-wrap: wrap; margin-top: var(--space-l); }
+</style>

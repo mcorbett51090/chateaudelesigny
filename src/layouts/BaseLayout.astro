@@ -4,7 +4,7 @@ import { getImage } from 'astro:assets';
 import { site } from '../config/site';
 import { photos } from '../assets/images';
 import { type Locale, useT, withLocale, withBase } from '../i18n/ui';
-import { siteOrigin, venueNode, jsonLdScript } from '../lib/schema';
+import { siteOrigin, venueNode, jsonLdScript, breadcrumbNode } from '../lib/schema';
 import { features } from '../config/features';
 
 interface Props {
@@ -48,7 +48,10 @@ const origin = siteOrigin(Astro.site, import.meta.env.BASE_URL);
 const venueDescription = locale === 'fr' ? site.tagline.fr : site.tagline.en;
 const venueImg = await getImage({ src: photos['exterior-facade'], width: 1200, format: 'jpg' });
 const venueImageUrl = new URL(venueImg.src, Astro.site).href;
-const ldScript = jsonLdScript([venueNode(origin, venueDescription, venueImageUrl), ...jsonLd]);
+// BreadcrumbList on every non-home, non-404 page (Home → this page).
+const crumbName = title.split(/ [·—] /)[0].trim();
+const crumbs = path && !noindex ? [breadcrumbNode(origin, locale, path, crumbName)] : [];
+const ldScript = jsonLdScript([venueNode(origin, venueDescription, venueImageUrl), ...crumbs, ...jsonLd]);
 ---
 
 <!doctype html>

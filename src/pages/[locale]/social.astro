@@ -41,6 +41,17 @@ const platforms = [
 
 const feed = ['couple-kiss', 'exterior-ivy-autumn', 'int-ballroom-red', 'grounds-moat', 'bride-window', 'event-banquet-sparklers', 'int-grand-staircase', 'grounds-dovecote'];
 
+// Journal — featured episodes from the owners' own "The Beau Chateau" YouTube series
+// (rights-clean). Curated links (their thumbnails are clickbait-style, so text cards).
+const journal = [
+  { id: 'gc1Toy7749I', fr: 'La salle de bain — avant / après', en: 'The bathroom — before & after' },
+  { id: '-tVIOSibu54', fr: 'La chambre d’enfant terminée', en: 'The nursery, complete' },
+  { id: '0vD4gmEqjPo', fr: 'La rénovation du Grand Salon', en: 'The Grand Salon renovation' },
+  { id: 'EqAVyerE-qk', fr: 'Une salle secrète du château', en: 'A secret castle room' },
+  { id: 'P98HnQGu81g', fr: 'Réparer la façade du château', en: 'Repairing the château facade' },
+  { id: 'nApZKiJZDl0', fr: 'Les plans oubliés du château', en: 'The château’s forgotten plans' },
+];
+
 const title = `${isFr ? 'Suivez le château' : 'Follow the château'} — ${site.name}`;
 const desc = isFr
   ? 'Suivez Château de Lésigny sur Instagram, YouTube et Facebook — le domaine, les mariages et la série Castle Impossible (HGTV).'
@@ -122,6 +133,33 @@ const desc = isFr
         <Photo name="int-grand-hall" ratio="4/3"
           alt={isFr ? 'Le grand hall du château' : 'The château’s grand hall'} />
       </figure>
+    </div>
+  </section>
+
+  <!-- Journal — featured episodes from the owners' YouTube renovation series -->
+  <section class="section journal" aria-labelledby="journal-title">
+    <div class="wrap-wide">
+      <p class="eyebrow" data-reveal>{isFr ? 'Journal · The Beau Chateau' : 'Journal · The Beau Chateau'}</p>
+      <h2 id="journal-title" data-reveal>{isFr ? 'La restauration, épisode après épisode.' : 'The restoration, episode by episode.'}</h2>
+      <p class="journal__lede slate" data-reveal>
+        {isFr
+          ? 'Daphne, Ian & Archaea filment la renaissance du domaine, pièce par pièce.'
+          : 'Daphne, Ian & Archaea film the estate’s renaissance, room by room.'}
+      </p>
+      <ul class="journal__grid" data-reveal role="list">
+        {journal.map((v) => (
+          <li class="journal__item">
+            <a href={`https://www.youtube.com/watch?v=${v.id}`} target="_blank" rel="noopener noreferrer">
+              <span class="journal__play" aria-hidden="true">▶</span>
+              <span class="journal__title">{isFr ? v.fr : v.en}</span>
+              <span class="journal__meta slate">{isFr ? 'Voir l’épisode ↗' : 'Watch the episode ↗'}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <a class="btn btn--ghost journal__all" href={site.social.youtube} target="_blank" rel="noopener noreferrer" data-reveal>
+        {isFr ? 'Tous les épisodes sur YouTube' : 'All episodes on YouTube'}
+      </a>
     </div>
   </section>
 
@@ -244,5 +282,27 @@ const desc = isFr
     .platforms__grid { grid-template-columns: 1fr; gap: var(--space-m); }
     .feed__grid { grid-template-columns: repeat(2, 1fr); }
     .sfeature__wrap { grid-template-columns: 1fr; gap: var(--space-l); }
+    .journal__grid { grid-template-columns: 1fr !important; }
   }
+
+  /* --- Journal (YouTube episodes) --- */
+  .journal__lede { margin-top: var(--space-s); max-width: 52ch; color: var(--text-muted); }
+  .journal__grid {
+    list-style: none; padding: 0; margin: var(--space-l) 0 0;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-m);
+  }
+  .journal__item a {
+    display: flex; flex-direction: column; gap: var(--space-3xs);
+    padding: var(--space-m);
+    border: var(--hairline) solid var(--rule); border-left: 2px solid var(--sang);
+    border-radius: var(--radius-s); text-decoration: none; background: var(--calcaire);
+    height: 100%;
+    transition: border-color var(--dur-fast) var(--ease-soft), background var(--dur-fast) var(--ease-soft);
+  }
+  .journal__item a:hover { border-left-color: var(--laiton-deep); background: var(--calcaire-2); }
+  .journal__play { color: var(--sang); font-size: var(--step--1); }
+  .journal__title { font-family: var(--font-display); font-size: var(--step-1); font-weight: 460; color: var(--text); }
+  .journal__meta { font-size: var(--step--1); margin-top: auto; }
+  .journal__all { margin-top: var(--space-l); }
+  @media (max-width: 900px) { .journal__grid { grid-template-columns: repeat(2, 1fr); } }
 </style>

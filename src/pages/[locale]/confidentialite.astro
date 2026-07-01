@@ -21,7 +21,9 @@ const analyticsName = features.cloudflareBeacon ? 'Cloudflare Web Analytics' : '
 const formProcessor = features.web3formsKey ? 'Web3Forms' : features.inquiryEndpoint ? (isFr ? 'notre prestataire de formulaire' : 'our form provider') : '';
 const newsletterOn = Boolean(features.newsletterUrl);
 const vouchersOn = Boolean(features.vouchers.stay || features.vouchers.shop);
-const embedsOn = Boolean(features.tour360Url);
+// Always true: the history page embeds the owners' YouTube before/after reveals
+// (consent-gated / click-to-load), and the 360° tour is added when configured.
+const embedsOn = true || Boolean(features.tour360Url);
 const anyThirdParty = analyticsOn || Boolean(formProcessor) || newsletterOn || vouchersOn || embedsOn;
 ---
 <PageLayout
@@ -270,7 +272,7 @@ const anyThirdParty = analyticsOn || Boolean(formProcessor) || newsletterOn || v
             )}
             {embedsOn && (
               <p class="legal-para">
-                Certains contenus immersifs (visite virtuelle à 360°) proviennent de services tiers susceptibles de déposer des cookies. Conformément aux recommandations de la CNIL, ils <strong>ne se chargent qu&rsquo;après un clic explicite de votre part</strong> («&nbsp;charger le contenu&nbsp;»)&nbsp;: <strong>aucun cookie tiers n&rsquo;est déposé avant votre consentement</strong>. Votre choix est mémorisé localement dans votre navigateur.
+                Certains contenus immersifs (vidéos de restauration hébergées sur YouTube, visite virtuelle à 360°) proviennent de services tiers susceptibles de déposer des cookies. Conformément aux recommandations de la CNIL, ils <strong>ne se chargent qu&rsquo;après un clic explicite de votre part</strong> («&nbsp;charger le contenu&nbsp;»)&nbsp;: <strong>aucun cookie tiers n&rsquo;est déposé avant votre consentement</strong>. Votre choix est mémorisé localement dans votre navigateur.
               </p>
             )}
             {vouchersOn && (
@@ -297,7 +299,7 @@ const anyThirdParty = analyticsOn || Boolean(formProcessor) || newsletterOn || v
             )}
             {embedsOn && (
               <p class="legal-para">
-                Some immersive content (the 360° virtual tour) is provided by third parties that may set cookies. In line with CNIL guidance, it <strong>loads only after you explicitly click to load it</strong>: <strong>no third-party cookie is set before your consent</strong>. Your choice is remembered locally in your browser.
+                Some immersive content (restoration videos hosted on YouTube, the 360° virtual tour) is provided by third parties that may set cookies. In line with CNIL guidance, it <strong>loads only after you explicitly click to load it</strong>: <strong>no third-party cookie is set before your consent</strong>. Your choice is remembered locally in your browser.
               </p>
             )}
             {vouchersOn && (

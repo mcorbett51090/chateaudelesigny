@@ -127,6 +127,14 @@ export function productNode(opts: {
   };
 }
 
+/** BreadcrumbList: Home → current page (only when not the home page). */
+export function breadcrumbNode(origin: string, locale: string, path: string, name: string) {
+  const home = { '@type': 'ListItem', position: 1, name: locale === 'fr' ? 'Accueil' : 'Home', item: `${origin}/${locale}/` };
+  const items: object[] = [home];
+  if (path) items.push({ '@type': 'ListItem', position: 2, name, item: `${origin}/${locale}/${path}` });
+  return { '@type': 'BreadcrumbList', itemListElement: items };
+}
+
 /** FAQPage from real Q&A pairs. */
 export function faqNode(items: { q: string; a: string }[]) {
   return {
