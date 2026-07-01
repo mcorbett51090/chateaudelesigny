@@ -34,10 +34,10 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      // Exclude utility/tracking routes: conversion thank-you pages (/merci/), the
-      // attribution redirect hops (/go/), and the internal analytics dashboard — all noindex.
+      // Exclude utility/tracking routes: conversion thank-you pages (/merci/), the attribution
+      // redirect hops (/go/), and the owner-only area (/interne/*, dashboard + future tools) — all noindex.
       filter: (page) =>
-        !page.includes('/merci/') && !page.includes('/go/') && !page.includes('/tableau-de-bord/'),
+        !page.includes('/merci/') && !page.includes('/go/') && !page.includes('/interne/'),
       i18n: {
         defaultLocale: 'fr',
         locales: { fr: 'fr-FR', en: 'en-US' },

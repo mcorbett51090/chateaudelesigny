@@ -1,6 +1,6 @@
 ---
-import PageLayout from '../../layouts/PageLayout.astro';
-import { locales, type Locale } from '../../i18n/ui';
+import PageLayout from '../../../layouts/PageLayout.astro';
+import { locales, type Locale } from '../../../i18n/ui';
 import { readdirSync, readFileSync } from 'node:fs';
 
 // No-login analytics dashboard. Month-by-month time series from the committed snapshots
@@ -58,7 +58,7 @@ const streamLabel: Record<string, string> = isFr
 const fmt = (n: number) => new Intl.NumberFormat(isFr ? 'fr-FR' : 'en-US').format(n);
 const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny`;
 ---
-<PageLayout title={title} description={isFr ? 'Tableau de bord d’audience du site.' : 'Website audience dashboard.'} locale={locale} path="tableau-de-bord/" noindex={true}>
+<PageLayout title={title} description={isFr ? 'Tableau de bord d’audience du site.' : 'Website audience dashboard.'} locale={locale} path="interne/tableau-de-bord/" noindex={true}>
   <section class="db section">
     <div class="wrap">
       <p class="eyebrow" data-reveal>{isFr ? 'Interne · Audience du site' : 'Internal · Site audience'}</p>

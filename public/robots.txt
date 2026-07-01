@@ -1,9 +1,9 @@
 User-agent: *
 Allow: /
-# Internal analytics dashboard — keep crawlers out (it's also noindex + sitemap-excluded, and
-# will be moved behind an SSO login wall). See docs/ANALYTICS.md + the dashboard-sso FORGE plan.
-Disallow: /fr/tableau-de-bord/
-Disallow: /en/tableau-de-bord/
+# Owner-only area — all /interne/* pages (dashboard, future tools). Kept out of crawlers (also
+# noindex + sitemap-excluded, and going behind an SSO login wall). See docs/DASHBOARD-SSO-SETUP.md.
+Disallow: /fr/interne/
+Disallow: /en/interne/
 
 # Update this to the custom domain (https://www.chateaudelesigny.com/sitemap-index.xml) after the DNS cutover.
 Sitemap: https://mcorbett51090.github.io/chateaudelesigny/sitemap-index.xml

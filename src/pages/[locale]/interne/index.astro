@@ -1,0 +1,65 @@
+---
+import PageLayout from '../../../layouts/PageLayout.astro';
+import { locales, type Locale, localeBase } from '../../../i18n/ui';
+
+// Owner hub. All owner-only pages live under /interne/* so a SINGLE Cloudflare Access rule
+// (/interne/*) protects every present and future one. noindex + sitemap-excluded.
+export function getStaticPaths() {
+  return locales.map((locale) => ({ params: { locale } }));
+}
+const { locale } = Astro.params as { locale: Locale };
+const isFr = locale === 'fr';
+const base = localeBase(locale);
+
+const tools = [
+  {
+    href: `${base}/interne/tableau-de-bord/`,
+    fr: 'Tableau de bord', en: 'Dashboard',
+    dFr: 'Audience du site, conversions par activité, tendances et événements.',
+    dEn: 'Site audience, conversions by stream, trends and timeline events.',
+  },
+  // Add future owner-only tools here — each new page under /interne/ is auto-protected.
+];
+const title = `${isFr ? 'Espace propriétaire' : 'Owner area'} · Château de Lésigny`;
+---
+<PageLayout title={title} description={isFr ? 'Pages réservées aux propriétaires.' : 'Owner-only pages.'} locale={locale} path="interne/" noindex={true}>
+  <section class="int section">
+    <div class="wrap int__inner">
+      <p class="eyebrow" data-reveal>{isFr ? 'Espace propriétaire' : 'Owner area'}</p>
+      <h1 data-reveal>{isFr ? 'Vos outils' : 'Your tools'}</h1>
+      <p class="int__lede slate" data-reveal>
+        {isFr
+          ? 'Pages réservées — protégées par authentification (seules les adresses autorisées y accèdent).'
+          : 'Reserved pages — protected by sign-in (only approved addresses get in).'}
+      </p>
+      <ul class="int__grid" data-reveal role="list">
+        {tools.map((t) => (
+          <li>
+            <a href={t.href}>
+              <span class="int__t">{isFr ? t.fr : t.en}</span>
+              <span class="int__d slate">{isFr ? t.dFr : t.dEn}</span>
+              <span class="int__go" aria-hidden="true">→</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .int { background: linear-gradient(180deg, var(--calcaire-2), var(--pierre)); min-height: 60vh; }
+  .int__lede { margin-top: var(--space-2xs); max-width: 52ch; }
+  .int__grid { list-style: none; padding: 0; margin: var(--space-l) 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: var(--space-m); }
+  .int__grid a {
+    display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 0.2rem var(--space-s);
+    padding: var(--space-l); text-decoration: none;
+    border: var(--hairline) solid var(--rule); border-top: 2px solid var(--sang); border-radius: var(--radius-s);
+    background: var(--calcaire);
+    transition: border-color var(--dur-fast) var(--ease-soft), background var(--dur-fast) var(--ease-soft);
+  }
+  .int__grid a:hover { border-top-color: var(--laiton-deep); background: var(--calcaire-2); }
+  .int__t { font-family: var(--font-display); font-size: var(--step-1); color: var(--text); }
+  .int__d { grid-column: 1 / -1; font-size: var(--step--1); }
+  .int__go { color: var(--sang); font-size: var(--step-1); }
+</style>

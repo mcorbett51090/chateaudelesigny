@@ -77,7 +77,7 @@ const waText = encodeURIComponent(
   <div class="ft__bar wrap-wide">
     {/* "Secret door": the © glyph is a discreet link to the owner-only dashboard.
         Looks like ordinary footer text; it will sit behind the Cloudflare Access SSO wall. */}
-    <span><a class="ft__door" href={`${base}/tableau-de-bord/`} aria-label={locale === 'fr' ? 'Espace propriétaire' : 'Owner area'} rel="nofollow">©</a> {year} {site.name}. {t('footer.rights')}.</span>
+    <span><a class="ft__door" href={`${base}/interne/`} aria-label={locale === 'fr' ? 'Espace propriétaire' : 'Owner area'} rel="nofollow">©</a> {year} {site.name}. {t('footer.rights')}.</span>
     <span class="ft__credit">
       {locale === 'fr' ? 'Blason de Lésigny' : 'Arms of Lésigny'} :
       <a href="https://commons.wikimedia.org/wiki/File:Blason_L%C3%A9signy.svg" target="_blank" rel="noopener">Chatsam</a>,

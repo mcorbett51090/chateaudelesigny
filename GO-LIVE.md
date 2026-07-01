@@ -24,7 +24,7 @@ Each turns a feature on the moment it's set; the privacy policy updates itself t
 ## 2b. Lock the analytics dashboard (SSO) — [`docs/DASHBOARD-SSO-SETUP.md`](docs/DASHBOARD-SSO-SETUP.md)
 Decided: repo → **private** + **Cloudflare Pages** + **Cloudflare Access** (Google + email code, email allow-list).
 - [ ] Connect the repo to Cloudflare Pages; verify the `*.pages.dev` build; then flip the repo **private**
-- [ ] Set up Cloudflare Access on `/fr|/en/tableau-de-bord/*` with the staff email allow-list
+- [ ] Set up Cloudflare Access on `/fr|/en/interne/*` (covers the dashboard + any future owner page) with the staff email allow-list
 - [ ] Verify no bypass (github.io 404, raw repo JSON private)
 - [ ] **Do NOT** set the digest secrets (`CF_API_TOKEN`…) until the above is green — it would auto-publish real numbers to the repo
 

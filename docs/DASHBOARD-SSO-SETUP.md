@@ -1,6 +1,8 @@
 # Dashboard SSO — setup runbook
 
-Goal: only the owner + a few staff can open `/tableau-de-bord/` **and** its data; no bypass.
+Goal: only the owner + a few staff can open the owner area `/interne/*` (the dashboard + any future
+owner-only page) **and** its data; no bypass. All owner pages live under `/interne/` so ONE Access
+rule protects them all.
 Decision made: **whole repo → private + host on Cloudflare Pages + Cloudflare Access.** Full
 reasoning: [`.ravenclaude/runs/forge/dashboard-sso/plan.md`](../.ravenclaude/runs/forge/dashboard-sso/plan.md).
 
@@ -38,7 +40,7 @@ Legend: **[you]** = clicks in Cloudflare/GitHub · **[dev]** = a code change (pi
    can't resurrect the old public origin.
 
 ## Phase 2 — prove the bypasses are dead
-6. **[you]** Open `https://mcorbett51090.github.io/chateaudelesigny/fr/tableau-de-bord/` → must be
+6. **[you]** Open `https://mcorbett51090.github.io/chateaudelesigny/fr/interne/tableau-de-bord/` → must be
    **404**. If it still loads: GitHub → Settings → Pages → Source = **None**.
 7. **[you]** Open `https://raw.githubusercontent.com/mcorbett51090/chateaudelesigny/main/reports/analytics/events.json`
    while logged out → must be **404 / requires auth**.
@@ -48,8 +50,9 @@ Legend: **[you]** = clicks in Cloudflare/GitHub · **[dev]** = a code change (pi
 9. **[you]** **Settings → Authentication → Login methods:** add **Google** (paste a Google OAuth
    client ID/secret — 10-min setup, or ask me for the walkthrough) **and** **One-time PIN** (no setup;
    this is the "Apple / any email" path — users get a 6-digit code).
-10. **[you]** **Access → Applications → Add → Self-hosted.** App name "Dashboard". Add **two paths**
-    (or one app per path): `<your-host>/fr/tableau-de-bord/*` and `<your-host>/en/tableau-de-bord/*`.
+10. **[you]** **Access → Applications → Add → Self-hosted.** App name "Owner area". Add the two
+    owner-area paths — `<your-host>/fr/interne/*` and `<your-host>/en/interne/*`. **This one rule
+    covers the dashboard AND every future owner page you add under `/interne/`** — no reconfiguring.
 11. **[you]** **Policy:** Action **Allow**, Include → **Emails** → list the owner's email **first**,
     then each staff email. (Add/remove people later = edit this list. No code, no deploy.)
 12. **[you]** Session duration ~24h. Save.
@@ -61,7 +64,7 @@ Legend: **[you]** = clicks in Cloudflare/GitHub · **[dev]** = a code change (pi
     real monthly digest (see [`docs/ANALYTICS.md`](ANALYTICS.md)). Re-check the repo has 0 forks first.
 
 ## Definition of done (all must be true)
-- [ ] `github.io/.../tableau-de-bord/` returns **404** (verified, not assumed).
+- [ ] `github.io/.../interne/tableau-de-bord/` returns **404** (verified, not assumed).
 - [ ] `raw.githubusercontent.com/.../reports/analytics/*.json` is **private/404** logged-out.
 - [ ] Incognito hit to the dashboard → **redirected to the Cloudflare login**, never a page with data.
 - [ ] A **non-listed** account is **denied**; an **allow-listed** email (Google **and** email-code) gets in.

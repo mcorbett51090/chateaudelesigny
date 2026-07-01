@@ -62,7 +62,7 @@ which would reintroduce a consent banner.)*
 ## Phases & status
 - **Phase 1 — tracking (BUILT):** `/merci/` pages, `/go/` links, contact-form re-route, sitemap exclusion.
 - **Phase 2 — digest (BUILT, dormant):** generator script + monthly GitHub Action — runs once secrets are set.
-- **Phase 3 — dashboard (BUILT):** no-login `/{locale}/tableau-de-bord/` reading the snapshot.
+- **Phase 3 — dashboard (BUILT):** owner-area `/{locale}/interne/tableau-de-bord/` reading the snapshot.
 - **Phase 0 — activation (OWNER):** see below, then watch ~3–4 weeks of real traffic before trusting numbers.
 
 ## Owner setup (paste-a-value — see also [`GO-LIVE.md`](../GO-LIVE.md))
