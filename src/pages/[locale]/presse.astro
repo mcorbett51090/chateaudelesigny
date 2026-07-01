@@ -420,7 +420,11 @@ const estateHighlights = [
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--laiton);
+  /* Was `color: var(--laiton)` — raw brass as text on the light `--calcaire` card is
+     ~2.8:1, well under AA (tokens.css reserves `--laiton` for hairline rules/dividers,
+     never text fills). `.award-card--alt` already proved the accessible pattern with
+     `--sang`; `--text-muted` keeps the base variant distinct from that accent and AA-safe. */
+  color: var(--text-muted);
   margin-top: var(--space-3xs);
 }
 .award-card--alt .award-card__label { color: var(--sang); }
@@ -669,7 +673,9 @@ const estateHighlights = [
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--laiton);
+  /* Was `color: var(--laiton)` — same ~2.8:1 contrast failure as .award-card__label above
+     (brass as text on light `--calcaire`/`--pierre`); switched to the AA-safe muted ink. */
+  color: var(--text-muted);
 }
 
 .evidence-card__fact {

@@ -288,38 +288,6 @@ const todayEntry = timelineEntries[timelineEntries.length - 1];
   </section>
 
 
-  <!-- ═══════════════════════════════════════════════
-       3. ESTATE BAND — full-bleed aerial behind scrim
-       ═══════════════════════════════════════════════ -->
-  <section class="estate-band" aria-labelledby="estate-band-heading">
-    <div class="estate-band__media">
-      <Photo
-        fill
-        name="exterior-aerial"
-        sizes="100vw"
-        widths={[768, 1280, 1920]}
-        alt={isFr
-          ? 'Vue aérienne du Château de Lésigny et de son parc boisé entouré de douves'
-          : 'Aerial view of Château de Lésigny and its wooded park encircled by moats'}
-      />
-    </div>
-    <div class="estate-band__scrim" aria-hidden="true"></div>
-
-    <div class="wrap estate-band__inner" data-reveal>
-      <p class="eyebrow estate-band__eyebrow">{isFr ? 'Le domaine' : 'The estate'}</p>
-      <p id="estate-band-heading" class="estate-band__caption">
-        {isFr
-          ? `${site.estate.hectares} hectares de parc, de douves et de terrasses`
-          : `${site.estate.hectares} hectares of park, moats, and terraces`}
-      </p>
-      <p class="estate-band__sub">
-        {isFr
-          ? `Parc boisé, pièces d’eau, communs, ferme et une cour d’un hectare : chaque espace forme un décor autonome.`
-          : `Wooded park, water features, outbuildings, a working farm, and a one-hectare courtyard: each space forms a self-contained set.`}
-      </p>
-    </div>
-  </section>
-
 
   <!-- ═══════════════════════════════════════════════
        4. ARCHITECTURE ESSAY — narrow column
@@ -1034,7 +1002,9 @@ const todayEntry = timelineEntries[timelineEntries.length - 1];
   }
   .today__cue {
     margin-top: var(--space-2xs, 0.45rem);
-    color: var(--laiton);
+    /* was var(--laiton) — brass is documented as borders/rules only and
+       fails AA contrast (~3:1) as text on --calcaire; .slate's inherited
+       --text-muted keeps the same "quiet caption" role legibly. */
   }
   /* The present-day panel: same dark Castle Impossible block, now the terminus. */
   .today__panel {
@@ -1175,7 +1145,8 @@ const todayEntry = timelineEntries[timelineEntries.length - 1];
   .cta-section { background: var(--calcaire-2); }
   .cta-wrap { display: grid; gap: var(--space-m); }
   .cta-rule { margin-bottom: var(--space-s); }
-  .cta-eyebrow { color: var(--laiton); }
+  /* .cta-eyebrow: no color override — var(--laiton) here failed AA contrast
+     (~3:1) as text on --calcaire-2; default .eyebrow (--text-muted) is AA. */
   .cta-title { font-size: var(--step-3); max-width: 28ch; }
   .cta-body { color: var(--text-muted); max-width: 48ch; }
   .cta-btn { justify-self: start; margin-top: var(--space-xs); }
@@ -1269,7 +1240,7 @@ const todayEntry = timelineEntries[timelineEntries.length - 1];
     gap: var(--space-2xl);
     align-items: start;
   }
-  .treasure__portrait { margin: 0; position: sticky; top: var(--space-l); }
+  .treasure__portrait { margin: 0; position: sticky; top: 5.5rem; }
   .treasure__portrait :global(img) {
     width: 100%;
     height: auto;

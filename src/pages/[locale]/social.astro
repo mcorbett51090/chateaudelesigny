@@ -84,6 +84,65 @@ const desc = isFr
     </div>
   </section>
 
+  <!-- YouTube — editorial feature (dark, mirrors the history page) -->
+  <section class="sfeature sfeature--dark is-dark" aria-labelledby="yt-title">
+    <div class="wrap-wide sfeature__wrap">
+      <div class="sfeature__text" data-reveal>
+        <p class="eyebrow sfeature__eyebrow">YouTube · TheBeauChateau</p>
+        <h2 id="yt-title" class="sfeature__title">
+          {isFr ? 'La renaissance du château, en vidéo' : 'The château’s renaissance, on film'}
+        </h2>
+        <p class="sfeature__body">
+          {isFr
+            ? 'Sur sa chaîne TheBeauChateau, le domaine documente la restauration pièce par pièce, les coulisses de la série « Castle Impossible » (HGTV) et la vie du château au fil des saisons.'
+            : 'On its TheBeauChateau channel, the estate documents the restoration room by room, the behind-the-scenes of the HGTV series “Castle Impossible”, and the life of the château through the seasons.'}
+        </p>
+        <p class="sfeature__body">
+          {isFr
+            ? 'Visites, avant/après, savoir-faire d’artisans et grands événements : une plongée au long cours dans un monument bien vivant.'
+            : 'Tours, before-and-afters, artisan craft, and grand events: a long-form dive into a monument very much alive.'}
+        </p>
+        <div class="sfeature__actions">
+          <a class="btn btn--primary" href={site.social.youtube} target="_blank" rel="noopener noreferrer"
+             aria-label={isFr ? 'S’abonner à TheBeauChateau sur YouTube (nouvelle fenêtre)' : 'Subscribe to TheBeauChateau on YouTube (opens in new tab)'}>
+            {isFr ? 'S’abonner sur YouTube' : 'Subscribe on YouTube'}
+          </a>
+        </div>
+      </div>
+      <figure class="sfeature__media" data-reveal>
+        <Photo name="int-grand-hall" ratio="4/3"
+          alt={isFr ? 'Le grand hall du château' : 'The château’s grand hall'} />
+      </figure>
+    </div>
+  </section>
+
+  <!-- Facebook — editorial feature (light, media-first) -->
+  <section class="section sfeature sfeature--alt" aria-labelledby="fb-title">
+    <div class="wrap-wide sfeature__wrap sfeature__wrap--reverse">
+      <figure class="sfeature__media" data-reveal>
+        <Photo name="exterior-garden-party" ratio="4/3"
+          alt={isFr ? 'Réception dans les jardins du château' : 'A reception in the château gardens'} />
+      </figure>
+      <div class="sfeature__text" data-reveal>
+        <p class="eyebrow sfeature__eyebrow">Facebook</p>
+        <h2 id="fb-title" class="sfeature__title">
+          {isFr ? 'Les rendez-vous du domaine' : 'The life of the estate'}
+        </h2>
+        <p class="sfeature__body">
+          {isFr
+            ? 'Sur Facebook, retrouvez les actualités du château, les événements ouverts au public, les annonces de diffusion et les temps forts de la saison.'
+            : 'On Facebook, follow the château’s news, public events, broadcast announcements, and the season’s highlights.'}
+        </p>
+        <div class="sfeature__actions">
+          <a class="btn btn--primary" href={site.social.facebook} target="_blank" rel="noopener noreferrer"
+             aria-label={isFr ? 'Suivre Château de Lésigny sur Facebook (nouvelle fenêtre)' : 'Follow Château de Lésigny on Facebook (opens in new tab)'}>
+            {isFr ? 'Suivre sur Facebook' : 'Follow on Facebook'}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Feed -->
   <section class="section feed">
     <div class="wrap-wide">
@@ -124,10 +183,13 @@ const desc = isFr
     background: var(--calcaire); box-shadow: inset 0 0 0 1px var(--rule);
     transition: box-shadow var(--dur-mid) var(--ease-soft), transform var(--dur-mid) var(--ease-soft);
   }
-  .pcard:hover { box-shadow: inset 0 0 0 1px var(--laiton); transform: translateY(-3px); }
+  .pcard:hover, .pcard:focus-visible { box-shadow: inset 0 0 0 1px var(--laiton); transform: translateY(-3px); }
   .pcard__icon { color: var(--sang); }
   .pcard__name { font-family: var(--font-display); font-size: var(--step-2); margin-top: var(--space-2xs); }
-  .pcard__handle { color: var(--laiton); }
+  /* Was `color: var(--laiton)` — raw brass on `--calcaire` is ~2.8:1, well under AA, and
+     silently overrode the `.slate` utility's accessible `--text-muted`. Tokens.css itself
+     restricts `--laiton` to hairline rules/dividers, never text fills — removed so `.slate`
+     (already applied in the markup) provides the AA-safe color. */
   .pcard__line { color: var(--text-muted); margin-block: var(--space-2xs) var(--space-s); }
   .pcard__cta { font-family: var(--font-ui); font-size: var(--step--1); letter-spacing: 0.04em; }
 
@@ -136,11 +198,28 @@ const desc = isFr
   .feed__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-2xs); }
   .feed__cell { overflow: hidden; }
   .feed__cell :global(img) { transition: transform var(--dur-slow) var(--ease-cut); }
-  .feed__cell:hover :global(img) { transform: scale(1.06); }
+  .feed__cell:hover :global(img), .feed__cell:focus-visible :global(img) { transform: scale(1.06); }
   .feed__cta { text-align: center; margin-top: var(--space-l); }
+
+  /* Editorial feature sections (YouTube / Facebook) — mirror the history page */
+  .sfeature { padding-block: clamp(3.5rem, 8vh, 6rem); }
+  .sfeature--dark { background: var(--suie); color: var(--ivoire); }
+  .sfeature__wrap {
+    display: grid; grid-template-columns: 1.05fr 0.95fr;
+    gap: clamp(var(--space-l), 5vw, var(--space-2xl)); align-items: center;
+  }
+  .sfeature__wrap--reverse .sfeature__media { order: -1; }
+  .sfeature--dark .sfeature__eyebrow { color: var(--laiton-soft); }
+  .sfeature__title { font-size: var(--step-3); margin-block: var(--space-s) var(--space-m); max-width: 20ch; }
+  .sfeature__body { max-width: 52ch; line-height: 1.7; color: var(--text-muted); }
+  .sfeature--dark .sfeature__body { color: color-mix(in srgb, var(--ivoire) 82%, transparent); }
+  .sfeature__body + .sfeature__body { margin-top: var(--space-s); }
+  .sfeature__actions { margin-top: var(--space-l); display: flex; gap: var(--space-s); flex-wrap: wrap; }
+  .sfeature__media { margin: 0; box-shadow: 0 24px 60px -30px rgba(20, 16, 12, 0.6); }
 
   @media (max-width: 760px) {
     .platforms__grid { grid-template-columns: 1fr; gap: var(--space-m); }
     .feed__grid { grid-template-columns: repeat(2, 1fr); }
+    .sfeature__wrap { grid-template-columns: 1fr; gap: var(--space-l); }
   }
 </style>

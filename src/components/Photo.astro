@@ -41,7 +41,9 @@ const style = !fill && ratio ? `aspect-ratio:${ratio}` : undefined;
 </figure>
 
 <style>
-  .photo { position: relative; overflow: hidden; margin: 0; background: var(--calcaire); }
+  /* Theme-aware surface so the missing-image placeholder text stays legible on
+     dark pages (var(--surface) tracks .is-dark; --calcaire is a fixed light hex). */
+  .photo { position: relative; overflow: hidden; margin: 0; background: var(--surface); }
   .photo :global(img) { width: 100%; height: 100%; object-fit: cover; display: block; }
   .photo--fill { position: absolute; inset: 0; }
   .photo--fill :global(img) { height: 100%; }

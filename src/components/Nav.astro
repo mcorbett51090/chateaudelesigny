@@ -49,6 +49,12 @@ const here = Astro.url.pathname;
     background: color-mix(in srgb, var(--pierre) 86%, transparent);
     backdrop-filter: blur(12px) saturate(1.1);
     border-bottom: var(--hairline) solid var(--rule);
+    /* The nav bar keeps its light translucent background on every page, so its
+       text must stay dark even when the page sets `.is-dark` on <html> (e.g. the
+       Filming page) — otherwise all nav text inherits ivory and vanishes. */
+    color: var(--encre);
+    --text-muted: var(--encre-soft);
+    --rule: color-mix(in srgb, var(--laiton) 55%, transparent);
   }
   .nav__inner {
     display: flex; align-items: center; gap: var(--space-m);

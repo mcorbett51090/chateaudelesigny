@@ -17,6 +17,9 @@ html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
   font-size: 100%;
+  /* Keep anchor-jump targets clear of the sticky nav for ALL users — this must
+     not be gated behind prefers-reduced-motion (only the snap behavior is). */
+  scroll-padding-top: var(--nav-h);
 }
 
 body {
@@ -130,7 +133,6 @@ main > section:first-of-type {
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-snap-type: y proximity;
-    scroll-padding-top: var(--nav-h);
   }
   main > section {
     scroll-snap-align: start;
