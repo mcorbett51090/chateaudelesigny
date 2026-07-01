@@ -13,3 +13,7 @@ node_modules/
 .DS_Store
 *.log
 npm-debug.log*
+
+# stray temp/session artifacts (keep .ravenclaude/runs/forge/)
+_sheet.jpg
+.ravenclaude/runs/*-*-*-*-*/
