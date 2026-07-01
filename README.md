@@ -64,6 +64,18 @@ clause) appears. Leaving them empty is a fully supported, honest state.
 > service (Web3Forms) that works on any static host. To run your own `/api/*` function instead,
 > deploy to Cloudflare Pages / Netlify and point `PUBLIC_INQUIRY_ENDPOINT` at it.
 
+**3. Preview everything at once** — `npm run dev:demo` (or `build:demo`) sets `PUBLIC_DEMO=1`,
+which populates *every* gated feature with realistic demo data so you can see them without any
+keys/assets: review stars + quotes, the before/after restoration slider, the 360° tour card,
+gift-voucher buttons, the newsletter form, and a filled-in Mentions légales. Demo data is
+preview-only — the [`check-todos`](scripts/check-todos.mjs) launch gate **fails a production build
+while `PUBLIC_DEMO` is set**, so it can never ship live.
+
+> **Launch gate:** `npm run build` runs `scripts/check-todos.mjs` first. On the interim
+> github.io preview it only warns about unfilled legal `TODO:` fields; on a production build
+> (custom-domain `SITE`, or `GO_LIVE=1`) it **fails** until they're filled — and always fails if
+> `PUBLIC_DEMO` is set.
+
 ## Structure
 
 - `src/pages/[locale]/` — bilingual pages

@@ -40,6 +40,14 @@ try {
   /* if the config can't be read, fall back to the env flag only */
 }
 
+// Demo/preview data must never ship to production.
+if (isProduction && process.env.PUBLIC_DEMO === '1') {
+  console.error('\n✗ check-todos: PUBLIC_DEMO=1 on a production build.');
+  console.error('  Demo/placeholder data (reviews, vouchers, demo legal…) must never go live.');
+  console.error('  Unset PUBLIC_DEMO for a production build, or build the preview host instead.\n');
+  process.exit(1);
+}
+
 if (todoLines.length === 0) {
   console.log('✓ check-todos: no TODO: placeholders in site.ts');
   process.exit(0);

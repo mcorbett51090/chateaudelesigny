@@ -10,9 +10,11 @@ const t = useT(locale); const base = localeBase(locale); const isFr = locale ===
 // This policy describes exactly the data flows that are ACTIVE in this build.
 // Each toggle below mirrors src/config/features.ts, so enabling a third-party
 // service can never leave the policy asserting the opposite (critic CE-1/R1).
+// In preview/demo mode, show the demo legal identity so the page renders fully.
+const legal = features.demo ? features.demoLegal : site.legal;
 // Keep this page out of the index while legally-required identity fields are still
 // TODO placeholders (they render as visible page text — poor to index pre-launch).
-const legalTodo = Object.values(site.legal).some((v) => typeof v === 'string' && v.startsWith('TODO:'));
+const legalTodo = Object.values(legal).some((v) => typeof v === 'string' && v.startsWith('TODO:'));
 
 const analyticsOn = Boolean(features.cloudflareBeacon || features.plausibleDomain);
 const analyticsName = features.cloudflareBeacon ? 'Cloudflare Web Analytics' : 'Plausible Analytics';
@@ -56,7 +58,7 @@ const anyThirdParty = analyticsOn || Boolean(formProcessor) || newsletterOn || v
         <dl class="info-grid">
           <div class="info-row">
             <dt>{isFr ? 'Dénomination' : 'Entity'}</dt>
-            <dd><mark class="todo">{site.legal.entityName}</mark></dd>
+            <dd><mark class="todo">{legal.entityName}</mark></dd>
           </div>
           <div class="info-row">
             <dt>{isFr ? 'Adresse' : 'Address'}</dt>

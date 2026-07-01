@@ -1,12 +1,14 @@
 ---
 import PageLayout from '../../layouts/PageLayout.astro';
 import { site } from '../../config/site';
+import { features } from '../../config/features';
 import { locales, type Locale, useT, localeBase } from '../../i18n/ui';
 export function getStaticPaths() { return locales.map((locale) => ({ params: { locale } })); }
 const { locale } = Astro.params as { locale: Locale };
 const t = useT(locale); const base = localeBase(locale); const isFr = locale === 'fr';
 // noindex while mandatory identity fields are still TODO placeholders (visible text).
-const legalTodo = Object.values(site.legal).some((v) => typeof v === 'string' && v.startsWith('TODO:'));
+const legal = features.demo ? features.demoLegal : site.legal;
+const legalTodo = Object.values(legal).some((v) => typeof v === 'string' && v.startsWith('TODO:'));
 ---
 <PageLayout
   title={isFr ? `Mentions légales — ${site.name}` : `Legal Notice — ${site.name}`}
@@ -52,15 +54,15 @@ const legalTodo = Object.values(site.legal).some((v) => typeof v === 'string' &&
         <dl class="info-grid">
           <div class="info-row">
             <dt>{isFr ? 'Dénomination sociale' : 'Company name'}</dt>
-            <dd><mark class="todo">{site.legal.entityName}</mark></dd>
+            <dd><mark class="todo">{legal.entityName}</mark></dd>
           </div>
           <div class="info-row">
             <dt>{isFr ? 'Forme juridique' : 'Legal form'}</dt>
-            <dd><mark class="todo">{site.legal.legalForm}</mark></dd>
+            <dd><mark class="todo">{legal.legalForm}</mark></dd>
           </div>
           <div class="info-row">
             <dt>{isFr ? 'Capital social' : 'Share capital'}</dt>
-            <dd><mark class="todo">{site.legal.shareCapital}</mark></dd>
+            <dd><mark class="todo">{legal.shareCapital}</mark></dd>
           </div>
           <div class="info-row">
             <dt>{isFr ? 'Siège social' : 'Registered address'}</dt>
@@ -72,15 +74,15 @@ const legalTodo = Object.values(site.legal).some((v) => typeof v === 'string' &&
           </div>
           <div class="info-row">
             <dt>SIREN / SIRET</dt>
-            <dd><mark class="todo">{site.legal.siren}</mark></dd>
+            <dd><mark class="todo">{legal.siren}</mark></dd>
           </div>
           <div class="info-row">
             <dt>RCS</dt>
-            <dd><mark class="todo">{site.legal.rcs}</mark></dd>
+            <dd><mark class="todo">{legal.rcs}</mark></dd>
           </div>
           <div class="info-row">
             <dt>{isFr ? 'Directeur de la publication' : 'Publication director'}</dt>
-            <dd><mark class="todo">{site.legal.publicationDirector}</mark></dd>
+            <dd><mark class="todo">{legal.publicationDirector}</mark></dd>
           </div>
           <div class="info-row">
             <dt>{isFr ? 'Contact' : 'Contact'}</dt>
@@ -103,7 +105,7 @@ const legalTodo = Object.values(site.legal).some((v) => typeof v === 'string' &&
             : 'This website is hosted by:'}
         </p>
         <p class="legal-para">
-          <mark class="todo">{site.legal.hostingProvider}</mark>
+          <mark class="todo">{legal.hostingProvider}</mark>
         </p>
       </section>
 
@@ -115,7 +117,7 @@ const legalTodo = Object.values(site.legal).some((v) => typeof v === 'string' &&
         {isFr && (
           <Fragment>
             <p class="legal-para">
-              Le présent site ainsi que l&rsquo;ensemble de son contenu &mdash; textes, photographies, vidéos, graphismes et logotype &mdash; sont la propriété exclusive de&nbsp;<mark class="todo">{site.legal.entityName}</mark> ou font l&rsquo;objet d&rsquo;une licence d&rsquo;utilisation dûment autorisée.
+              Le présent site ainsi que l&rsquo;ensemble de son contenu &mdash; textes, photographies, vidéos, graphismes et logotype &mdash; sont la propriété exclusive de&nbsp;<mark class="todo">{legal.entityName}</mark> ou font l&rsquo;objet d&rsquo;une licence d&rsquo;utilisation dûment autorisée.
             </p>
             <p class="legal-para">
               Toute reproduction, représentation, modification, publication ou adaptation de tout ou partie des éléments du site, quel que soit le moyen ou le procédé utilisé, est interdite sans autorisation écrite préalable du propriétaire.
@@ -128,7 +130,7 @@ const legalTodo = Object.values(site.legal).some((v) => typeof v === 'string' &&
         {!isFr && (
           <Fragment>
             <p class="legal-para">
-              This website and all of its content &mdash; texts, photographs, videos, graphics and logo &mdash; are the exclusive property of&nbsp;<mark class="todo">{site.legal.entityName}</mark> or are used under duly authorised licence.
+              This website and all of its content &mdash; texts, photographs, videos, graphics and logo &mdash; are the exclusive property of&nbsp;<mark class="todo">{legal.entityName}</mark> or are used under duly authorised licence.
             </p>
             <p class="legal-para">
               Any reproduction, representation, modification, publication or adaptation of any part of the website&rsquo;s elements, by any means or process, is prohibited without the owner&rsquo;s prior written consent.
