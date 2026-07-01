@@ -75,7 +75,9 @@ const waText = encodeURIComponent(
   </div>
 
   <div class="ft__bar wrap-wide">
-    <span>© {year} {site.name}. {t('footer.rights')}.</span>
+    {/* "Secret door": the © glyph is a discreet link to the owner-only dashboard.
+        Looks like ordinary footer text; it will sit behind the Cloudflare Access SSO wall. */}
+    <span><a class="ft__door" href={`${base}/tableau-de-bord/`} aria-label={locale === 'fr' ? 'Espace propriétaire' : 'Owner area'} rel="nofollow">©</a> {year} {site.name}. {t('footer.rights')}.</span>
     <span class="ft__credit">
       {locale === 'fr' ? 'Blason de Lésigny' : 'Arms of Lésigny'} :
       <a href="https://commons.wikimedia.org/wiki/File:Blason_L%C3%A9signy.svg" target="_blank" rel="noopener">Chatsam</a>,
@@ -132,6 +134,10 @@ const waText = encodeURIComponent(
     border-top: var(--hairline) solid var(--rule);
     font-family: var(--font-ui); font-size: var(--step--1); color: var(--text-muted);
   }
+  /* Secret door — indistinguishable from the © text until you hover the glyph itself. */
+  .ft__door { color: inherit; text-decoration: none; cursor: pointer; border-radius: 2px; }
+  .ft__door:hover { color: var(--laiton-soft); }
+  .ft__door:focus-visible { outline: 2px solid var(--laiton); outline-offset: 2px; }
   .ft__legal { display: flex; gap: var(--space-m); }
   .ft__legal a { color: var(--text-muted); }
   .ft__crest { width: 56px; height: auto; margin-bottom: var(--space-xs); }
