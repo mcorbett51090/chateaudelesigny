@@ -1,8 +1,11 @@
 ---
+import { getImage } from 'astro:assets';
 import PageLayout from '../../layouts/PageLayout.astro';
 import Photo from '../../components/Photo.astro';
+import Lightbox from '../../components/Lightbox.astro';
 import { site } from '../../config/site';
 import { locales, type Locale, useT, localeBase, withBase } from '../../i18n/ui';
+import { photos } from '../../assets/images';
 
 export function getStaticPaths() {
   return locales.map((locale) => ({ params: { locale } }));
@@ -56,6 +59,20 @@ const decors = [
     note: isFr ? 'Sols d\'origine — poutres apparentes' : 'Original floors — exposed beams',
   },
 ] as const;
+
+// Lightbox targets: full-size (1600w) render + intrinsic dimensions for each
+// décor plate's photo. Plates with no matching asset render the plain
+// (non-linked) <Photo> below — PhotoSwipe needs real dimensions.
+type LightboxTarget = { src: string; w: number; h: number };
+const decorLightbox: (LightboxTarget | null)[] = await Promise.all(
+  decors.map(async (d) => {
+    const meta = photos[d.photo];
+    if (!meta) return null;
+    const big = await getImage({ src: meta, width: 1600, format: 'webp' });
+    const h = Math.round(1600 * meta.height / meta.width);
+    return { src: big.src, w: 1600, h };
+  })
+);
 ---
 
 <PageLayout
@@ -340,24 +357,47 @@ const decors = [
           : `${site.estate.decors}+ décors. Each one a scene.`}
       </h2>
 
-      <ul class="t-decors" role="list">
-        {decors.map((d, i) => (
-          <li class="t-plate" data-reveal style={`--delay:${(i % 4) * 80}ms`}>
-            <div class="t-plate__img">
-              <Photo
-                fill
-                name={d.photo}
-                alt={d.label}
-                sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, (max-width: 1100px) 33vw, 25vw"
-                widths={[400, 800, 1200]}
-              />
-            </div>
-            <div class="t-plate__caption">
-              <span class="t-plate__label">{d.label}</span>
-              <span class="t-plate__note slate">{d.note}</span>
-            </div>
-          </li>
-        ))}
+      <ul class="t-decors" role="list" data-pswp-gallery>
+        {decors.map((d, i) => {
+          const lb = decorLightbox[i];
+          return (
+            <li class="t-plate" data-reveal style={`--delay:${(i % 4) * 80}ms`}>
+              <div class="t-plate__img">
+                {lb ? (
+                  <a
+                    class="pswp-item"
+                    href={lb.src}
+                    data-pswp-width={lb.w}
+                    data-pswp-height={lb.h}
+                    target="_blank"
+                    rel="noopener"
+                    aria-label={isFr ? `Agrandir : ${d.label}` : `Enlarge: ${d.label}`}
+                  >
+                    <Photo
+                      fill
+                      name={d.photo}
+                      alt={d.label}
+                      sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, (max-width: 1100px) 33vw, 25vw"
+                      widths={[400, 800, 1200]}
+                    />
+                  </a>
+                ) : (
+                  <Photo
+                    fill
+                    name={d.photo}
+                    alt={d.label}
+                    sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, (max-width: 1100px) 33vw, 25vw"
+                    widths={[400, 800, 1200]}
+                  />
+                )}
+              </div>
+              <div class="t-plate__caption">
+                <span class="t-plate__label">{d.label}</span>
+                <span class="t-plate__note slate">{d.note}</span>
+              </div>
+            </li>
+          );
+        })}
       </ul>
     </div>
   </section>
@@ -500,6 +540,8 @@ const decors = [
       </div>
     </div>
   </section>
+
+  <Lightbox />
 
 </PageLayout>
 
@@ -790,6 +832,20 @@ const decors = [
     border: var(--hairline) solid color-mix(in srgb, var(--laiton) 28%, transparent);
     pointer-events: none;
     z-index: 2;
+  }
+
+  /* Lightbox click target — fills the plate exactly like the fill Photo it
+     wraps did before (no explicit z-index, so it stays at the same paint
+     level as the photo, below the ::after brass frame). */
+  .t-plate__img .pswp-item {
+    position: absolute;
+    inset: 0;
+    display: block;
+  }
+  .t-plate__img .pswp-item:focus-visible {
+    outline: 2px solid var(--laiton-soft);
+    outline-offset: -2px;
+    z-index: 3;
   }
 
   .t-plate__caption {

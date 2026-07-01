@@ -1,0 +1,19 @@
+---
+/**
+ * Lightbox — PhotoSwipe v5 wiring, shared by any page that renders one or
+ * more galleries marked up with `[data-pswp-gallery]` containers whose
+ * anchors carry `data-pswp-width` / `data-pswp-height`. Include once per
+ * page, after the gallery markup.
+ */
+import 'photoswipe/style.css';
+---
+<script>
+  import PhotoSwipeLightbox from 'photoswipe/lightbox';
+
+  const lb = new PhotoSwipeLightbox({
+    gallery: '[data-pswp-gallery]',
+    children: 'a[data-pswp-width]',
+    pswpModule: () => import('photoswipe'),
+  });
+  lb.init();
+</script>

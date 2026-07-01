@@ -5,6 +5,7 @@ import { locales, type Locale, useT, localeBase } from '../../i18n/ui';
 import DomaineSchematic from '../../components/domaine/DomaineSchematic.astro';
 import DomaineIndex from '../../components/domaine/DomaineIndex.astro';
 import Photo from '../../components/Photo.astro';
+import Lightbox from '../../components/Lightbox.astro';
 
 export function getStaticPaths() { return locales.map((locale) => ({ params: { locale } })); }
 
@@ -129,6 +130,8 @@ const structures = [
       </div>
     </div>
   </section>
+
+  <Lightbox />
 </PageLayout>
 
 <style>

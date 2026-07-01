@@ -1,8 +1,11 @@
 ---
+import { getImage } from 'astro:assets';
 import PageLayout from '../../layouts/PageLayout.astro';
 import Photo from '../../components/Photo.astro';
+import Lightbox from '../../components/Lightbox.astro';
 import { site } from '../../config/site';
 import { locales, type Locale, useT, localeBase } from '../../i18n/ui';
+import { photos } from '../../assets/images';
 
 export function getStaticPaths() {
   return locales.map((locale) => ({ params: { locale } }));
@@ -165,6 +168,20 @@ const galleryPlates = [
     enAlt: 'Draped windows of the Renaissance interiors',
   },
 ];
+
+// Lightbox targets: full-size (1600w) render + intrinsic dimensions for each
+// gallery plate's photo. Plates with no matching asset render the plain
+// (non-linked) <Photo> below — PhotoSwipe needs real dimensions.
+type LightboxTarget = { src: string; w: number; h: number };
+const galleryLightbox: (LightboxTarget | null)[] = await Promise.all(
+  galleryPlates.map(async (plate) => {
+    const meta = photos[plate.photo];
+    if (!meta) return null;
+    const big = await getImage({ src: meta, width: 1600, format: 'webp' });
+    const h = Math.round(1600 * meta.height / meta.width);
+    return { src: big.src, w: 1600, h };
+  })
+);
 ---
 
 <PageLayout
@@ -284,16 +301,36 @@ const galleryPlates = [
         class="m-gallery"
         aria-label={isFr ? 'Aperçu des espaces' : 'Venue spaces overview'}
         data-reveal
+        data-pswp-gallery
       >
-        {galleryPlates.map((plate, i) => (
-          <div class={`m-plate m-plate--${i + 1}`}>
-            <Photo fill name={plate.photo} alt={isFr ? plate.frAlt : plate.enAlt} />
-            <div class="m-plate__inner">
-              <p class="m-plate__name">{isFr ? plate.fr : plate.en}</p>
-              <p class="m-plate__sub slate">{isFr ? plate.frSub : plate.enSub}</p>
+        {galleryPlates.map((plate, i) => {
+          const lb = galleryLightbox[i];
+          return (
+            <div class={`m-plate m-plate--${i + 1}`}>
+              {lb ? (
+                <a
+                  class="pswp-item"
+                  href={lb.src}
+                  data-pswp-width={lb.w}
+                  data-pswp-height={lb.h}
+                  target="_blank"
+                  rel="noopener"
+                  aria-label={isFr
+                    ? `Agrandir : ${plate.fr}`
+                    : `Enlarge: ${plate.en}`}
+                >
+                  <Photo fill name={plate.photo} alt={isFr ? plate.frAlt : plate.enAlt} />
+                </a>
+              ) : (
+                <Photo fill name={plate.photo} alt={isFr ? plate.frAlt : plate.enAlt} />
+              )}
+              <div class="m-plate__inner">
+                <p class="m-plate__name">{isFr ? plate.fr : plate.en}</p>
+                <p class="m-plate__sub slate">{isFr ? plate.frSub : plate.enSub}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
     </div>
@@ -411,6 +448,8 @@ const galleryPlates = [
       </p>
     </div>
   </section>
+
+  <Lightbox />
 
 </PageLayout>
 
@@ -585,6 +624,20 @@ const galleryPlates = [
     pointer-events: none;
   }
 
+  /* Lightbox click target — fills the plate exactly like the fill Photo it
+     wraps did before (no explicit z-index, so it stays at the same paint
+     level as the photo: below the ::after scrim and the caption). */
+  .m-plate .pswp-item {
+    position: absolute;
+    inset: 0;
+    display: block;
+  }
+  .m-plate .pswp-item:focus-visible {
+    outline: 2px solid var(--laiton-soft);
+    outline-offset: -2px;
+    z-index: 3;
+  }
+
   /* Row 1: three equal portrait plates */
   .m-plate--1,
   .m-plate--2,
@@ -605,6 +658,7 @@ const galleryPlates = [
     z-index: 2;
     padding-top: var(--space-xs);
     border-top: var(--hairline) solid color-mix(in srgb, var(--laiton) 60%, transparent);
+    pointer-events: none; /* let clicks on the caption reach .pswp-item beneath */
   }
 
   .m-plate__name {

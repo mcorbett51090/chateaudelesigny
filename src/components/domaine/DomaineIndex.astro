@@ -6,8 +6,10 @@
  * with an aria-live count. Progressive: with JS off, no plate is ever hidden.
  * No photographs exist yet — each plate is a stone panel (swappable image slot).
  */
+import { getImage } from 'astro:assets';
 import type { Locale } from '../../i18n/ui';
 import Photo from '../Photo.astro';
+import { photos } from '../../assets/images';
 interface Props { locale: Locale }
 const { locale } = Astro.props;
 const isFr = locale === 'fr';
@@ -92,6 +94,20 @@ const useFilters = [
   { v: 'film', label: 'Film' },
   { v: 'photo', label: 'Photo' },
 ];
+
+// Lightbox targets: full-size (1600w) render + intrinsic dimensions for each
+// unique décor photo. Keys with no matching asset are left out — those
+// plates render the plain (non-linked) <Photo> below.
+type LightboxTarget = { src: string; w: number; h: number };
+const lightboxByPhoto = new Map<string, LightboxTarget>();
+for (const d of decors) {
+  if (lightboxByPhoto.has(d.photo)) continue;
+  const meta = photos[d.photo];
+  if (!meta) continue;
+  const big = await getImage({ src: meta, width: 1600, format: 'webp' });
+  const h = Math.round(1600 * meta.height / meta.width);
+  lightboxByPhoto.set(d.photo, { src: big.src, w: 1600, h });
+}
 ---
 <section class="section index" aria-labelledby="index-heading">
   <div class="wrap-wide">
@@ -129,22 +145,47 @@ const useFilters = [
     </div>
 
     <!-- Grid -->
-    <ul class="index__grid" data-grid data-space="tous" data-use="tous">
-      {decors.map((d) => (
-        <li class="decor" data-decor data-space={d.space} data-uses={d.uses.join(' ')} data-reveal>
-          <article class="decor__card">
-            <div class="decor__plate" aria-hidden="true">
-              <Photo fill name={d.photo} alt="" sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 34vw" />
-              <span class="decor__n slate">N°{d.n}</span>
-              <span class="decor__plate-name">{d.name}</span>
-            </div>
-            <div class="decor__meta">
-              <h3 class="decor__name visually-hidden">{d.name}</h3>
-              <p class="decor__slate slate">{slate(d)}</p>
-            </div>
-          </article>
-        </li>
-      ))}
+    <ul class="index__grid" data-grid data-space="tous" data-use="tous" data-pswp-gallery>
+      {decors.map((d) => {
+        const lb = lightboxByPhoto.get(d.photo);
+        return (
+          <li class="decor" data-decor data-space={d.space} data-uses={d.uses.join(' ')} data-reveal>
+            <article class="decor__card">
+              {/* The plate is decorative once a lightbox link is present (name is
+                  conveyed by the link's aria-label and the visible meta below), so
+                  aria-hidden is only used on the no-link fallback — a focusable <a>
+                  must never live inside an aria-hidden ancestor. */}
+              {lb ? (
+                <div class="decor__plate">
+                  <a
+                    class="pswp-item"
+                    href={lb.src}
+                    data-pswp-width={lb.w}
+                    data-pswp-height={lb.h}
+                    target="_blank"
+                    rel="noopener"
+                    aria-label={isFr ? `Agrandir : ${d.name}` : `Enlarge: ${d.name}`}
+                  >
+                    <Photo fill name={d.photo} alt="" sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 34vw" />
+                  </a>
+                  <span class="decor__n slate">N°{d.n}</span>
+                  <span class="decor__plate-name">{d.name}</span>
+                </div>
+              ) : (
+                <div class="decor__plate" aria-hidden="true">
+                  <Photo fill name={d.photo} alt="" sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 34vw" />
+                  <span class="decor__n slate">N°{d.n}</span>
+                  <span class="decor__plate-name">{d.name}</span>
+                </div>
+              )}
+              <div class="decor__meta">
+                <h3 class="decor__name visually-hidden">{d.name}</h3>
+                <p class="decor__slate slate">{slate(d)}</p>
+              </div>
+            </article>
+          </li>
+        );
+      })}
     </ul>
 
     <p class="index__empty slate" data-empty hidden>
@@ -264,14 +305,28 @@ const useFilters = [
     border-radius: 1px; pointer-events: none;
     z-index: 3;
   }
-  /* Text labels above scrim */
-  .decor__n { color: var(--laiton-soft); position: relative; z-index: 2; }
+  /* Text labels above scrim. pointer-events:none so clicks always reach the
+     lightbox link (.pswp-item) beneath them rather than the label text. */
+  .decor__n { color: var(--laiton-soft); position: relative; z-index: 2; pointer-events: none; }
   .decor__plate-name {
     font-family: var(--font-display); font-weight: 460;
     font-size: var(--step-2); line-height: 1.05;
     color: var(--ivoire);
     max-width: 14ch; text-wrap: balance;
-    position: relative; z-index: 2;
+    position: relative; z-index: 2; pointer-events: none;
+  }
+
+  /* Lightbox click target: fills the plate exactly like the fill Photo it
+     wraps did before (no explicit z-index — stays at the same paint level
+     as the photo, i.e. below the ::before scrim and the labels above). */
+  .decor__plate .pswp-item {
+    position: absolute; inset: 0; display: block;
+    border-radius: inherit;
+  }
+  .decor__plate .pswp-item:focus-visible {
+    outline: 2px solid var(--laiton-soft);
+    outline-offset: -2px;
+    z-index: 4;
   }
 
   .decor__meta { display: flex; flex-direction: column; gap: 0.35rem; }
