@@ -1,0 +1,235 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import Photo from '../../components/Photo.astro';
+import { site } from '../../config/site';
+import { locales, type Locale, useT, localeBase } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return locales.map((locale) => ({ params: { locale } }));
+}
+
+const { locale } = Astro.params as { locale: Locale };
+const t = useT(locale);
+const base = localeBase(locale);
+const isFr = locale === 'fr';
+---
+
+<PageLayout
+  title={isFr
+    ? 'Une nuit au château · Château de Lésigny'
+    : 'A night at the château · Château de Lésigny'}
+  description={isFr
+    ? 'Passez une nuit au Château de Lésigny — une chambre dans le colombier face à la façade de brique rouge, et des massages dans les salons du domaine.'
+    : 'Spend a night at Château de Lésigny — a room in the dovecote facing the red-brick façade, with massages in the estate’s salons.'}
+  locale={locale}
+  path="sejour/"
+>
+
+  <!-- ① Hero ---------------------------------------------------------------- -->
+  <section class="sj-hero is-dark" aria-labelledby="sj-h1">
+    <Photo
+      fill
+      name="exterior-evening"
+      alt={isFr ? 'Le Château de Lésigny au crépuscule' : 'Château de Lésigny at dusk'}
+      loading="eager"
+    />
+    <div class="sj-hero__scrim" aria-hidden="true"></div>
+    <div class="wrap sj-hero__inner">
+      <p class="eyebrow sj-hero__eyebrow" data-reveal>
+        {isFr ? 'Une nuit au château' : 'A night at the château'}
+      </p>
+      <h1 id="sj-h1" class="sj-hero__title" data-reveal>
+        {isFr
+          ? 'Offrez-vous une expérience inoubliable.'
+          : 'Treat yourself to an unforgettable experience.'}
+      </h1>
+      <p class="sj-hero__lede" data-reveal>
+        {isFr
+          ? 'Le temps d’une nuit, le domaine n’est plus qu’à vous — un pur moment de déconnexion entre les murs d’un château cinq fois centenaire, aux portes de Paris.'
+          : 'For one night, the estate is yours alone — a pure moment of disconnection within the walls of a five-hundred-year-old château, at the gates of Paris.'}
+      </p>
+      <div class="sj-hero__actions" data-reveal>
+        <a class="btn btn--primary" href={`${base}/contact/?stream=stay`}>
+          {isFr ? 'Dormir au château' : 'Sleep at the château'}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ② Le Colombier -------------------------------------------------------- -->
+  <section class="section sj-room" aria-labelledby="sj-room-h2">
+    <div class="wrap-wide sj-room__grid">
+      <div class="sj-room__visual" data-reveal>
+        <Photo
+          name="grounds-dovecote"
+          alt={isFr ? 'Le colombier du Château de Lésigny' : 'The dovecote of Château de Lésigny'}
+          ratio="4/5"
+          sizes="(max-width: 900px) 100vw, 45vw"
+          widths={[500, 800, 1100]}
+        />
+      </div>
+      <div class="sj-room__copy flow" data-reveal>
+        <p class="eyebrow">{isFr ? 'La chambre' : 'The room'}</p>
+        <h2 id="sj-room-h2">{isFr ? 'Le Colombier' : 'The Dovecote'}</h2>
+        <p>
+          {isFr
+            ? 'Nichée dans l’ancien colombier du domaine, la chambre s’ouvre sur la façade de brique rouge du château. Un décor où de grands noms de la cour de France ont autrefois séjourné.'
+            : 'Set in the estate’s former dovecote, the room opens onto the château’s red-brick façade — a setting where great names of the French court once stayed.'}
+        </p>
+        <p>
+          {isFr
+            ? 'Loin de l’agitation, on y savoure le silence du parc, la lumière changeante sur la pierre et le sentiment rare d’avoir un château pour soi.'
+            : 'Far from the bustle, you savour the silence of the park, the shifting light on stone, and the rare feeling of having a château to yourself.'}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ③ Le petit plus ------------------------------------------------------- -->
+  <section class="sj-extra is-dark" aria-labelledby="sj-extra-h2">
+    <div class="wrap-wide sj-extra__grid">
+      <div class="sj-extra__copy flow" data-reveal>
+        <p class="eyebrow">{isFr ? 'Le petit plus' : 'The extra touch'}</p>
+        <h2 id="sj-extra-h2">
+          {isFr ? 'Un massage dans les salons.' : 'A massage in the salons.'}
+        </h2>
+        <p>
+          {isFr
+            ? 'Prolongez la parenthèse : sur demande, un massage vous est proposé dans les salons du château, pour un séjour placé sous le signe du bien-être.'
+            : 'Extend the escape: on request, a massage can be arranged in the château’s salons — a stay devoted to well-being.'}
+        </p>
+        <p class="sj-extra__note slate">
+          {isFr
+            ? 'Prestation sur demande, à préciser lors de votre réservation.'
+            : 'Available on request — please mention it when booking.'}
+        </p>
+      </div>
+      <div class="sj-extra__visual" data-reveal>
+        <Photo
+          name="int-rose-drapes"
+          alt={isFr ? 'Salon du château baigné de lumière' : 'Château salon bathed in light'}
+          ratio="4/3"
+          sizes="(max-width: 900px) 100vw, 45vw"
+          widths={[500, 800, 1100]}
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ④ CTA ----------------------------------------------------------------- -->
+  <section class="section sj-cta">
+    <div class="wrap sj-cta__inner" data-reveal>
+      <h2 class="sj-cta__title">
+        {isFr ? 'Réservez votre nuit.' : 'Book your night.'}
+      </h2>
+      <p class="sj-cta__sub">
+        {isFr
+          ? 'Écrivez-nous pour connaître les disponibilités et composer votre séjour.'
+          : 'Write to us for availability and to shape your stay.'}
+      </p>
+      <div class="sj-cta__actions">
+        <a class="btn btn--primary" href={`${base}/contact/?stream=stay`}>
+          {isFr ? 'Dormir au château' : 'Sleep at the château'}
+        </a>
+        <a class="sj-cta__phone" href={`tel:${site.contact.phoneEvents.replace(/\s/g, '')}`}>
+          {site.contact.phoneEvents}
+        </a>
+      </div>
+    </div>
+  </section>
+
+</PageLayout>
+
+<style>
+  /* =========================================================================
+     Une nuit au château — page-scoped styles (tokens only)
+     ========================================================================= */
+
+  /* --- ① Hero -------------------------------------------------------------- */
+  .sj-hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--suie);
+    padding-block: clamp(4rem, 14vh, 11rem) var(--space-l);
+  }
+  .sj-hero__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      170deg,
+      color-mix(in srgb, var(--encre) 55%, transparent) 0%,
+      color-mix(in srgb, var(--encre) 66%, transparent) 100%
+    );
+  }
+  .sj-hero__inner { position: relative; z-index: 2; }
+  .sj-hero__eyebrow { margin-bottom: var(--space-m); }
+  .sj-hero__title { font-size: var(--step-5); max-width: 18ch; margin-bottom: var(--space-m); }
+  .sj-hero__lede {
+    font-size: var(--step-1);
+    color: var(--text-muted);
+    max-width: 52ch;
+    margin-bottom: var(--space-l);
+  }
+
+  /* --- Shared two-column blocks ------------------------------------------- */
+  .sj-room__grid,
+  .sj-extra__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2xl);
+    align-items: center;
+  }
+  .sj-room__visual,
+  .sj-extra__visual { overflow: hidden; border: var(--hairline) solid var(--rule); }
+
+  .sj-room__copy h2,
+  .sj-extra__copy h2 { margin-top: var(--space-3xs); }
+
+  /* --- ③ Le petit plus ----------------------------------------------------- */
+  .sj-extra { background: var(--suie); padding-block: var(--space-3xl); }
+  .sj-extra__note { margin-top: var(--space-s); font-size: var(--step--1); color: var(--text-muted); }
+  /* On the dark band the first column should read as ivory copy */
+  .sj-extra__copy { color: var(--ivoire); }
+
+  /* --- ④ CTA --------------------------------------------------------------- */
+  .sj-cta__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-s);
+  }
+  .sj-cta__title { font-size: var(--step-3); }
+  .sj-cta__sub { color: var(--text-muted); max-width: 46ch; }
+  .sj-cta__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-m);
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: var(--space-m);
+  }
+  .sj-cta__phone {
+    font-family: var(--font-slate);
+    font-size: var(--step-0);
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-bottom: var(--hairline) solid var(--laiton);
+    padding-bottom: 2px;
+    transition: color var(--dur-fast) var(--ease-soft);
+  }
+  .sj-cta__phone:hover { color: var(--text); }
+
+  /* --- Responsive ---------------------------------------------------------- */
+  @media (max-width: 900px) {
+    .sj-room__grid,
+    .sj-extra__grid { grid-template-columns: 1fr; gap: var(--space-xl); }
+    /* Image first on the alternating (image-right) block for reading order */
+    .sj-extra__visual { order: -1; }
+  }
+  @media (max-width: 540px) {
+    .sj-hero__title { font-size: var(--step-4); }
+  }
+</style>

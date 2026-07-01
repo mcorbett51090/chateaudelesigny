@@ -82,6 +82,7 @@ const partners = [
     photo: 'catering-canapes',
     frAlt: 'Canapés gastronomiques pour cocktail de mariage',
     enAlt: 'Gourmet canapés for wedding cocktail reception',
+    anchor: 'traiteurs',
   },
   {
     fr: 'Photographie',
@@ -91,6 +92,7 @@ const partners = [
     photo: 'makeup-artist',
     frAlt: 'Artiste maquillage lors des préparatifs du mariage',
     enAlt: 'Makeup artist during wedding preparations',
+    anchor: 'photographes',
   },
   {
     fr: 'Décoration',
@@ -100,6 +102,7 @@ const partners = [
     photo: 'int-painted-ceiling',
     frAlt: 'Plafond peint des intérieurs du château',
     enAlt: 'Painted ceiling of the château interiors',
+    anchor: 'fleuristes',
   },
   {
     fr: 'Animation',
@@ -109,6 +112,7 @@ const partners = [
     photo: 'music-sax',
     frAlt: 'Saxophoniste lors d\'une réception de mariage',
     enAlt: 'Saxophonist at a wedding reception',
+    anchor: 'animation',
   },
   {
     fr: 'Organisation',
@@ -118,6 +122,7 @@ const partners = [
     photo: 'couple-bouquet',
     frAlt: 'Bouquet de la mariée lors de la réception',
     enAlt: 'Bridal bouquet at the reception',
+    anchor: 'organisation',
   },
 ];
 
@@ -346,6 +351,11 @@ const galleryLightbox: (LightboxTarget | null)[] = await Promise.all(
             ? 'Un lieu pour chaque célébration.'
             : 'A setting for every celebration.'}
         </h2>
+        <a class="m-events__corporate" href={`${base}/entreprise/`}>
+          {isFr
+            ? 'Séminaires & événements d’entreprise →'
+            : 'Corporate events & seminars →'}
+        </a>
       </div>
       <ul class="m-events__grid" role="list">
         {eventTypes.map((ev) => (
@@ -369,15 +379,23 @@ const galleryLightbox: (LightboxTarget | null)[] = await Promise.all(
             ? 'Un réseau de partenaires triés sur le volet.'
             : 'A curated network of trusted partners.'}
         </h2>
+        <a class="m-partners__all" href={`${base}/partenaires/`}>
+          {isFr ? 'Voir tous nos partenaires →' : 'See all our partners →'}
+        </a>
       </div>
       <ul class="m-partners__list" role="list">
         {partners.map((p) => (
           <li class="m-partner" data-reveal>
-            <Photo name={p.photo} alt={isFr ? p.frAlt : p.enAlt} ratio="4/3" class="m-partner__photo" />
-            <div class="m-partner__body">
-              <h3 class="m-partner__title">{isFr ? p.fr : p.en}</h3>
-              <p class="m-partner__desc">{isFr ? p.frDesc : p.enDesc}</p>
-            </div>
+            <a class="m-partner__link" href={`${base}/partenaires/#${p.anchor}`}>
+              <Photo name={p.photo} alt={isFr ? p.frAlt : p.enAlt} ratio="4/3" class="m-partner__photo" />
+              <div class="m-partner__body">
+                <h3 class="m-partner__title">{isFr ? p.fr : p.en}</h3>
+                <p class="m-partner__desc">{isFr ? p.frDesc : p.enDesc}</p>
+                <span class="m-partner__cue" aria-hidden="true">
+                  {isFr ? 'Découvrir →' : 'Discover →'}
+                </span>
+              </div>
+            </a>
           </li>
         ))}
       </ul>
@@ -688,6 +706,21 @@ const galleryLightbox: (LightboxTarget | null)[] = await Promise.all(
     margin-top: var(--space-3xs);
   }
 
+  .m-events__corporate {
+    display: inline-block;
+    margin-top: var(--space-m);
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--text);
+    text-decoration: none;
+    border-bottom: var(--hairline) solid var(--laiton);
+    padding-bottom: 2px;
+    transition: color var(--dur-fast) var(--ease-soft), border-color var(--dur-fast) var(--ease-soft);
+  }
+  .m-events__corporate:hover { color: var(--sang); border-color: var(--sang); }
+
   .m-events__grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -737,6 +770,21 @@ const galleryLightbox: (LightboxTarget | null)[] = await Promise.all(
     margin-top: var(--space-3xs);
   }
 
+  .m-partners__all {
+    display: inline-block;
+    margin-top: var(--space-m);
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--ivoire);
+    text-decoration: none;
+    border-bottom: var(--hairline) solid var(--laiton);
+    padding-bottom: 2px;
+    transition: color var(--dur-fast) var(--ease-soft), border-color var(--dur-fast) var(--ease-soft);
+  }
+  .m-partners__all:hover { color: var(--laiton-soft); border-color: var(--laiton-soft); }
+
   .m-partners__list {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -755,17 +803,42 @@ const galleryLightbox: (LightboxTarget | null)[] = await Promise.all(
     overflow: hidden;
   }
 
+  /* Whole card is a link to the matching section of the partners page */
+  .m-partner__link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+  }
+
   /* The Photo figure inside a partner card — flush to the card edges */
   .m-partner :global(.m-partner__photo) {
     flex-shrink: 0;
+    transition: transform var(--dur-mid) var(--ease-soft);
   }
+  .m-partner__link:hover :global(.m-partner__photo img) { transform: scale(1.04); }
+  .m-partner :global(.m-partner__photo) { overflow: hidden; }
 
   .m-partner__body {
     display: flex;
     flex-direction: column;
     gap: var(--space-2xs);
     padding: var(--space-m);
+    flex: 1;
   }
+
+  .m-partner__cue {
+    margin-top: auto;
+    padding-top: var(--space-xs);
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--laiton-soft);
+    transition: color var(--dur-fast) var(--ease-soft);
+  }
+  .m-partner__link:hover .m-partner__cue { color: var(--ivoire); }
 
   .m-partner__title {
     font-size: var(--step-1);

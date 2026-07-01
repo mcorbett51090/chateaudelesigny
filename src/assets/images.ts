@@ -66,6 +66,28 @@ import _music_sax from './gallery/music-sax.jpg';
 import _plan_floorplan from './gallery/plan-floorplan.png';
 import _wedding_confetti_bw from './gallery/wedding-confetti-bw.jpg';
 
+// --- Boutique (The Beau Chateau shop — store.chateaudelesigny.com) ---------
+import _hat_main from './boutique/hat-main.jpg';
+import _hat_detail from './boutique/hat-detail.jpg';
+import _hat_worn from './boutique/hat-worn.jpg';
+
+// --- Partners (prestataires) — images mirrored from the original partners page
+import _partner_progtraiteur from './partners/partner-progtraiteur.jpg';
+import _partner_grandchemin from './partners/partner-grandchemin.jpg';
+import _partner_enfants_terribles from './partners/partner-enfants-terribles.jpg';
+import _partner_aviv_saveurs from './partners/partner-aviv-saveurs.jpg';
+import _partner_artisalie from './partners/partner-artisalie.jpg';
+import _partner_designfleurs from './partners/partner-designfleurs.jpg';
+import _partner_virginie_laborde from './partners/partner-virginie-laborde.jpg';
+import _partner_smile_mix from './partners/partner-smile-mix.jpg';
+import _partner_super_cho from './partners/partner-super-cho.jpg';
+import _partner_my_event_consulting from './partners/partner-my-event-consulting.jpg';
+import _partner_mxcar from './partners/partner-mxcar.jpg';
+import _partner_presta_kids from './partners/partner-presta-kids.jpg';
+import _partner_antoine_demoinet from './partners/partner-antoine-demoinet.jpg';
+import _partner_quentin_blanc from './partners/partner-quentin-blanc.jpg';
+import _partner_kasiah from './partners/partner-kasiah.jpg';
+
 export const photos: Record<string, ImageMetadata> = {
   'badge-awards-2024': _badge_awards_2024,
   'badge-awards-2026': _badge_awards_2026,
@@ -132,6 +154,28 @@ export const photos: Record<string, ImageMetadata> = {
   'music-sax': _music_sax,
   'plan-floorplan': _plan_floorplan,
   'wedding-confetti-bw': _wedding_confetti_bw,
+
+  // Boutique
+  'hat-main': _hat_main,
+  'hat-detail': _hat_detail,
+  'hat-worn': _hat_worn,
+
+  // Partners
+  'partner-progtraiteur': _partner_progtraiteur,
+  'partner-grandchemin': _partner_grandchemin,
+  'partner-enfants-terribles': _partner_enfants_terribles,
+  'partner-aviv-saveurs': _partner_aviv_saveurs,
+  'partner-artisalie': _partner_artisalie,
+  'partner-designfleurs': _partner_designfleurs,
+  'partner-virginie-laborde': _partner_virginie_laborde,
+  'partner-smile-mix': _partner_smile_mix,
+  'partner-super-cho': _partner_super_cho,
+  'partner-my-event-consulting': _partner_my_event_consulting,
+  'partner-mxcar': _partner_mxcar,
+  'partner-presta-kids': _partner_presta_kids,
+  'partner-antoine-demoinet': _partner_antoine_demoinet,
+  'partner-quentin-blanc': _partner_quentin_blanc,
+  'partner-kasiah': _partner_kasiah,
 };
 
 export type PhotoKey = keyof typeof photos;

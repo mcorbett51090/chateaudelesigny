@@ -63,7 +63,8 @@
       "Bash(curl -s -m 20 -L https://www.chateaudelesigny.com -o /tmp/claude-1000/-workspaces-chateaudelesigny/f43830f5-3bfb-4e88-b7bd-517d856c992e/scratchpad/lesigny-home.html)",
       "Bash(curl -s -m 15 https://www.chateaudelesigny.com/sitemap.xml)",
       "Bash(curl *)",
-      "Bash(grep -o '\"text\":\"[^\"]\\\\{40,400\\\\}\"' /tmp/claude-1000/-workspaces-chateaudelesigny/f43830f5-3bfb-4e88-b7bd-517d856c992e/scratchpad/lesigny-home.html)"
+      "Bash(grep -o '\"text\":\"[^\"]\\\\{40,400\\\\}\"' /tmp/claude-1000/-workspaces-chateaudelesigny/f43830f5-3bfb-4e88-b7bd-517d856c992e/scratchpad/lesigny-home.html)",
+      "WebFetch(domain:store.chateaudelesigny.com)"
     ]
   }
 }

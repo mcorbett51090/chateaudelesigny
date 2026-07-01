@@ -1,0 +1,455 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import Photo from '../../components/Photo.astro';
+import { locales, type Locale, useT, localeBase } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return locales.map((locale) => ({ params: { locale } }));
+}
+
+const { locale } = Astro.params as { locale: Locale };
+const t = useT(locale);
+const base = localeBase(locale);
+const isFr = locale === 'fr';
+
+// The shop lives on a separate Shopify storefront (store.chateaudelesigny.com).
+// This page mirrors its catalogue; the purchase / secure checkout happens there.
+const STORE = 'https://store.chateaudelesigny.com';
+const PRODUCT_URL = `${STORE}/products/beau-chateau-cap-in-olive-green`;
+
+const priceStr = isFr ? '39,99 €' : '€39.99';
+
+const gallery = [
+  { photo: 'hat-main', frAlt: 'Chapeau The Beau Chapeau en toile olive, vue de face', enAlt: 'The Beau Chapeau hat in olive canvas, front view' },
+  { photo: 'hat-detail', frAlt: 'Détail de la patte en cuir gravé et de la boucle en laiton brossé', enAlt: 'Detail of the etched-leather patch and brushed-brass buckle' },
+  { photo: 'hat-worn', frAlt: 'Le chapeau porté, dans les décors du Château de Lésigny', enAlt: 'The hat worn, in the setting of Château de Lésigny' },
+];
+
+const materials = isFr
+  ? ['Toile olive mi-lourde', 'Cuir pleine fleur à tannage végétal', 'Fabriqué en France']
+  : ['Mid-weight olive canvas', 'Full-grain vegetable-tanned leather', 'Made in France'];
+
+// Payment methods offered at the Shopify checkout (trust signal).
+const payments = [
+  'Visa', 'Mastercard', 'American Express', 'Cartes Bancaires',
+  'PayPal', 'Apple Pay', 'Shop Pay', 'Klarna',
+  'Bancontact', 'MobilePay', 'BLIK', 'EPS',
+];
+---
+
+<PageLayout
+  title={isFr
+    ? 'Boutique · The Beau Chateau — Château de Lésigny'
+    : 'Shop · The Beau Chateau — Château de Lésigny'}
+  description={isFr
+    ? 'La boutique du Château de Lésigny — pièces en édition limitée signées The Beau Chateau, à commencer par The Beau Chapeau, chapeau en toile olive fabriqué en France.'
+    : 'The Château de Lésigny shop — limited-edition pieces by The Beau Chateau, starting with The Beau Chapeau, an olive-canvas hat made in France.'}
+  locale={locale}
+  path="boutique/"
+>
+
+  <!-- ① Hero ---------------------------------------------------------------- -->
+  <section class="bt-hero section" aria-labelledby="bt-h1">
+    <div class="wrap">
+      <p class="eyebrow bt-hero__eyebrow" data-reveal>
+        {isFr ? 'Boutique · The Beau Chateau' : 'Shop · The Beau Chateau'}
+      </p>
+      <h1 id="bt-h1" class="bt-hero__title" data-reveal>
+        {isFr ? 'La boutique' : 'The shop'}
+      </h1>
+      <p class="bt-hero__lead" data-reveal>
+        {isFr
+          ? 'Des pièces en édition limitée nées au château — imaginées par Daphne, Ian et Archaea, la famille de The Beau Chateau. Chaque objet s’inspire de l’architecture et de l’esprit du domaine.'
+          : 'Limited-edition pieces born at the château — created by Daphne, Ian and Archaea, the family behind The Beau Chateau. Every object draws on the architecture and spirit of the estate.'}
+      </p>
+    </div>
+  </section>
+
+  <div class="wrap-wide"><hr class="rule" /></div>
+
+  <!-- ② Product feature ----------------------------------------------------- -->
+  <section class="section bt-product" aria-labelledby="bt-prod-h2">
+    <div class="wrap-wide bt-product__grid">
+
+      <!-- Gallery -->
+      <div class="bt-gallery" data-reveal>
+        <div class="bt-gallery__main">
+          <Photo
+            name={gallery[0].photo}
+            alt={isFr ? gallery[0].frAlt : gallery[0].enAlt}
+            ratio="3/4"
+            loading="eager"
+            sizes="(max-width: 900px) 100vw, 45vw"
+            widths={[500, 800, 1100]}
+          />
+        </div>
+        <div class="bt-gallery__thumbs">
+          {gallery.slice(1).map((g) => (
+            <Photo
+              name={g.photo}
+              alt={isFr ? g.frAlt : g.enAlt}
+              ratio="1/1"
+              sizes="(max-width: 900px) 50vw, 22vw"
+              widths={[300, 500]}
+            />
+          ))}
+        </div>
+      </div>
+
+      <!-- Details -->
+      <div class="bt-details" data-reveal>
+        <p class="bt-details__brand">The Beau Chateau</p>
+        <h2 id="bt-prod-h2" class="bt-details__name">
+          {isFr ? 'The Beau Chapeau' : 'The Beau Chapeau'}
+        </h2>
+
+        <div class="bt-details__pricerow">
+          <span class="bt-details__price">{priceStr}</span>
+          <span class="bt-badge bt-badge--soldout">
+            {isFr ? 'Épuisé · Précommande' : 'Sold out · Pre-order'}
+          </span>
+        </div>
+
+        <p class="bt-details__desc">
+          {isFr
+            ? 'Un chapeau d’inspiration vintage, baptisé « le beau chapeau ». Sa patte en cuir gravé et ses détails en laiton brossé s’inspirent de l’architecture Art nouveau qui couronne le point le plus haut du Château de Lésigny.'
+            : 'A vintage-inspired hat — “the beautiful hat”. Its embossed-leather patch and brushed-brass detailing take their cue from the Art Nouveau architecture crowning the highest point of Château de Lésigny.'}
+        </p>
+        <p class="bt-details__desc">
+          {isFr
+            ? 'Coupe décontractée et non structurée, pensée pour se patiner joliment au fil du temps et des saisons.'
+            : 'A relaxed, unstructured fit, designed to age beautifully with wear over time.'}
+        </p>
+
+        <ul class="bt-specs" role="list">
+          {materials.map((m) => <li class="bt-specs__item">{m}</li>)}
+        </ul>
+
+        <p class="bt-ship">
+          {isFr
+            ? 'Article en précommande — expéditions à partir de mi-septembre.'
+            : 'Pre-order item — shipping from mid-September.'}
+        </p>
+
+        <div class="bt-details__actions">
+          <a
+            class="btn btn--primary"
+            href={PRODUCT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {isFr ? 'Précommander sur la boutique' : 'Pre-order on our shop'}
+          </a>
+          <a
+            class="bt-details__more"
+            href={PRODUCT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {isFr ? 'Voir la fiche complète ↗' : 'View full details ↗'}
+          </a>
+        </div>
+
+        <p class="bt-details__secure slate">
+          {isFr
+            ? 'Paiement sécurisé assuré par notre boutique Shopify.'
+            : 'Secure checkout handled by our Shopify store.'}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ③ Mailing list -------------------------------------------------------- -->
+  <section class="bt-list is-dark" aria-labelledby="bt-list-h2">
+    <div class="wrap bt-list__inner" data-reveal>
+      <p class="eyebrow">{isFr ? 'Restez informé' : 'Stay in the loop'}</p>
+      <h2 id="bt-list-h2" class="bt-list__title">
+        {isFr
+          ? 'Nouveautés, lancements et coulisses.'
+          : 'Insider news, launches and behind the scenes.'}
+      </h2>
+      <p class="bt-list__sub">
+        {isFr
+          ? 'Inscrivez-vous à notre liste de diffusion pour les nouvelles en avant-première, les lancements de produits et bien plus — et suivez la famille sur la chaîne The Beau Chateau.'
+          : 'Subscribe to our mailing list for insider news, product launches and more — and follow the family on the The Beau Chateau channel.'}
+      </p>
+      <div class="bt-list__actions">
+        <a class="btn btn--primary" href={STORE} target="_blank" rel="noopener noreferrer">
+          {isFr ? 'Rejoindre la liste' : 'Join the mailing list'}
+        </a>
+        <a
+          class="btn btn--ghost"
+          href="https://www.youtube.com/c/TheBeauChateau"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {isFr ? 'The Beau Chateau sur YouTube' : 'The Beau Chateau on YouTube'}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ④ Trust / store ------------------------------------------------------- -->
+  <section class="section bt-trust" aria-labelledby="bt-trust-h2">
+    <div class="wrap-wide bt-trust__inner">
+      <div class="bt-trust__copy">
+        <h2 id="bt-trust-h2" class="bt-trust__title">
+          {isFr ? 'Toute la boutique' : 'The full shop'}
+        </h2>
+        <p class="bt-trust__sub slate">
+          {isFr
+            ? 'Catalogue complet, tailles et paiement sur notre boutique en ligne officielle.'
+            : 'Full catalogue, sizing and payment on our official online store.'}
+        </p>
+        <a class="btn btn--ghost bt-trust__cta" href={STORE} target="_blank" rel="noopener noreferrer">
+          {isFr ? 'Ouvrir la boutique ↗' : 'Open the store ↗'}
+        </a>
+      </div>
+      <div class="bt-trust__pay" aria-label={isFr ? 'Moyens de paiement acceptés' : 'Accepted payment methods'}>
+        <p class="bt-trust__pay-label slate">
+          {isFr ? 'Paiements acceptés' : 'Accepted payments'}
+        </p>
+        <ul class="bt-pay" role="list">
+          {payments.map((p) => <li class="bt-pay__chip">{p}</li>)}
+        </ul>
+        <p class="bt-trust__powered">
+          {isFr ? 'Boutique propulsée par Shopify' : 'Store powered by Shopify'}
+        </p>
+      </div>
+    </div>
+  </section>
+
+</PageLayout>
+
+<style>
+  /* =========================================================================
+     Boutique — page-scoped styles (tokens only)
+     ========================================================================= */
+
+  /* --- ① Hero -------------------------------------------------------------- */
+  .bt-hero {
+    background:
+      radial-gradient(110% 70% at 50% -5%, var(--calcaire-2), transparent 55%),
+      linear-gradient(180deg, var(--calcaire-2), var(--pierre));
+    padding-block: clamp(4rem, 11vh, 8rem) var(--space-xl);
+    min-height: auto;
+  }
+  .bt-hero__eyebrow { margin-bottom: var(--space-m); }
+  .bt-hero__title { max-width: 18ch; }
+  .bt-hero__lead {
+    font-size: var(--step-1);
+    color: var(--text-muted);
+    max-width: 56ch;
+    margin-top: var(--space-m);
+  }
+
+  /* --- ② Product ----------------------------------------------------------- */
+  .bt-product__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+
+  .bt-gallery { display: flex; flex-direction: column; gap: var(--space-m); }
+  .bt-gallery__main {
+    border: var(--hairline) solid var(--rule);
+    overflow: hidden;
+  }
+  .bt-gallery__thumbs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-m);
+  }
+  .bt-gallery__thumbs :global(.photo) {
+    border: var(--hairline) solid var(--rule);
+  }
+
+  .bt-details { display: flex; flex-direction: column; align-items: flex-start; }
+  .bt-details__brand {
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .bt-details__name {
+    font-size: var(--step-4);
+    margin-top: var(--space-2xs);
+  }
+  .bt-details__pricerow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-m);
+    flex-wrap: wrap;
+    margin-top: var(--space-s);
+  }
+  .bt-details__price {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    font-weight: 420;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    line-height: 1;
+  }
+  .bt-badge {
+    font-family: var(--font-ui);
+    font-size: var(--step--2);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.35em 0.7em;
+    border-radius: 2px;
+    line-height: 1.3;
+  }
+  .bt-badge--soldout {
+    color: var(--ivoire);
+    background: var(--sang);
+  }
+  .bt-details__desc {
+    color: var(--text-muted);
+    margin-top: var(--space-m);
+    max-width: 46ch;
+  }
+  .bt-details__desc + .bt-details__desc { margin-top: var(--space-s); }
+
+  .bt-specs {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--space-l);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    width: 100%;
+    max-width: 46ch;
+  }
+  .bt-specs__item {
+    font-size: var(--step--1);
+    color: var(--text);
+    padding-top: var(--space-2xs);
+    border-top: var(--hairline) solid var(--rule);
+    padding-left: 1.2em;
+    position: relative;
+  }
+  .bt-specs__item::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--laiton);
+  }
+
+  .bt-ship {
+    font-size: var(--step--1);
+    color: var(--text-muted);
+    margin-top: var(--space-m);
+  }
+
+  .bt-details__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-m);
+    flex-wrap: wrap;
+    margin-top: var(--space-l);
+  }
+  .bt-details__more {
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--text);
+    text-decoration: none;
+    border-bottom: var(--hairline) solid var(--laiton);
+    padding-bottom: 2px;
+    transition:
+      color var(--dur-fast) var(--ease-soft),
+      border-color var(--dur-fast) var(--ease-soft);
+  }
+  .bt-details__more:hover { color: var(--sang); border-color: var(--sang); }
+
+  .bt-details__secure {
+    font-size: var(--step--1);
+    color: var(--text-muted);
+    margin-top: var(--space-m);
+  }
+
+  /* --- ③ Mailing list ------------------------------------------------------ */
+  .bt-list {
+    background: var(--suie);
+    padding-block: var(--space-3xl);
+  }
+  .bt-list__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-m);
+  }
+  .bt-list__title { max-width: 24ch; font-size: var(--step-3); color: var(--ivoire); }
+  .bt-list__sub {
+    font-size: var(--step-0);
+    color: color-mix(in srgb, var(--ivoire) 70%, transparent);
+    max-width: 56ch;
+  }
+  .bt-list__actions {
+    display: flex;
+    gap: var(--space-s);
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: var(--space-s);
+  }
+  .bt-list .btn--ghost { color: var(--ivoire); }
+
+  /* --- ④ Trust ------------------------------------------------------------- */
+  .bt-trust__inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2xl);
+    align-items: center;
+  }
+  .bt-trust__title { font-size: var(--step-3); }
+  .bt-trust__sub { color: var(--text-muted); margin-top: var(--space-2xs); max-width: 40ch; }
+  .bt-trust__cta { margin-top: var(--space-m); }
+
+  .bt-trust__pay-label {
+    font-size: var(--step--2);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: var(--space-s);
+  }
+  .bt-pay {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+  }
+  .bt-pay__chip {
+    font-family: var(--font-ui);
+    font-size: var(--step--2);
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    border: var(--hairline) solid var(--rule);
+    border-radius: var(--radius-s);
+    padding: 0.4em 0.7em;
+    background: var(--calcaire);
+  }
+  .bt-trust__powered {
+    font-size: var(--step--2);
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-top: var(--space-m);
+  }
+
+  /* --- Responsive ---------------------------------------------------------- */
+  @media (max-width: 900px) {
+    .bt-product__grid { grid-template-columns: 1fr; gap: var(--space-xl); }
+    .bt-trust__inner { grid-template-columns: 1fr; gap: var(--space-xl); }
+    .bt-list__title { font-size: var(--step-2); }
+  }
+  @media (max-width: 540px) {
+    .bt-details__name { font-size: var(--step-3); }
+  }
+</style>

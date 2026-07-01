@@ -1,0 +1,565 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import Photo from '../../components/Photo.astro';
+import { site } from '../../config/site';
+import { locales, type Locale, useT, localeBase } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return locales.map((locale) => ({ params: { locale } }));
+}
+
+const { locale } = Astro.params as { locale: Locale };
+const t = useT(locale);
+const base = localeBase(locale);
+const isFr = locale === 'fr';
+
+// Featured in-house organiser (Magnus Events) — the château's own events arm.
+const organiser = {
+  name: 'Magnus Events',
+  fr: 'Organisation d’événements',
+  en: 'Event organisation',
+  frDesc:
+    'L’agence événementielle du domaine coordonne mariages, réceptions et tournages de bout en bout — un interlocuteur unique pour orchestrer chaque prestataire réuni sur cette page.',
+  enDesc:
+    'The estate’s in-house events agency coordinates weddings, receptions and shoots end to end — a single point of contact to orchestrate every partner listed on this page.',
+  phone: site.contact.phoneEvents,
+  email: site.contact.email,
+};
+
+type Partner = {
+  slug: string;
+  name: string;
+  photo: string;
+  frRole: string;
+  enRole: string;
+  address?: string;
+  phones?: string[];
+  email?: string;
+  website?: { label: string; url: string };
+};
+
+const groups: {
+  id: string;
+  fr: string;
+  en: string;
+  frLede: string;
+  enLede: string;
+  partners: Partner[];
+}[] = [
+  {
+    id: 'traiteurs',
+    fr: 'Traiteurs',
+    en: 'Catering',
+    frLede: 'Gastronomie sur mesure — cuisine classique, halal et casher.',
+    enLede: 'Bespoke gastronomy — classic, halal and kosher cuisine.',
+    partners: [
+      {
+        slug: 'progtraiteur',
+        name: 'Pro’G Traiteur',
+        photo: 'partner-progtraiteur',
+        frRole: 'Traiteur — chef exécutif',
+        enRole: 'Catering — executive chef',
+        address: 'Domaine d’Arvigny, Allée Edouard Branly, 77550 Moissy-Cramayel',
+        phones: ['01 60 65 55 87', '06 50 21 04 84'],
+        email: 'nicolas@progtraiteur.fr',
+        website: { label: 'progtraiteur.fr', url: 'https://www.progtraiteur.fr' },
+      },
+      {
+        slug: 'grandchemin',
+        name: 'Grand Chemin',
+        photo: 'partner-grandchemin',
+        frRole: 'Traiteur — cuisine & décor authentiques',
+        enRole: 'Catering — authentic cuisine & decor',
+        address: '36 Boulevard Jourdan, 75014 Paris',
+        phones: ['01 42 79 04 60'],
+        email: 'info@grandchemin.fr',
+        website: { label: 'grandchemin.fr', url: 'https://www.grandchemin.fr' },
+      },
+      {
+        slug: 'enfants-terribles',
+        name: 'Les Enfants Terribles',
+        photo: 'partner-enfants-terribles',
+        frRole: 'Traiteur halal',
+        enRole: 'Halal catering',
+        address:
+          '45-63 avenue du Général Leclerc, Parc des 6 routes — Bâtiment 55, 93120 La Courneuve',
+        phones: ['+33 1 43 60 44 97'],
+        email: 'contact@traiteur-lesenfantsterribles.fr',
+        website: {
+          label: 'traiteur-lesenfantsterribles.fr',
+          url: 'https://www.traiteur-lesenfantsterribles.fr',
+        },
+      },
+      {
+        slug: 'aviv-saveurs',
+        name: 'Aviv Saveurs',
+        photo: 'partner-aviv-saveurs',
+        frRole: 'Traiteur casher',
+        enRole: 'Kosher catering',
+        address: '48 rue Jean Jaurès, 91300 Massy',
+        phones: ['01 60 11 46 28', '06 22 71 08 68'],
+        email: 'info@avivsaveurs.com',
+        website: { label: 'avivsaveurs.com', url: 'https://www.avivsaveurs.com' },
+      },
+    ],
+  },
+  {
+    id: 'fleuristes',
+    fr: 'Ambiance — Fleuristes',
+    en: 'Ambiance — Florists',
+    frLede: 'Scénographie florale et art de la table.',
+    enLede: 'Floral staging and the art of the table.',
+    partners: [
+      {
+        slug: 'artisalie',
+        name: 'Artisalie',
+        photo: 'partner-artisalie',
+        frRole: 'Fleuriste',
+        enRole: 'Florist',
+        website: { label: 'artisalie.fr', url: 'https://www.artisalie.fr' },
+      },
+      {
+        slug: 'designfleurs',
+        name: 'Design Fleurs',
+        photo: 'partner-designfleurs',
+        frRole: 'Fleuriste',
+        enRole: 'Florist',
+        website: { label: 'designfleurs.fr', url: 'https://www.designfleurs.fr' },
+      },
+      {
+        slug: 'virginie-laborde',
+        name: 'Virginie Laborde',
+        photo: 'partner-virginie-laborde',
+        frRole: 'Fleuriste — Event & Floral Design',
+        enRole: 'Florist — Event & Floral Design',
+        website: {
+          label: 'Mariages.net',
+          url: 'https://www.mariages.net/decoration-mariage/virginie-laborde-event-%26-floral-design--e175553',
+        },
+      },
+    ],
+  },
+  {
+    id: 'animation',
+    fr: 'Ambiance — Animation & Services',
+    en: 'Ambiance — Entertainment & Services',
+    frLede: 'Son, lumière, spectacles et prestations pour rythmer la fête.',
+    enLede: 'Sound, light, shows and services to set the tempo of the party.',
+    partners: [
+      {
+        slug: 'smile-mix',
+        name: 'Smile Mix',
+        photo: 'partner-smile-mix',
+        frRole: 'DJ & animation',
+        enRole: 'DJ & entertainment',
+        website: { label: 'smile-mix.fr', url: 'https://www.smile-mix.fr' },
+      },
+      {
+        slug: 'super-cho',
+        name: 'Super Cho',
+        photo: 'partner-super-cho',
+        frRole: 'Spectacles de feu & lumière',
+        enRole: 'Fire & light shows',
+        website: { label: 'super-cho.com', url: 'https://www.super-cho.com' },
+      },
+      {
+        slug: 'my-event-consulting',
+        name: 'My Event Consulting',
+        photo: 'partner-my-event-consulting',
+        frRole: 'Spectacles son & lumière',
+        enRole: 'Sound & light shows',
+        website: {
+          label: 'my-event-consulting.com',
+          url: 'https://www.my-event-consulting.com',
+        },
+      },
+      {
+        slug: 'mxcar',
+        name: 'MX Car',
+        photo: 'partner-mxcar',
+        frRole: 'Voitures & transport',
+        enRole: 'Cars & transport',
+        website: { label: 'mxcar.fr', url: 'https://www.mxcar.fr' },
+      },
+      {
+        slug: 'presta-kids',
+        name: 'Presta’ Kids',
+        photo: 'partner-presta-kids',
+        frRole: 'Garde & animation enfants',
+        enRole: 'Childcare & kids’ entertainment',
+        email: 'presta.kids@gmail.com',
+      },
+    ],
+  },
+  {
+    id: 'photographes',
+    fr: 'Photographes',
+    en: 'Photographers',
+    frLede: 'Des regards choisis pour leur sensibilité au lieu.',
+    enLede: 'Photographers chosen for their feel for the estate.',
+    partners: [
+      {
+        slug: 'antoine-demoinet',
+        name: 'Antoine Demoinet',
+        photo: 'partner-antoine-demoinet',
+        frRole: 'Photographe',
+        enRole: 'Photographer',
+        website: { label: 'antoinedemoinet.com', url: 'https://www.antoinedemoinet.com' },
+      },
+      {
+        slug: 'quentin-blanc',
+        name: 'Quentin Blanc',
+        photo: 'partner-quentin-blanc',
+        frRole: 'Photographe',
+        enRole: 'Photographer',
+        website: { label: 'quentin-blanc.fr', url: 'https://www.quentin-blanc.fr' },
+      },
+      {
+        slug: 'kasiah',
+        name: 'KasiaH',
+        photo: 'partner-kasiah',
+        frRole: 'Photographe',
+        enRole: 'Photographer',
+        website: { label: 'kasiah.net', url: 'https://www.kasiah.net' },
+      },
+    ],
+  },
+];
+
+const telHref = (p: string) => `tel:${p.replace(/[^\d+]/g, '')}`;
+---
+
+<PageLayout
+  title={isFr
+    ? 'Nos partenaires · Château de Lésigny'
+    : 'Our partners · Château de Lésigny'}
+  description={isFr
+    ? 'Traiteurs, fleuristes, DJ, spectacles et photographes : le réseau de prestataires de confiance du Château de Lésigny pour vos mariages et événements.'
+    : 'Caterers, florists, DJs, shows and photographers: Château de Lésigny’s network of trusted partners for your weddings and events.'}
+  locale={locale}
+  path="partenaires/"
+>
+
+  <!-- ① Hero ---------------------------------------------------------------- -->
+  <section class="pt-hero section" aria-labelledby="pt-h1">
+    <div class="wrap">
+      <p class="eyebrow pt-hero__eyebrow" data-reveal>
+        {isFr ? 'Prestataires' : 'Partners'}
+      </p>
+      <h1 id="pt-h1" class="pt-hero__title" data-reveal>
+        {isFr ? 'Nos partenaires' : 'Our partners'}
+      </h1>
+      <p class="pt-hero__lead" data-reveal>
+        {isFr
+          ? 'Un réseau de prestataires triés sur le volet — traiteurs, fleuristes, animateurs et photographes qui connaissent le domaine et savent en révéler chaque décor.'
+          : 'A hand-picked network of professionals — caterers, florists, entertainers and photographers who know the estate and know how to bring each of its settings to life.'}
+      </p>
+    </div>
+  </section>
+
+  <div class="wrap-wide"><hr class="rule" /></div>
+
+  <!-- ② Organiser (Magnus Events) ------------------------------------------- -->
+  <section class="section" id="organisation" aria-labelledby="pt-org-h2">
+    <div class="wrap-wide">
+      <p class="eyebrow" data-reveal>{isFr ? 'Organisation' : 'Organisation'}</p>
+      <h2 id="pt-org-h2" class="pt-group__title" data-reveal>{organiser.name}</h2>
+      <div class="pt-organiser" data-reveal>
+        <p class="pt-organiser__role">{isFr ? organiser.fr : organiser.en}</p>
+        <p class="pt-organiser__desc">{isFr ? organiser.frDesc : organiser.enDesc}</p>
+        <div class="pt-organiser__contacts">
+          <a class="pt-contact" href={telHref(organiser.phone)}>
+            <span class="pt-contact__k slate">{isFr ? 'Téléphone' : 'Phone'}</span>
+            <span class="pt-contact__v">{organiser.phone}</span>
+          </a>
+          <a class="pt-contact" href={`mailto:${organiser.email}`}>
+            <span class="pt-contact__k slate">{isFr ? 'Courriel' : 'Email'}</span>
+            <span class="pt-contact__v">{organiser.email}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ③ Partner groups ------------------------------------------------------ -->
+  {groups.map((group) => (
+    <section class="section pt-group" id={group.id} aria-labelledby={`pt-${group.id}-h2`}>
+      <div class="wrap-wide">
+        <div class="pt-group__header" data-reveal>
+          <p class="eyebrow">{isFr ? group.fr : group.en}</p>
+          <h2 id={`pt-${group.id}-h2`} class="pt-group__title">
+            {isFr ? group.fr : group.en}
+          </h2>
+          <p class="pt-group__lede slate">{isFr ? group.frLede : group.enLede}</p>
+        </div>
+
+        <ul class="pt-grid" role="list">
+          {group.partners.map((p) => (
+            <li class="pt-card" data-reveal>
+              <div class="pt-card__visual">
+                <Photo
+                  name={p.photo}
+                  alt={isFr
+                    ? `${p.name} — ${p.frRole}`
+                    : `${p.name} — ${p.enRole}`}
+                  ratio="4/3"
+                  sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 33vw"
+                  widths={[400, 700, 1000]}
+                />
+              </div>
+              <div class="pt-card__body">
+                <h3 class="pt-card__name">{p.name}</h3>
+                <p class="pt-card__role">{isFr ? p.frRole : p.enRole}</p>
+                {p.address && <p class="pt-card__meta">{p.address}</p>}
+                {p.phones && (
+                  <p class="pt-card__meta">
+                    {p.phones.map((ph, i) => (
+                      <>
+                        {i > 0 && <span aria-hidden="true"> · </span>}
+                        <a href={telHref(ph)}>{ph}</a>
+                      </>
+                    ))}
+                  </p>
+                )}
+                {p.email && (
+                  <p class="pt-card__meta">
+                    <a href={`mailto:${p.email}`}>{p.email}</a>
+                  </p>
+                )}
+                {p.website && (
+                  <a
+                    class="pt-card__link"
+                    href={p.website.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {p.website.label} ↗
+                  </a>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  ))}
+
+  <!-- ④ CTA ----------------------------------------------------------------- -->
+  <section class="pt-cta is-dark" aria-labelledby="pt-cta-h2">
+    <div class="wrap pt-cta__inner" data-reveal>
+      <p class="eyebrow">{isFr ? 'Vous organisez un événement ?' : 'Planning an event?'}</p>
+      <h2 id="pt-cta-h2" class="pt-cta__title">
+        {isFr
+          ? 'Nous vous mettons en relation avec les bons prestataires.'
+          : 'We’ll connect you with the right partners.'}
+      </h2>
+      <p class="pt-cta__sub">
+        {isFr
+          ? 'Dites-nous ce que vous imaginez : notre équipe compose l’équipe idéale autour de votre projet.'
+          : 'Tell us what you have in mind — our team will assemble the ideal team around your project.'}
+      </p>
+      <div class="pt-cta__actions">
+        <a class="btn btn--primary" href={`${base}/contact/?stream=wedding`}>
+          {isFr ? 'Nous contacter' : 'Get in touch'}
+        </a>
+        <a class="btn btn--ghost" href={`${base}/mariages/`}>
+          {isFr ? 'Mariages & événements' : 'Weddings & events'}
+        </a>
+      </div>
+    </div>
+  </section>
+
+</PageLayout>
+
+<style>
+  /* =========================================================================
+     Nos partenaires — page-scoped styles (tokens only)
+     ========================================================================= */
+
+  /* --- ① Hero -------------------------------------------------------------- */
+  .pt-hero {
+    background:
+      radial-gradient(110% 70% at 50% -5%, var(--calcaire-2), transparent 55%),
+      linear-gradient(180deg, var(--calcaire-2), var(--pierre));
+    padding-block: clamp(4rem, 11vh, 8rem) var(--space-xl);
+    min-height: auto;
+  }
+  .pt-hero__eyebrow { margin-bottom: var(--space-m); }
+  .pt-hero__title { max-width: 20ch; }
+  .pt-hero__lead {
+    font-size: var(--step-1);
+    color: var(--text-muted);
+    max-width: 56ch;
+    margin-top: var(--space-m);
+  }
+
+  /* --- Group headers ------------------------------------------------------- */
+  .pt-group__header { max-width: var(--measure); margin-bottom: var(--space-xl); }
+  .pt-group__title { margin-top: var(--space-3xs); }
+  .pt-group__lede { margin-top: var(--space-2xs); color: var(--text-muted); }
+
+  .pt-group + .pt-group { padding-top: 0; }
+
+  /* --- ② Organiser --------------------------------------------------------- */
+  .pt-organiser {
+    max-width: 62ch;
+    margin-top: var(--space-m);
+    padding-top: var(--space-m);
+    border-top: var(--hairline) solid var(--rule);
+  }
+  .pt-organiser__role {
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .pt-organiser__desc {
+    color: var(--text-muted);
+    margin-top: var(--space-2xs);
+    font-size: var(--step-0);
+  }
+  .pt-organiser__contacts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-l);
+    margin-top: var(--space-m);
+  }
+  .pt-contact {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+    text-decoration: none;
+    color: var(--text);
+  }
+  .pt-contact__k {
+    font-size: var(--step--2);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .pt-contact__v {
+    font-family: var(--font-slate);
+    font-size: var(--step-0);
+    color: var(--text);
+    border-bottom: var(--hairline) solid var(--laiton);
+    padding-bottom: 2px;
+    transition: color var(--dur-fast) var(--ease-soft);
+  }
+  .pt-contact:hover .pt-contact__v { color: var(--sang); }
+
+  /* --- ③ Partner grid ------------------------------------------------------ */
+  .pt-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-l);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .pt-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--calcaire);
+    border: var(--hairline) solid var(--rule);
+    border-top: 2px solid var(--laiton);
+    box-shadow: var(--shadow-s);
+    overflow: hidden;
+  }
+  .pt-card__visual { overflow: hidden; }
+  .pt-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+    padding: var(--space-m);
+    flex: 1;
+  }
+  .pt-card__name {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 460;
+    line-height: 1.1;
+    color: var(--text);
+  }
+  .pt-card__role {
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: var(--space-2xs);
+  }
+  .pt-card__meta {
+    font-size: var(--step--1);
+    color: var(--text-muted);
+    max-width: none;
+    line-height: 1.5;
+  }
+  .pt-card__meta a {
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+  .pt-card__meta a:hover {
+    color: var(--text);
+    text-decoration: underline;
+    text-decoration-color: var(--laiton);
+  }
+  .pt-card__link {
+    margin-top: auto;
+    padding-top: var(--space-s);
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--text);
+    text-decoration: none;
+    width: max-content;
+  }
+  .pt-card__link {
+    border-bottom: var(--hairline) solid var(--laiton);
+    padding-bottom: 2px;
+    transition:
+      color var(--dur-fast) var(--ease-soft),
+      border-color var(--dur-fast) var(--ease-soft);
+  }
+  .pt-card__link:hover { color: var(--sang); border-color: var(--sang); }
+
+  /* --- ④ CTA --------------------------------------------------------------- */
+  .pt-cta {
+    background: var(--suie);
+    padding-block: var(--space-3xl);
+  }
+  .pt-cta__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-m);
+  }
+  .pt-cta__title { max-width: 24ch; font-size: var(--step-3); color: var(--ivoire); }
+  .pt-cta__sub {
+    font-size: var(--step-0);
+    color: color-mix(in srgb, var(--ivoire) 70%, transparent);
+    max-width: 50ch;
+  }
+  .pt-cta__actions {
+    display: flex;
+    gap: var(--space-s);
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: var(--space-s);
+  }
+  .pt-cta .btn--ghost { color: var(--ivoire); }
+
+  /* --- Responsive ---------------------------------------------------------- */
+  @media (max-width: 900px) {
+    .pt-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 560px) {
+    .pt-grid { grid-template-columns: 1fr; }
+    .pt-cta__title { font-size: var(--step-2); }
+  }
+</style>
