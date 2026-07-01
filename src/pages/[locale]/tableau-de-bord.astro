@@ -3,11 +3,11 @@ import PageLayout from '../../layouts/PageLayout.astro';
 import { locales, type Locale } from '../../i18n/ui';
 import { readdirSync, readFileSync } from 'node:fs';
 
-// No-login analytics dashboard. Builds a month-by-month time series from the committed snapshots
-// (reports/analytics/YYYY-MM.json from the monthly digest Action) and lets the viewer pick a
-// timeframe and OVERLAY MULTIPLE METRICS to compare trends over time. Each line is scaled to its
-// own range so single-digit conversions don't flatline against thousands of visits. Falls back to
-// sample.json (12-month history) until real data accrues. noindex + sitemap-excluded.
+// No-login analytics dashboard. Month-by-month time series from the committed snapshots
+// (reports/analytics/YYYY-MM.json), with: timeframe controls, a multi-select metric overlay
+// (each line scaled to its own range), and user-managed EVENT annotations (renovations, launches…)
+// shown as labeled vertical lines you can toggle. Events seed from reports/analytics/events.json
+// and can be added live (stored per-browser in localStorage). noindex + sitemap-excluded.
 export function getStaticPaths() {
   return locales.map((locale) => ({ params: { locale } }));
 }
@@ -22,6 +22,7 @@ const normConv = (c: any): Record<string, number> =>
 const dir = 'reports/analytics';
 let series: Point[] = [];
 let data: any = null;
+let events: { date: string; label: string }[] = [];
 let isSample = true;
 try {
   const files = readdirSync(dir).filter((f) => f.endsWith('.json'));
@@ -36,8 +37,8 @@ try {
     series = (data.history ?? []).map((h: any) => ({ month: h.month, visits: h.visits, conversions: normConv(h.conversions) }));
   }
 } catch { /* no data */ }
+try { events = JSON.parse(readFileSync(`${dir}/events.json`, 'utf8')); } catch { /* none */ }
 
-// Metric registry — rendered as toggle chips AND used by the client extractor (keyed by `key`).
 const METRICS = [
   { key: 'visits', label: isFr ? 'Visites' : 'Visits', color: '#7a2e2e' },
   { key: 'mariage', label: isFr ? 'Mariages' : 'Weddings', color: '#b8912f' },
@@ -74,14 +75,7 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
           <div class="db__controls">
             <div class="db__legend" role="group" aria-label={isFr ? 'Mesures (choix multiple)' : 'Metrics (multi-select)'}>
               {METRICS.map((m, i) => (
-                <button
-                  type="button"
-                  class={`db__chip${i === 0 ? ' is-on' : ''}`}
-                  data-metric={m.key}
-                  data-label={m.label}
-                  aria-pressed={i === 0 ? 'true' : 'false'}
-                  style={`--c:${m.color}`}
-                >
+                <button type="button" class={`db__chip${i === 0 ? ' is-on' : ''}`} data-metric={m.key} data-label={m.label} aria-pressed={i === 0 ? 'true' : 'false'} style={`--c:${m.color}`}>
                   <span class="db__swatch" aria-hidden="true"></span>
                   <span class="db__chip-l">{m.label}</span>
                   <span class="db__lv" data-lv={m.key}></span>
@@ -96,8 +90,26 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
             </div>
           </div>
           <p class="db__sum" id="db-sum" aria-live="polite"></p>
-          <div class="db__chart" id="db-chart" role="img" aria-label={isFr ? 'Graphique de tendance' : 'Trend chart'}></div>
-          <p class="db__hint slate">{isFr ? 'Cliquez une mesure pour l’ajouter/retirer. Chaque courbe est mise à l’échelle de sa propre plage — comparez les tendances, pas les valeurs absolues. Chiffres échantillonnés.' : 'Click a metric to add/remove it. Each line is scaled to its own range — compare trends, not absolute values. Sampled figures.'}</p>
+
+          <div class="db__main">
+            <div class="db__chartcol">
+              <div class="db__chart" id="db-chart" role="img" aria-label={isFr ? 'Graphique de tendance' : 'Trend chart'}></div>
+              <p class="db__hint slate">{isFr ? 'Cliquez une mesure pour l’ajouter/retirer. Chaque courbe est à l’échelle de sa propre plage — comparez les tendances. Chiffres échantillonnés.' : 'Click a metric to add/remove it. Each line is scaled to its own range — compare trends. Sampled figures.'}</p>
+            </div>
+
+            <aside class="db__events" aria-label={isFr ? 'Événements' : 'Events'}>
+              <div class="db__ev-head">
+                <span>{isFr ? 'Événements' : 'Events'}</span>
+                <button type="button" id="db-ev-all" class="db__ev-all">{isFr ? 'Tout' : 'All'}</button>
+              </div>
+              <ul class="db__ev-list" id="db-ev-list"></ul>
+              <form class="db__ev-add" id="db-ev-add">
+                <input type="month" id="db-ev-date" required aria-label={isFr ? 'Date' : 'Date'} />
+                <input type="text" id="db-ev-label" required maxlength="40" placeholder={isFr ? 'Ex : Salle de bal rénovée' : 'e.g. Ballroom renovated'} aria-label={isFr ? 'Intitulé' : 'Label'} />
+                <button type="submit">{isFr ? '+ Ajouter' : '+ Add'}</button>
+              </form>
+            </aside>
+          </div>
         </div>
       )}
 
@@ -114,7 +126,6 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
             ))}
           </ul>
         </article>
-
         <article class="db__card">
           <p class="db__k">{isFr ? 'Conversions — dernier mois (estimation)' : 'Conversions — latest month (estimate)'}</p>
           <ul class="db__conv">
@@ -132,7 +143,6 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
           </ul>
           <p class="db__note slate">{isFr ? 'Chiffres réels = votre boîte mail + Stripe. Ici : tendance.' : 'True counts = your inbox + Stripe. Here: the trend.'}</p>
         </article>
-
         <article class="db__card">
           <p class="db__k">{isFr ? 'Pages d’entrée' : 'Top landing pages'}</p>
           <ul class="db__pages">
@@ -144,79 +154,111 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
   </section>
 
   <script type="application/json" id="db-series" set:html={JSON.stringify(series)} is:inline></script>
+  <script type="application/json" id="db-events-seed" set:html={JSON.stringify(events)} is:inline></script>
   <script>
     (() => {
-      const el = document.getElementById('db-series');
-      const chart = document.getElementById('db-chart');
-      const sumEl = document.getElementById('db-sum');
+      const $ = (id) => document.getElementById(id);
+      const seriesEl = $('db-series'), chart = $('db-chart'), sumEl = $('db-sum');
       const trend = chart?.closest('.db__trend');
-      if (!el || !chart || !sumEl || !trend) return;
-      const series = JSON.parse(el.textContent || '[]');
+      if (!seriesEl || !chart || !sumEl || !trend) return;
+      const series = JSON.parse(seriesEl.textContent || '[]');
       if (!series.length) return;
       const isFr = document.documentElement.lang === 'fr';
       const nf = new Intl.NumberFormat(isFr ? 'fr-FR' : 'en-US');
+      const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
+      const COLORS = { visits: '#7a2e2e', mariage: '#b8912f', entreprise: '#2f6f8f', sejour: '#3f7d55', boutique: '#6a4f8f', cadeau: '#9c6b3f' };
       const fnMap = {
-        visits: (s) => s.visits,
-        mariage: (s) => s.conversions.mariage,
-        entreprise: (s) => s.conversions.entreprise,
-        sejour: (s) => s.conversions.sejour,
-        boutique: (s) => s.conversions.boutique,
-        cadeau: (s) => s.conversions.cadeau,
+        visits: (s) => s.visits, mariage: (s) => s.conversions.mariage, entreprise: (s) => s.conversions.entreprise,
+        sejour: (s) => s.conversions.sejour, boutique: (s) => s.conversions.boutique, cadeau: (s) => s.conversions.cadeau,
       };
       const chips = Array.from(trend.querySelectorAll('.db__chip'));
-      const meta = {}; // key -> { color, label }
-      chips.forEach((b) => {
-        meta[b.dataset.metric] = { color: getComputedStyle(b).getPropertyValue('--c').trim(), label: b.dataset.label };
-      });
+      const label = {};
+      chips.forEach((b) => { label[b.dataset.metric] = b.dataset.label; });
       const order = chips.map((b) => b.dataset.metric);
       const selected = new Set(['visits']);
-      let tf = 0; // 0 = all
+      let tf = 0;
 
-      const mLabel = (m) => m.slice(5) + '/' + m.slice(2, 4); // 2026-06 -> 06/26
+      // ---- Events (seed from file + user-added in localStorage) ----
+      const LS_ADD = 'db-events-add', LS_OFF = 'db-events-off';
+      const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch { return d; } };
+      const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+      const seed = JSON.parse($('db-events-seed')?.textContent || '[]').map((e) => ({ ...e, user: false }));
+      let userEv = load(LS_ADD, []).map((e) => ({ ...e, user: true }));
+      let off = new Set(load(LS_OFF, []));
+      const evId = (e) => e.date + '|' + e.label;
+      const allEvents = () => [...seed, ...userEv].sort((a, b) => a.date.localeCompare(b.date));
+
+      const mLabel = (m) => m.slice(5) + '/' + m.slice(2, 4);
+      const mNum = (d) => { const [y, mo] = d.split('-').map(Number); return y * 12 + (mo - 1); };
       const activeKeys = () => order.filter((k) => selected.has(k));
 
-      function draw(data, keys) {
-        const W = 760, H = 240, pl = 10, pr = 10, pt = 16, pb = 26;
+      function draw(data, keys, evts) {
+        const W = 760, H = 264, pl = 12, pr = 12, pt = 34, pb = 26;
         const n = data.length;
         const X = (i) => pl + (n <= 1 ? (W - pl - pr) / 2 : (i * (W - pl - pr)) / (n - 1));
         const single = keys.length === 1;
+        const fillOp = single ? 0.22 : 0.13;
         const step = Math.max(1, Math.ceil(n / 6));
         let xlabels = '';
-        for (let i = 0; i < n; i += step) xlabels += `<text x="${X(i).toFixed(1)}" y="${H - 8}" text-anchor="middle" class="db-x">${mLabel(data[i].month)}</text>`;
-        let body = '';
+        for (let i = 0; i < n; i += step) xlabels += `<text x="${X(i).toFixed(1)}" y="${H - 8}" text-anchor="middle" fill="#8a7d6d" font-size="11">${mLabel(data[i].month)}</text>`;
+        let areas = '', lines = '', dots = '', vlabels = '';
         keys.forEach((key) => {
-          const color = meta[key].color;
+          const color = COLORS[key] || '#7a2e2e';
           const vals = data.map(fnMap[key]);
           const max = Math.max(1, ...vals);
           const Y = (v) => pt + (1 - v / max) * (H - pt - pb);
-          const line = vals.map((v, i) => `${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(' ');
-          if (single) {
-            const area = `${X(0).toFixed(1)},${H - pb} ${line} ${X(n - 1).toFixed(1)},${H - pb}`;
-            body += `<polygon class="db-area" points="${area}" style="fill:color-mix(in srgb, ${color} 16%, transparent)"></polygon>`;
-          }
-          body += `<polyline class="db-line" points="${line}" style="stroke:${color}"></polyline>`;
-          for (let i = 0; i < n; i++) {
-            body += `<circle cx="${X(i).toFixed(1)}" cy="${Y(vals[i]).toFixed(1)}" r="${i === n - 1 ? 3.5 : 2}" style="fill:${color}"><title>${meta[key].label} — ${data[i].month}: ${nf.format(vals[i])}</title></circle>`;
-          }
-          if (single) body += `<text x="${X(n - 1).toFixed(1)}" y="${(Y(vals[n - 1]) - 8).toFixed(1)}" text-anchor="end" class="db-last" style="fill:${color}">${nf.format(vals[n - 1])}</text>`;
+          const pts = vals.map((v, i) => `${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(' ');
+          // translucent area fill in the SAME colour as the line (presentation attrs = universal support)
+          areas += `<polygon points="${X(0).toFixed(1)},${H - pb} ${pts} ${X(n - 1).toFixed(1)},${H - pb}" fill="${color}" fill-opacity="${fillOp}" stroke="none"></polygon>`;
+          lines += `<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" vector-effect="non-scaling-stroke"></polyline>`;
+          for (let i = 0; i < n; i++) dots += `<circle cx="${X(i).toFixed(1)}" cy="${Y(vals[i]).toFixed(1)}" r="${i === n - 1 ? 4 : 3}" fill="${color}" stroke="#f6f1e7" stroke-width="1.1"><title>${esc(label[key])} — ${data[i].month}: ${nf.format(vals[i])}</title></circle>`;
+          if (single) vlabels += `<text x="${X(n - 1).toFixed(1)}" y="${(Y(vals[n - 1]) - 9).toFixed(1)}" text-anchor="end" fill="${color}" font-size="13" font-weight="600">${nf.format(vals[n - 1])}</text>`;
         });
-        return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" class="db-svg">${body}${xlabels}</svg>`;
+        // event annotation lines (toggled-on events within the visible date range)
+        let evLines = '', evLabels = '';
+        if (n >= 1) {
+          const s0 = mNum(data[0].month), s1 = mNum(data[n - 1].month);
+          const inRange = evts.filter((e) => { const m = mNum(e.date); return m >= s0 && m <= s1; });
+          inRange.forEach((e, k) => {
+            const m = mNum(e.date);
+            const x = s1 === s0 ? pl + (W - pl - pr) / 2 : pl + ((m - s0) / (s1 - s0)) * (W - pl - pr);
+            const ly = 10 + (k % 2) * 12;
+            const anchor = x < 70 ? 'start' : x > W - 70 ? 'end' : 'middle';
+            const short = e.label.length > 20 ? e.label.slice(0, 19) + '…' : e.label;
+            evLines += `<line x1="${x.toFixed(1)}" y1="${pt - 4}" x2="${x.toFixed(1)}" y2="${H - pb}" stroke="#8a7d6d" stroke-width="1" stroke-dasharray="3 3" opacity="0.6"></line>`;
+            evLabels += `<text x="${x.toFixed(1)}" y="${ly}" text-anchor="${anchor}" fill="#5a5048" font-size="10">${esc(short)}<title>${esc(e.date + ' — ' + e.label)}</title></text>`;
+          });
+        }
+        return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" preserveAspectRatio="xMidYMid meet">${areas}${lines}${dots}${evLines}${evLabels}${vlabels}${xlabels}</svg>`;
+      }
+
+      function renderEventList() {
+        const list = $('db-ev-list');
+        list.innerHTML = allEvents().map((e) => {
+          const id = evId(e), on = !off.has(id);
+          return `<li class="db__ev">
+            <label><input type="checkbox" data-id="${esc(id)}" ${on ? 'checked' : ''}>
+            <span class="db__ev-d">${esc(e.date)}</span>
+            <span class="db__ev-t" title="${esc(e.label)}">${esc(e.label)}</span></label>
+            ${e.user ? `<button type="button" class="db__ev-x" data-del="${esc(id)}" aria-label="${isFr ? 'Supprimer' : 'Remove'}">×</button>` : ''}
+          </li>`;
+        }).join('') || `<li class="db__ev-empty slate">${isFr ? 'Aucun événement.' : 'No events.'}</li>`;
+        list.querySelectorAll('input[type=checkbox]').forEach((c) =>
+          c.addEventListener('change', () => { const id = c.dataset.id; if (c.checked) off.delete(id); else off.add(id); save(LS_OFF, [...off]); render(); })
+        );
+        list.querySelectorAll('[data-del]').forEach((b) =>
+          b.addEventListener('click', () => { const id = b.dataset.del; userEv = userEv.filter((e) => evId(e) !== id); save(LS_ADD, userEv.map(({ user, ...r }) => r)); renderEventList(); render(); })
+        );
       }
 
       function render() {
         const keys = activeKeys();
         const data = tf ? series.slice(-tf) : series;
-        chart.innerHTML = keys.length ? draw(data, keys) : '';
-        // chip totals for the visible timeframe
-        chips.forEach((b) => {
-          const k = b.dataset.metric;
-          const tot = data.reduce((a, s) => a + fnMap[k](s), 0);
-          const lv = b.querySelector('.db__lv');
-          if (lv) lv.textContent = nf.format(tot);
-        });
-        const months = data.length;
-        const per = isFr ? `sur ${months} mois` : `over ${months} months`;
+        const onEv = allEvents().filter((e) => !off.has(evId(e)));
+        chart.innerHTML = keys.length ? draw(data, keys, onEv) : '';
+        chips.forEach((b) => { const k = b.dataset.metric; const tot = data.reduce((a, s) => a + fnMap[k](s), 0); const lv = b.querySelector('.db__lv'); if (lv) lv.textContent = nf.format(tot); });
+        const months = data.length, per = isFr ? `sur ${months} mois` : `over ${months} months`;
         if (keys.length === 1) {
           const f = fnMap[keys[0]];
           const total = data.reduce((a, s) => a + f(s), 0);
@@ -224,43 +266,38 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
           const ptot = prev.reduce((a, s) => a + f(s), 0);
           const pct = ptot ? Math.round(((total - ptot) / ptot) * 100) : null;
           let d = '';
-          if (pct !== null) {
-            const arrow = pct >= 0 ? '▲' : '▼';
-            const vs = isFr ? `${arrow} ${Math.abs(pct)}% vs période précédente` : `${arrow} ${Math.abs(pct)}% vs previous period`;
-            d = ` · <span class="${pct >= 0 ? 'up' : 'down'}">${vs}</span>`;
-          }
-          sumEl.innerHTML = `<strong>${nf.format(total)}</strong> ${meta[keys[0]].label.toLowerCase()} ${per}${d}`;
+          if (pct !== null) { const ar = pct >= 0 ? '▲' : '▼'; d = ` · <span class="${pct >= 0 ? 'up' : 'down'}">${ar} ${Math.abs(pct)}% ${isFr ? 'vs période précédente' : 'vs previous period'}</span>`; }
+          sumEl.innerHTML = `<strong>${nf.format(total)}</strong> ${label[keys[0]].toLowerCase()} ${per}${d}`;
         } else if (keys.length > 1) {
-          sumEl.innerHTML = isFr
-            ? `<strong>${keys.length} mesures</strong> comparées ${per} · échelles indépendantes`
-            : `<strong>${keys.length} metrics</strong> compared ${per} · independent scales`;
-        } else {
-          sumEl.innerHTML = isFr ? 'Choisissez au moins une mesure.' : 'Select at least one metric.';
-        }
+          sumEl.innerHTML = isFr ? `<strong>${keys.length} mesures</strong> comparées ${per} · échelles indépendantes` : `<strong>${keys.length} metrics</strong> compared ${per} · independent scales`;
+        } else sumEl.innerHTML = isFr ? 'Choisissez au moins une mesure.' : 'Select at least one metric.';
       }
 
-      chips.forEach((b) =>
-        b.addEventListener('click', () => {
-          const k = b.dataset.metric;
-          if (selected.has(k)) {
-            if (selected.size === 1) return; // keep at least one
-            selected.delete(k);
-          } else {
-            selected.add(k);
-          }
-          const on = selected.has(k);
-          b.classList.toggle('is-on', on);
-          b.setAttribute('aria-pressed', on ? 'true' : 'false');
-          render();
-        })
-      );
-      trend.querySelectorAll('[data-role="tf"] button').forEach((b) =>
-        b.addEventListener('click', () => {
-          tf = parseInt(b.getAttribute('data-tf'), 10);
-          b.parentElement.querySelectorAll('button').forEach((x) => x.classList.toggle('is-on', x === b));
-          render();
-        })
-      );
+      chips.forEach((b) => b.addEventListener('click', () => {
+        const k = b.dataset.metric;
+        if (selected.has(k)) { if (selected.size === 1) return; selected.delete(k); } else selected.add(k);
+        const on = selected.has(k); b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); render();
+      }));
+      trend.querySelectorAll('[data-role="tf"] button').forEach((b) => b.addEventListener('click', () => {
+        tf = parseInt(b.getAttribute('data-tf'), 10);
+        b.parentElement.querySelectorAll('button').forEach((x) => x.classList.toggle('is-on', x === b)); render();
+      }));
+      $('db-ev-add').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const date = $('db-ev-date').value, lab = $('db-ev-label').value.trim();
+        if (!date || !lab) return;
+        userEv.push({ date, label: lab, user: true });
+        save(LS_ADD, userEv.map(({ user, ...r }) => r));
+        $('db-ev-label').value = '';
+        renderEventList(); render();
+      });
+      $('db-ev-all').addEventListener('click', () => {
+        const ids = allEvents().map(evId);
+        if (off.size >= ids.length) off = new Set(); else off = new Set(ids);
+        save(LS_OFF, [...off]); renderEventList(); render();
+      });
+
+      renderEventList();
       render();
     })();
   </script>
@@ -273,7 +310,7 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
   .db__controls { display: flex; flex-wrap: wrap; gap: var(--space-m); justify-content: space-between; align-items: flex-start; }
   .db__legend { display: flex; flex-wrap: wrap; gap: var(--space-2xs); }
   .db__chip { display: inline-flex; align-items: center; gap: 0.4rem; appearance: none; border: var(--hairline) solid var(--rule); background: var(--calcaire-2); padding: 0.3rem 0.7rem; border-radius: 99px; font: inherit; font-size: var(--step--1); color: var(--text-muted); cursor: pointer; opacity: 0.6; }
-  .db__chip.is-on { opacity: 1; color: var(--text); border-color: var(--c); background: color-mix(in srgb, var(--c) 8%, var(--calcaire)); }
+  .db__chip.is-on { opacity: 1; color: var(--text); border-color: var(--c); background: var(--calcaire); }
   .db__swatch { width: 0.7rem; height: 0.7rem; border-radius: 50%; background: var(--c); flex: none; }
   .db__lv { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--text); }
   .db__chip:not(.is-on) .db__lv { color: var(--text-muted); font-weight: 400; }
@@ -284,13 +321,24 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
   .db__seg button:hover:not(.is-on) { background: var(--calcaire-2); }
   .db__sum { margin: var(--space-m) 0 var(--space-s); font-size: var(--step-1); }
   .db__sum .up { color: #2e7d52; } .db__sum .down { color: var(--sang); }
-  .db__chart { width: 100%; }
-  .db-svg { width: 100%; height: auto; display: block; }
-  .db-area { stroke: none; }
-  .db-line { fill: none; stroke-width: 2; vector-effect: non-scaling-stroke; }
-  .db-x { fill: var(--text-muted); font-size: 11px; }
-  .db-last { font-size: 13px; font-weight: 600; }
+  .db__main { display: grid; grid-template-columns: 1fr 15rem; gap: var(--space-l); align-items: start; }
+  .db__chart { width: 100%; min-width: 0; }
   .db__hint { margin: var(--space-s) 0 0; font-size: var(--step--2); max-width: 62ch; }
+  /* Events panel */
+  .db__events { border: var(--hairline) solid var(--rule); border-radius: var(--radius-s); padding: var(--space-s); background: var(--calcaire-2); font-size: var(--step--1); }
+  .db__ev-head { display: flex; justify-content: space-between; align-items: center; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; font-size: var(--step--2); color: var(--text-muted); }
+  .db__ev-all { appearance: none; border: var(--hairline) solid var(--rule); background: var(--calcaire); border-radius: 99px; font: inherit; font-size: var(--step--2); padding: 0.1rem 0.55rem; cursor: pointer; color: var(--text-muted); }
+  .db__ev-list { list-style: none; margin: var(--space-s) 0; padding: 0; display: grid; gap: 0.2rem; max-height: 12rem; overflow: auto; }
+  .db__ev-list :global(.db__ev) { display: flex; align-items: center; gap: 0.3rem; }
+  .db__ev-list :global(.db__ev label) { display: flex; align-items: center; gap: 0.35rem; cursor: pointer; flex: 1; min-width: 0; }
+  .db__ev-list :global(.db__ev-d) { color: var(--text-muted); font-variant-numeric: tabular-nums; flex: none; }
+  .db__ev-list :global(.db__ev-t) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .db__ev-list :global(.db__ev-empty) { color: var(--text-muted); list-style: none; }
+  .db__ev-list :global(.db__ev-x) { appearance: none; border: 0; background: transparent; color: var(--text-muted); cursor: pointer; font-size: 1rem; line-height: 1; padding: 0 0.2rem; flex: none; }
+  .db__ev-list :global(.db__ev-x):hover { color: var(--sang); }
+  .db__ev-add { display: grid; gap: 0.3rem; border-top: var(--hairline) solid var(--rule); padding-top: var(--space-s); }
+  .db__ev-add input { font: inherit; font-size: var(--step--1); padding: 0.35rem 0.5rem; border: var(--hairline) solid var(--rule); border-radius: var(--radius-s); background: var(--calcaire); color: var(--text); }
+  .db__ev-add button { appearance: none; border: 0; background: var(--laiton-deep); color: #fff; font: inherit; font-size: var(--step--1); padding: 0.4rem; border-radius: var(--radius-s); cursor: pointer; }
   .db__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-l); margin-top: var(--space-l); }
   .db__card { padding: var(--space-l); border: var(--hairline) solid var(--rule); border-top: 2px solid var(--laiton); border-radius: var(--radius-s); background: var(--calcaire); }
   .db__k { font-size: var(--step--1); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin: 0 0 var(--space-s); }
@@ -304,5 +352,5 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
   .db__flag { color: var(--laiton-deep); margin-left: 0.25rem; cursor: help; }
   .db__note { margin: var(--space-s) 0 0; font-size: var(--step--2); }
   .db__pages code { font-size: var(--step--2); }
-  @media (max-width: 800px) { .db__grid { grid-template-columns: 1fr; } .db__bars li { grid-template-columns: 6rem 1fr 2.5rem; } }
+  @media (max-width: 860px) { .db__main { grid-template-columns: 1fr; } .db__grid { grid-template-columns: 1fr; } .db__bars li { grid-template-columns: 6rem 1fr 2.5rem; } }
 </style>
