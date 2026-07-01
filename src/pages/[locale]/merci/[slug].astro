@@ -1,0 +1,70 @@
+---
+import PageLayout from '../../../layouts/PageLayout.astro';
+import { locales, type Locale, localeBase } from '../../../i18n/ui';
+
+// Conversion thank-you pages. A pageview of /{locale}/merci/{slug}/ is the pageview-proxy
+// "conversion" signal for the free (pageview-only) Cloudflare Web Analytics. Reached ONLY on a
+// genuine, confirmed action (contact.astro navigates here on a confirmed Web3Forms send; Stripe
+// sends buyers here via post-payment redirect). noindex + excluded from the sitemap so crawlers
+// never mint phantom conversions. Slug is stable across FR/EN; only the copy is localized.
+export function getStaticPaths() {
+  const slugs = ['mariage', 'entreprise', 'sejour', 'boutique', 'cadeau', 'tournage', 'photo'];
+  return locales.flatMap((locale) => slugs.map((slug) => ({ params: { locale, slug } })));
+}
+
+const { locale, slug } = Astro.params as { locale: Locale; slug: string };
+const isFr = locale === 'fr';
+const base = localeBase(locale);
+
+type Copy = { h: string; p: string; cta: { label: string; href: string } };
+const copyFr: Record<string, Copy> = {
+  mariage: { h: 'Merci — votre demande est bien reçue.', p: 'Notre équipe mariages vous répond sous 48 h pour construire votre projet. En attendant, découvrez le domaine.', cta: { label: 'Découvrir le domaine', href: `${base}/le-domaine/` } },
+  entreprise: { h: 'Merci — votre demande est bien reçue.', p: 'Nous revenons vers vous sous 48 h pour votre séminaire ou événement d’entreprise.', cta: { label: 'Nos espaces séminaires', href: `${base}/entreprise/` } },
+  sejour: { h: 'Merci — votre demande de séjour est bien reçue.', p: 'Nous vous répondons sous 48 h pour votre séjour au Colombier.', cta: { label: 'Le séjour', href: `${base}/sejour/` } },
+  boutique: { h: 'Merci pour votre commande !', p: 'Votre paiement est confirmé. Vous recevez un e-mail de confirmation ; nous préparons votre commande.', cta: { label: 'Retour à la boutique', href: `${base}/boutique/` } },
+  cadeau: { h: 'Merci — votre bon cadeau est confirmé !', p: 'Vous recevez votre bon par e-mail. Un cadeau qui ouvre les portes du château.', cta: { label: 'Retour à la boutique', href: `${base}/boutique/` } },
+  tournage: { h: 'Merci — votre demande est bien reçue.', p: 'Notre équipe tournages vous répond rapidement pour votre projet.', cta: { label: 'Le château au cinéma', href: `${base}/tournages/` } },
+  photo: { h: 'Merci — votre demande est bien reçue.', p: 'Nous revenons vers vous sous 48 h pour votre séance photo.', cta: { label: 'Séances photo', href: `${base}/photographes/` } },
+};
+const copyEn: Record<string, Copy> = {
+  mariage: { h: 'Thank you — your enquiry is in.', p: 'Our weddings team replies within 48 h to shape your celebration. In the meantime, explore the estate.', cta: { label: 'Explore the estate', href: `${base}/le-domaine/` } },
+  entreprise: { h: 'Thank you — your enquiry is in.', p: 'We’ll get back to you within 48 h about your seminar or corporate event.', cta: { label: 'Our seminar spaces', href: `${base}/entreprise/` } },
+  sejour: { h: 'Thank you — your stay enquiry is in.', p: 'We’ll reply within 48 h about your stay at Le Colombier.', cta: { label: 'The stay', href: `${base}/sejour/` } },
+  boutique: { h: 'Thank you for your order!', p: 'Your payment is confirmed. A confirmation email is on its way while we prepare your order.', cta: { label: 'Back to the shop', href: `${base}/boutique/` } },
+  cadeau: { h: 'Thank you — your gift voucher is confirmed!', p: 'Your voucher arrives by email. A gift that opens the château’s doors.', cta: { label: 'Back to the shop', href: `${base}/boutique/` } },
+  tournage: { h: 'Thank you — your enquiry is in.', p: 'Our filming team will reply shortly about your production.', cta: { label: 'The château on screen', href: `${base}/tournages/` } },
+  photo: { h: 'Thank you — your enquiry is in.', p: 'We’ll get back to you within 48 h about your photo shoot.', cta: { label: 'Photo shoots', href: `${base}/photographes/` } },
+};
+const c = (isFr ? copyFr : copyEn)[slug] ?? (isFr ? copyFr.mariage : copyEn.mariage);
+const title = `${c.h} · Château de Lésigny`;
+---
+<PageLayout title={title} description={c.p} locale={locale} path={`merci/${slug}/`} noindex={true}>
+  <section class="merci section" aria-labelledby="merci-h1">
+    <div class="wrap merci__inner">
+      <p class="eyebrow" data-reveal>{isFr ? 'Château de Lésigny' : 'Château de Lésigny'}</p>
+      <span class="merci__mark" aria-hidden="true">✦</span>
+      <h1 id="merci-h1" class="merci__h" data-reveal>{c.h}</h1>
+      <p class="merci__p" data-reveal>{c.p}</p>
+      <div class="merci__actions" data-reveal>
+        <a class="btn btn--primary" href={c.cta.href}>{c.cta.label}</a>
+        <a class="btn btn--ghost" href={`${base}/`}>{isFr ? 'Retour à l’accueil' : 'Back to home'}</a>
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .merci {
+    background:
+      radial-gradient(110% 70% at 50% -5%, var(--calcaire-2), transparent 55%),
+      linear-gradient(180deg, var(--calcaire-2), var(--pierre));
+    min-height: 64vh;
+    display: flex;
+    align-items: center;
+  }
+  .merci__inner { text-align: center; }
+  .merci__mark { display: block; color: var(--laiton-deep); font-size: var(--step-3); margin-top: var(--space-s); }
+  .merci__h { max-width: 22ch; margin: var(--space-xs) auto 0; }
+  .merci__p { color: var(--text-muted); font-size: var(--step-1); max-width: 48ch; margin: var(--space-m) auto 0; }
+  .merci__actions { display: flex; gap: var(--space-s); justify-content: center; flex-wrap: wrap; margin-top: var(--space-l); }
+</style>

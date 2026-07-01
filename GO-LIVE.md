@@ -10,6 +10,7 @@ Each turns a feature on the moment it's set; the privacy policy updates itself t
 
 - [ ] `PUBLIC_WEB3FORMS_KEY` — real enquiry delivery + auto-reply ([web3forms.com](https://web3forms.com), free)
 - [ ] `PUBLIC_CF_BEACON` **or** `PUBLIC_PLAUSIBLE_DOMAIN` — cookieless analytics (no consent banner)
+- [ ] **Analytics reporting** (full setup in [`docs/ANALYTICS.md`](docs/ANALYTICS.md)): repo secrets `CF_API_TOKEN` (Account Analytics:Read) + `CF_ACCOUNT_ID` + `DIGEST_RECIPIENTS` (reuse `BREVO_API_KEY`) to switch on the monthly digest; set Stripe Payment-Link post-payment redirects → `…/fr/merci/boutique/` & `…/fr/merci/cadeau/`; paste the `/go/instagram|newsletter|gbp|mariagesnet/` links into those channels
 - [ ] `PUBLIC_NEWSLETTER_URL` — Brevo hosted-form action URL (EU)
 - [ ] `PUBLIC_VOUCHER_STAY_URL` / `PUBLIC_VOUCHER_SHOP_URL` — Stripe Payment Links (gift vouchers)
 

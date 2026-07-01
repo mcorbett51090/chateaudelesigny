@@ -11,7 +11,8 @@
     "build:demo": "PUBLIC_DEMO=1 astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "check:todos": "node scripts/check-todos.mjs"
+    "check:todos": "node scripts/check-todos.mjs",
+    "analytics:digest": "node scripts/analytics-digest.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.2.1",

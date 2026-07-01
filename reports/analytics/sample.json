@@ -1,0 +1,28 @@
+{
+  "month": "sample",
+  "generatedAt": "2026-07-01T06:00:00Z",
+  "sampleNote": "Illustrative sample data — replace once the Cloudflare beacon + API token are live.",
+  "totals": { "visits": 1240, "pageviews": 3180, "prevVisits": 1050 },
+  "locales": { "fr": 902, "en": 338 },
+  "channels": [
+    { "source": "Instagram", "visits": 214 },
+    { "source": "Google (search)", "visits": 188 },
+    { "source": "mariages.net", "visits": 96 },
+    { "source": "Direct", "visits": 402 },
+    { "source": "Facebook", "visits": 71 }
+  ],
+  "landingPages": [
+    { "path": "/fr/mariages/", "visits": 321 },
+    { "path": "/fr/", "visits": 289 },
+    { "path": "/fr/le-domaine/", "visits": 142 },
+    { "path": "/en/", "visits": 118 },
+    { "path": "/fr/sejour/", "visits": 87 }
+  ],
+  "conversions": {
+    "mariage":    { "merci": 9, "confirmed": null },
+    "entreprise": { "merci": 3, "confirmed": null },
+    "sejour":     { "merci": 5, "confirmed": null },
+    "boutique":   { "merci": 2, "confirmed": null },
+    "cadeau":     { "merci": 1, "confirmed": null }
+  }
+}

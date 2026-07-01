@@ -34,6 +34,10 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
+      // Exclude utility/tracking routes: conversion thank-you pages (/merci/), the
+      // attribution redirect hops (/go/), and the internal analytics dashboard — all noindex.
+      filter: (page) =>
+        !page.includes('/merci/') && !page.includes('/go/') && !page.includes('/tableau-de-bord/'),
       i18n: {
         defaultLocale: 'fr',
         locales: { fr: 'fr-FR', en: 'en-US' },

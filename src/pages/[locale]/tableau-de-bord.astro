@@ -1,0 +1,130 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { locales, type Locale } from '../../i18n/ui';
+import { readdirSync, readFileSync } from 'node:fs';
+
+// No-login analytics dashboard. Renders the latest committed snapshot (reports/analytics/*.json)
+// written by the monthly digest Action. noindex + sitemap-excluded. Falls back to sample.json
+// until the Cloudflare beacon + API token are live. See docs/ANALYTICS.md.
+export function getStaticPaths() {
+  return locales.map((locale) => ({ params: { locale } }));
+}
+const { locale } = Astro.params as { locale: Locale };
+const isFr = locale === 'fr';
+
+const dir = 'reports/analytics';
+let data: any;
+let isSample = true;
+try {
+  const files = readdirSync(dir).filter((f) => f.endsWith('.json'));
+  const real = files.filter((f) => /^\d{4}-\d{2}\.json$/.test(f)).sort();
+  const pick = real.length ? real[real.length - 1] : 'sample.json';
+  isSample = pick === 'sample.json';
+  data = JSON.parse(readFileSync(`${dir}/${pick}`, 'utf8'));
+} catch {
+  data = null;
+}
+
+const t = data?.totals ?? { visits: 0, pageviews: 0, prevVisits: 0 };
+const momPct = t.prevVisits ? Math.round(((t.visits - t.prevVisits) / t.prevVisits) * 100) : null;
+const channels: { source: string; visits: number }[] = data?.channels ?? [];
+const chMax = Math.max(1, ...channels.map((c) => c.visits));
+const landing: { path: string; visits: number }[] = data?.landingPages ?? [];
+const conv: Record<string, { merci: number; confirmed: number | null }> = data?.conversions ?? {};
+const streamLabel: Record<string, string> = isFr
+  ? { mariage: 'Mariages', entreprise: 'Entreprise', sejour: 'Séjours', boutique: 'Boutique', cadeau: 'Bons cadeaux' }
+  : { mariage: 'Weddings', entreprise: 'Corporate', sejour: 'Stays', boutique: 'Shop', cadeau: 'Gift vouchers' };
+const fmt = (n: number) => new Intl.NumberFormat(isFr ? 'fr-FR' : 'en-US').format(n);
+const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny`;
+---
+<PageLayout title={title} description={isFr ? 'Tableau de bord d’audience du site.' : 'Website audience dashboard.'} locale={locale} path="tableau-de-bord/" noindex={true}>
+  <section class="db section">
+    <div class="wrap">
+      <p class="eyebrow" data-reveal>{isFr ? 'Interne · Audience du site' : 'Internal · Site audience'}</p>
+      <h1 data-reveal>{isFr ? 'Tableau de bord' : 'Dashboard'}</h1>
+      <p class="db__meta slate" data-reveal>
+        {data
+          ? (isSample
+              ? (isFr ? 'Données d’exemple — en attente de l’activation de Cloudflare.' : 'Sample data — awaiting Cloudflare activation.')
+              : `${isFr ? 'Période' : 'Period'}: ${data.month}`)
+          : (isFr ? 'Aucune donnée pour le moment.' : 'No data yet.')}
+        {' · '}{data?.sampleNote}
+      </p>
+
+      {data && (
+        <div class="db__grid" data-reveal>
+          <article class="db__card db__card--hero">
+            <p class="db__k">{isFr ? 'Visites (30 j)' : 'Visits (30 d)'}</p>
+            <p class="db__v">{fmt(t.visits)}</p>
+            {momPct !== null && (
+              <p class={`db__delta ${momPct >= 0 ? 'up' : 'down'}`}>{momPct >= 0 ? '▲' : '▼'} {Math.abs(momPct)}% {isFr ? 'vs mois précédent' : 'vs prev month'}</p>
+            )}
+            <p class="db__sub slate">{fmt(data.locales?.fr ?? 0)} FR · {fmt(data.locales?.en ?? 0)} EN</p>
+          </article>
+
+          <article class="db__card">
+            <p class="db__k">{isFr ? 'D’où viennent les visiteurs' : 'Where visitors come from'}</p>
+            <ul class="db__bars">
+              {channels.map((c) => (
+                <li>
+                  <span class="db__bar-l">{c.source}</span>
+                  <span class="db__bar"><span style={`width:${Math.round((c.visits / chMax) * 100)}%`}></span></span>
+                  <span class="db__bar-n">{fmt(c.visits)}</span>
+                </li>
+              ))}
+            </ul>
+          </article>
+
+          <article class="db__card">
+            <p class="db__k">{isFr ? 'Conversions (estimation)' : 'Conversions (estimate)'}</p>
+            <ul class="db__conv">
+              {Object.keys(streamLabel).map((k) => (
+                <li>
+                  <span>{streamLabel[k]}</span>
+                  <span class="db__conv-n">
+                    {conv[k]?.confirmed ?? conv[k]?.merci ?? 0}
+                    {(conv[k]?.confirmed == null && (conv[k]?.merci ?? 0) < 50) && (
+                      <span class="db__flag" title={isFr ? 'Petit échantillon — tendance seulement' : 'Small sample — directional only'}>≈</span>
+                    )}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p class="db__note slate">{isFr ? 'Chiffres réels = votre boîte mail + Stripe. Ici : tendance.' : 'True counts = your inbox + Stripe. Here: the trend.'}</p>
+          </article>
+
+          <article class="db__card">
+            <p class="db__k">{isFr ? 'Pages d’entrée' : 'Top landing pages'}</p>
+            <ul class="db__pages">
+              {landing.map((p) => (<li><code>{p.path}</code><span>{fmt(p.visits)}</span></li>))}
+            </ul>
+          </article>
+        </div>
+      )}
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .db { background: linear-gradient(180deg, var(--calcaire-2), var(--pierre)); min-height: 60vh; }
+  .db__meta { margin-top: var(--space-2xs); }
+  .db__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-l); margin-top: var(--space-l); }
+  .db__card { padding: var(--space-l); border: var(--hairline) solid var(--rule); border-top: 2px solid var(--laiton); border-radius: var(--radius-s); background: var(--calcaire); }
+  .db__card--hero { border-top-color: var(--sang); }
+  .db__k { font-size: var(--step--1); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin: 0 0 var(--space-s); }
+  .db__v { font-family: var(--font-display); font-size: var(--step-4); line-height: 1; margin: 0; }
+  .db__delta { font-size: var(--step--1); margin: var(--space-2xs) 0 0; }
+  .db__delta.up { color: #2e7d52; } .db__delta.down { color: var(--sang); }
+  .db__sub { margin: var(--space-2xs) 0 0; font-size: var(--step--1); }
+  .db__bars, .db__conv, .db__pages { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-2xs); }
+  .db__bars li { display: grid; grid-template-columns: 8rem 1fr 2.5rem; align-items: center; gap: var(--space-2xs); font-size: var(--step--1); }
+  .db__bar { background: var(--rule); border-radius: 99px; height: 0.5rem; overflow: hidden; }
+  .db__bar span { display: block; height: 100%; background: var(--laiton-deep); }
+  .db__bar-n { text-align: right; }
+  .db__conv li, .db__pages li { display: flex; justify-content: space-between; gap: var(--space-s); font-size: var(--step--1); padding: var(--space-3xs) 0; border-bottom: var(--hairline) solid var(--rule); }
+  .db__conv-n { font-variant-numeric: tabular-nums; font-weight: 600; }
+  .db__flag { color: var(--laiton-deep); margin-left: 0.25rem; cursor: help; }
+  .db__note { margin: var(--space-s) 0 0; font-size: var(--step--2); }
+  .db__pages code { font-size: var(--step--2); }
+  @media (max-width: 700px) { .db__grid { grid-template-columns: 1fr; } .db__bars li { grid-template-columns: 6rem 1fr 2.5rem; } }
+</style>

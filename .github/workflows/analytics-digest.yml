@@ -1,0 +1,51 @@
+# DORMANT until repo secrets exist: CF_API_TOKEN and CF_ACCOUNT_ID (required),
+# BREVO_API_KEY and DIGEST_RECIPIENTS (optional, for the emailed digest). Without
+# CF_API_TOKEN/CF_ACCOUNT_ID, scripts/analytics-digest.mjs exits 0 immediately having
+# done nothing — this workflow is safe to merge and run before those secrets are set.
+# See docs/ANALYTICS.md ("Owner setup") for how to create and add the secrets.
+name: Analytics digest
+
+on:
+  # Monthly, 06:00 UTC on the 1st — covers the just-finished calendar month.
+  schedule:
+    - cron: '0 6 1 * *'
+  # Allow a manual run from the Actions tab.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run analytics digest
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          DIGEST_RECIPIENTS: ${{ secrets.DIGEST_RECIPIENTS }}
+        run: npm run analytics:digest
+
+      - name: Commit new reports
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports/
+          if git diff --cached --quiet; then
+            echo "No new report files — nothing to commit."
+          else
+            git commit -m "chore(analytics): archive monthly snapshot + digest"
+            git push
+          fi

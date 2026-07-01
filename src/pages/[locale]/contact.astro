@@ -505,15 +505,13 @@ const desc = isFr
       if ((web3Key || endpoint) && !isTooFast) {
         const sent = await deliver();
         if (sent) {
-          // Delivered server-side — no mail client opens, so correct the copy that
-          // otherwise assumes the mailto path ("your mail app should have opened…").
-          const cH = confirmEl?.querySelector('.c-confirm__h');
-          const cP = confirmEl?.querySelector('.c-confirm__p');
-          if (cH) cH.textContent = isFr ? 'Merci — votre message a bien été envoyé.' : 'Thank you — your message has been sent.';
-          if (cP) cP.textContent = isFr
-            ? 'Nous vous répondons sous 48 h. Vous pouvez aussi nous écrire directement ci-dessous.'
-            : 'We’ll reply within 48 h. You can also write to us directly below.';
-          reveal(stream);
+          // Delivered server-side (CONFIRMED send). Navigate to the localized thank-you page so
+          // the pageview counts as a conversion in pageview-only Cloudflare Web Analytics — this
+          // is the ONLY conversion site. The honeypot/bot branch and the unconfirmable mailto
+          // fallback deliberately keep the inline reveal() and never land here (no phantom counts).
+          const slugFor = { wedding: 'mariage', corporate: 'entreprise', film: 'tournage', photo: 'photo', stay: 'sejour' };
+          const slug = slugFor[stream] || 'mariage';
+          window.location.assign(location.pathname.replace(/contact\/?$/, `merci/${slug}/`));
           return;
         }
       }

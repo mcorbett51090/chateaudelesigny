@@ -1,0 +1,56 @@
+---
+import { withBase } from '../../i18n/ui';
+import { features } from '../../config/features';
+
+// Path-based attribution hops. Cloudflare Web Analytics strips ?utm= query strings, so campaign
+// links are pasted as PATHS the owner controls: /go/instagram/ etc. A visit here fires one CF
+// pageview under that path (attribution), then redirects to the real destination. noindex +
+// excluded from the sitemap. The beacon is loaded EAGERLY (not deferred) and the redirect waits
+// a beat so the pageview is recorded before we leave.
+export function getStaticPaths() {
+  return [
+    { params: { source: 'instagram' }, props: { dest: '/fr/' } },
+    { params: { source: 'newsletter' }, props: { dest: '/fr/' } },
+    { params: { source: 'gbp' }, props: { dest: '/fr/' } },
+    { params: { source: 'mariagesnet' }, props: { dest: '/fr/mariages/' } },
+  ];
+}
+
+const { dest } = Astro.props as { dest: string };
+const target = withBase(dest);
+const beacon = features.cloudflareBeacon;
+---
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Château de Lésigny</title>
+    <link rel="canonical" href={new URL(target, Astro.site).href} />
+    {/* Beacon loaded eagerly so the attribution pageview is sent before the redirect. */}
+    {beacon && (
+      <script
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon={`{"token": "${beacon}"}`}
+      ></script>
+    )}
+    {/* Belt-and-braces redirect: JS (fast, after a beat for the beacon) + a meta fallback. */}
+    <script is:inline define:vars={{ target }}>
+      setTimeout(function () { window.location.replace(target); }, 700);
+    </script>
+    <noscript><meta http-equiv="refresh" content={`0; url=${target}`} /></noscript>
+    <style>
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center;
+        font-family: Georgia, 'Times New Roman', serif; background: #f4efe7; color: #4a4038; }
+      .go { text-align: center; }
+      .go a { color: #7a2e2e; }
+    </style>
+  </head>
+  <body>
+    <div class="go">
+      <p>Redirection vers Château de Lésigny…</p>
+      <p><a href={target}>Continuer &rarr;</a></p>
+    </div>
+  </body>
+</html>
