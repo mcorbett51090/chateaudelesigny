@@ -3,30 +3,50 @@ import PageLayout from '../../layouts/PageLayout.astro';
 import { locales, type Locale } from '../../i18n/ui';
 import { readdirSync, readFileSync } from 'node:fs';
 
-// No-login analytics dashboard. Renders the latest committed snapshot (reports/analytics/*.json)
-// written by the monthly digest Action. noindex + sitemap-excluded. Falls back to sample.json
-// until the Cloudflare beacon + API token are live. See docs/ANALYTICS.md.
+// No-login analytics dashboard. Builds a month-by-month time series from the committed snapshots
+// (reports/analytics/YYYY-MM.json from the monthly digest Action) and lets the viewer pick a
+// timeframe and OVERLAY MULTIPLE METRICS to compare trends over time. Each line is scaled to its
+// own range so single-digit conversions don't flatline against thousands of visits. Falls back to
+// sample.json (12-month history) until real data accrues. noindex + sitemap-excluded.
 export function getStaticPaths() {
   return locales.map((locale) => ({ params: { locale } }));
 }
 const { locale } = Astro.params as { locale: Locale };
 const isFr = locale === 'fr';
 
+const STREAMS = ['mariage', 'entreprise', 'sejour', 'boutique', 'cadeau'];
+type Point = { month: string; visits: number; conversions: Record<string, number> };
+const normConv = (c: any): Record<string, number> =>
+  Object.fromEntries(STREAMS.map((k) => [k, typeof c?.[k] === 'number' ? c[k] : (c?.[k]?.merci ?? 0)]));
+
 const dir = 'reports/analytics';
-let data: any;
+let series: Point[] = [];
+let data: any = null;
 let isSample = true;
 try {
   const files = readdirSync(dir).filter((f) => f.endsWith('.json'));
   const real = files.filter((f) => /^\d{4}-\d{2}\.json$/.test(f)).sort();
-  const pick = real.length ? real[real.length - 1] : 'sample.json';
-  isSample = pick === 'sample.json';
-  data = JSON.parse(readFileSync(`${dir}/${pick}`, 'utf8'));
-} catch {
-  data = null;
-}
+  if (real.length) {
+    isSample = false;
+    const snaps = real.map((f) => JSON.parse(readFileSync(`${dir}/${f}`, 'utf8')));
+    series = snaps.map((s) => ({ month: s.month, visits: s.totals?.visits ?? 0, conversions: normConv(s.conversions) }));
+    data = snaps[snaps.length - 1];
+  } else {
+    data = JSON.parse(readFileSync(`${dir}/sample.json`, 'utf8'));
+    series = (data.history ?? []).map((h: any) => ({ month: h.month, visits: h.visits, conversions: normConv(h.conversions) }));
+  }
+} catch { /* no data */ }
 
-const t = data?.totals ?? { visits: 0, pageviews: 0, prevVisits: 0 };
-const momPct = t.prevVisits ? Math.round(((t.visits - t.prevVisits) / t.prevVisits) * 100) : null;
+// Metric registry — rendered as toggle chips AND used by the client extractor (keyed by `key`).
+const METRICS = [
+  { key: 'visits', label: isFr ? 'Visites' : 'Visits', color: '#7a2e2e' },
+  { key: 'mariage', label: isFr ? 'Mariages' : 'Weddings', color: '#b8912f' },
+  { key: 'entreprise', label: isFr ? 'Entreprise' : 'Corporate', color: '#2f6f8f' },
+  { key: 'sejour', label: isFr ? 'Séjours' : 'Stays', color: '#3f7d55' },
+  { key: 'boutique', label: isFr ? 'Boutique' : 'Shop', color: '#6a4f8f' },
+  { key: 'cadeau', label: isFr ? 'Bons cadeaux' : 'Vouchers', color: '#9c6b3f' },
+];
+
 const channels: { source: string; visits: number }[] = data?.channels ?? [];
 const chMax = Math.max(1, ...channels.map((c) => c.visits));
 const landing: { path: string; visits: number }[] = data?.landingPages ?? [];
@@ -43,81 +63,239 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
       <p class="eyebrow" data-reveal>{isFr ? 'Interne · Audience du site' : 'Internal · Site audience'}</p>
       <h1 data-reveal>{isFr ? 'Tableau de bord' : 'Dashboard'}</h1>
       <p class="db__meta slate" data-reveal>
-        {data
-          ? (isSample
-              ? (isFr ? 'Données d’exemple — en attente de l’activation de Cloudflare.' : 'Sample data — awaiting Cloudflare activation.')
-              : `${isFr ? 'Période' : 'Period'}: ${data.month}`)
-          : (isFr ? 'Aucune donnée pour le moment.' : 'No data yet.')}
-        {' · '}{data?.sampleNote}
+        {isSample
+          ? (isFr ? 'Données d’exemple — en attente de l’activation de Cloudflare.' : 'Sample data — awaiting Cloudflare activation.')
+          : (isFr ? `Dernière période : ${data?.month}` : `Latest period: ${data?.month}`)}
+        {data?.sampleNote ? ` · ${data.sampleNote}` : ''}
       </p>
 
-      {data && (
-        <div class="db__grid" data-reveal>
-          <article class="db__card db__card--hero">
-            <p class="db__k">{isFr ? 'Visites (30 j)' : 'Visits (30 d)'}</p>
-            <p class="db__v">{fmt(t.visits)}</p>
-            {momPct !== null && (
-              <p class={`db__delta ${momPct >= 0 ? 'up' : 'down'}`}>{momPct >= 0 ? '▲' : '▼'} {Math.abs(momPct)}% {isFr ? 'vs mois précédent' : 'vs prev month'}</p>
-            )}
-            <p class="db__sub slate">{fmt(data.locales?.fr ?? 0)} FR · {fmt(data.locales?.en ?? 0)} EN</p>
-          </article>
-
-          <article class="db__card">
-            <p class="db__k">{isFr ? 'D’où viennent les visiteurs' : 'Where visitors come from'}</p>
-            <ul class="db__bars">
-              {channels.map((c) => (
-                <li>
-                  <span class="db__bar-l">{c.source}</span>
-                  <span class="db__bar"><span style={`width:${Math.round((c.visits / chMax) * 100)}%`}></span></span>
-                  <span class="db__bar-n">{fmt(c.visits)}</span>
-                </li>
+      {series.length > 0 && (
+        <div class="db__trend" data-reveal>
+          <div class="db__controls">
+            <div class="db__legend" role="group" aria-label={isFr ? 'Mesures (choix multiple)' : 'Metrics (multi-select)'}>
+              {METRICS.map((m, i) => (
+                <button
+                  type="button"
+                  class={`db__chip${i === 0 ? ' is-on' : ''}`}
+                  data-metric={m.key}
+                  data-label={m.label}
+                  aria-pressed={i === 0 ? 'true' : 'false'}
+                  style={`--c:${m.color}`}
+                >
+                  <span class="db__swatch" aria-hidden="true"></span>
+                  <span class="db__chip-l">{m.label}</span>
+                  <span class="db__lv" data-lv={m.key}></span>
+                </button>
               ))}
-            </ul>
-          </article>
-
-          <article class="db__card">
-            <p class="db__k">{isFr ? 'Conversions (estimation)' : 'Conversions (estimate)'}</p>
-            <ul class="db__conv">
-              {Object.keys(streamLabel).map((k) => (
-                <li>
-                  <span>{streamLabel[k]}</span>
-                  <span class="db__conv-n">
-                    {conv[k]?.confirmed ?? conv[k]?.merci ?? 0}
-                    {(conv[k]?.confirmed == null && (conv[k]?.merci ?? 0) < 50) && (
-                      <span class="db__flag" title={isFr ? 'Petit échantillon — tendance seulement' : 'Small sample — directional only'}>≈</span>
-                    )}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            <p class="db__note slate">{isFr ? 'Chiffres réels = votre boîte mail + Stripe. Ici : tendance.' : 'True counts = your inbox + Stripe. Here: the trend.'}</p>
-          </article>
-
-          <article class="db__card">
-            <p class="db__k">{isFr ? 'Pages d’entrée' : 'Top landing pages'}</p>
-            <ul class="db__pages">
-              {landing.map((p) => (<li><code>{p.path}</code><span>{fmt(p.visits)}</span></li>))}
-            </ul>
-          </article>
+            </div>
+            <div class="db__seg" role="group" aria-label={isFr ? 'Période' : 'Timeframe'} data-role="tf">
+              <button type="button" data-tf="3">3M</button>
+              <button type="button" data-tf="6">6M</button>
+              <button type="button" data-tf="12">12M</button>
+              <button type="button" data-tf="0" class="is-on">{isFr ? 'Tout' : 'All'}</button>
+            </div>
+          </div>
+          <p class="db__sum" id="db-sum" aria-live="polite"></p>
+          <div class="db__chart" id="db-chart" role="img" aria-label={isFr ? 'Graphique de tendance' : 'Trend chart'}></div>
+          <p class="db__hint slate">{isFr ? 'Cliquez une mesure pour l’ajouter/retirer. Chaque courbe est mise à l’échelle de sa propre plage — comparez les tendances, pas les valeurs absolues. Chiffres échantillonnés.' : 'Click a metric to add/remove it. Each line is scaled to its own range — compare trends, not absolute values. Sampled figures.'}</p>
         </div>
       )}
+
+      <div class="db__grid" data-reveal>
+        <article class="db__card">
+          <p class="db__k">{isFr ? 'D’où viennent les visiteurs' : 'Where visitors come from'}</p>
+          <ul class="db__bars">
+            {channels.map((c) => (
+              <li>
+                <span class="db__bar-l">{c.source}</span>
+                <span class="db__bar"><span style={`width:${Math.round((c.visits / chMax) * 100)}%`}></span></span>
+                <span class="db__bar-n">{fmt(c.visits)}</span>
+              </li>
+            ))}
+          </ul>
+        </article>
+
+        <article class="db__card">
+          <p class="db__k">{isFr ? 'Conversions — dernier mois (estimation)' : 'Conversions — latest month (estimate)'}</p>
+          <ul class="db__conv">
+            {Object.keys(streamLabel).map((k) => (
+              <li>
+                <span>{streamLabel[k]}</span>
+                <span class="db__conv-n">
+                  {conv[k]?.confirmed ?? conv[k]?.merci ?? 0}
+                  {(conv[k]?.confirmed == null && (conv[k]?.merci ?? 0) < 50) && (
+                    <span class="db__flag" title={isFr ? 'Petit échantillon — tendance seulement' : 'Small sample — directional only'}>≈</span>
+                  )}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p class="db__note slate">{isFr ? 'Chiffres réels = votre boîte mail + Stripe. Ici : tendance.' : 'True counts = your inbox + Stripe. Here: the trend.'}</p>
+        </article>
+
+        <article class="db__card">
+          <p class="db__k">{isFr ? 'Pages d’entrée' : 'Top landing pages'}</p>
+          <ul class="db__pages">
+            {landing.map((p) => (<li><code>{p.path}</code><span>{fmt(p.visits)}</span></li>))}
+          </ul>
+        </article>
+      </div>
     </div>
   </section>
+
+  <script type="application/json" id="db-series" set:html={JSON.stringify(series)} is:inline></script>
+  <script>
+    (() => {
+      const el = document.getElementById('db-series');
+      const chart = document.getElementById('db-chart');
+      const sumEl = document.getElementById('db-sum');
+      const trend = chart?.closest('.db__trend');
+      if (!el || !chart || !sumEl || !trend) return;
+      const series = JSON.parse(el.textContent || '[]');
+      if (!series.length) return;
+      const isFr = document.documentElement.lang === 'fr';
+      const nf = new Intl.NumberFormat(isFr ? 'fr-FR' : 'en-US');
+
+      const fnMap = {
+        visits: (s) => s.visits,
+        mariage: (s) => s.conversions.mariage,
+        entreprise: (s) => s.conversions.entreprise,
+        sejour: (s) => s.conversions.sejour,
+        boutique: (s) => s.conversions.boutique,
+        cadeau: (s) => s.conversions.cadeau,
+      };
+      const chips = Array.from(trend.querySelectorAll('.db__chip'));
+      const meta = {}; // key -> { color, label }
+      chips.forEach((b) => {
+        meta[b.dataset.metric] = { color: getComputedStyle(b).getPropertyValue('--c').trim(), label: b.dataset.label };
+      });
+      const order = chips.map((b) => b.dataset.metric);
+      const selected = new Set(['visits']);
+      let tf = 0; // 0 = all
+
+      const mLabel = (m) => m.slice(5) + '/' + m.slice(2, 4); // 2026-06 -> 06/26
+      const activeKeys = () => order.filter((k) => selected.has(k));
+
+      function draw(data, keys) {
+        const W = 760, H = 240, pl = 10, pr = 10, pt = 16, pb = 26;
+        const n = data.length;
+        const X = (i) => pl + (n <= 1 ? (W - pl - pr) / 2 : (i * (W - pl - pr)) / (n - 1));
+        const single = keys.length === 1;
+        const step = Math.max(1, Math.ceil(n / 6));
+        let xlabels = '';
+        for (let i = 0; i < n; i += step) xlabels += `<text x="${X(i).toFixed(1)}" y="${H - 8}" text-anchor="middle" class="db-x">${mLabel(data[i].month)}</text>`;
+        let body = '';
+        keys.forEach((key) => {
+          const color = meta[key].color;
+          const vals = data.map(fnMap[key]);
+          const max = Math.max(1, ...vals);
+          const Y = (v) => pt + (1 - v / max) * (H - pt - pb);
+          const line = vals.map((v, i) => `${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(' ');
+          if (single) {
+            const area = `${X(0).toFixed(1)},${H - pb} ${line} ${X(n - 1).toFixed(1)},${H - pb}`;
+            body += `<polygon class="db-area" points="${area}" style="fill:color-mix(in srgb, ${color} 16%, transparent)"></polygon>`;
+          }
+          body += `<polyline class="db-line" points="${line}" style="stroke:${color}"></polyline>`;
+          for (let i = 0; i < n; i++) {
+            body += `<circle cx="${X(i).toFixed(1)}" cy="${Y(vals[i]).toFixed(1)}" r="${i === n - 1 ? 3.5 : 2}" style="fill:${color}"><title>${meta[key].label} — ${data[i].month}: ${nf.format(vals[i])}</title></circle>`;
+          }
+          if (single) body += `<text x="${X(n - 1).toFixed(1)}" y="${(Y(vals[n - 1]) - 8).toFixed(1)}" text-anchor="end" class="db-last" style="fill:${color}">${nf.format(vals[n - 1])}</text>`;
+        });
+        return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" class="db-svg">${body}${xlabels}</svg>`;
+      }
+
+      function render() {
+        const keys = activeKeys();
+        const data = tf ? series.slice(-tf) : series;
+        chart.innerHTML = keys.length ? draw(data, keys) : '';
+        // chip totals for the visible timeframe
+        chips.forEach((b) => {
+          const k = b.dataset.metric;
+          const tot = data.reduce((a, s) => a + fnMap[k](s), 0);
+          const lv = b.querySelector('.db__lv');
+          if (lv) lv.textContent = nf.format(tot);
+        });
+        const months = data.length;
+        const per = isFr ? `sur ${months} mois` : `over ${months} months`;
+        if (keys.length === 1) {
+          const f = fnMap[keys[0]];
+          const total = data.reduce((a, s) => a + f(s), 0);
+          const prev = tf ? series.slice(-2 * tf, -tf) : [];
+          const ptot = prev.reduce((a, s) => a + f(s), 0);
+          const pct = ptot ? Math.round(((total - ptot) / ptot) * 100) : null;
+          let d = '';
+          if (pct !== null) {
+            const arrow = pct >= 0 ? '▲' : '▼';
+            const vs = isFr ? `${arrow} ${Math.abs(pct)}% vs période précédente` : `${arrow} ${Math.abs(pct)}% vs previous period`;
+            d = ` · <span class="${pct >= 0 ? 'up' : 'down'}">${vs}</span>`;
+          }
+          sumEl.innerHTML = `<strong>${nf.format(total)}</strong> ${meta[keys[0]].label.toLowerCase()} ${per}${d}`;
+        } else if (keys.length > 1) {
+          sumEl.innerHTML = isFr
+            ? `<strong>${keys.length} mesures</strong> comparées ${per} · échelles indépendantes`
+            : `<strong>${keys.length} metrics</strong> compared ${per} · independent scales`;
+        } else {
+          sumEl.innerHTML = isFr ? 'Choisissez au moins une mesure.' : 'Select at least one metric.';
+        }
+      }
+
+      chips.forEach((b) =>
+        b.addEventListener('click', () => {
+          const k = b.dataset.metric;
+          if (selected.has(k)) {
+            if (selected.size === 1) return; // keep at least one
+            selected.delete(k);
+          } else {
+            selected.add(k);
+          }
+          const on = selected.has(k);
+          b.classList.toggle('is-on', on);
+          b.setAttribute('aria-pressed', on ? 'true' : 'false');
+          render();
+        })
+      );
+      trend.querySelectorAll('[data-role="tf"] button').forEach((b) =>
+        b.addEventListener('click', () => {
+          tf = parseInt(b.getAttribute('data-tf'), 10);
+          b.parentElement.querySelectorAll('button').forEach((x) => x.classList.toggle('is-on', x === b));
+          render();
+        })
+      );
+      render();
+    })();
+  </script>
 </PageLayout>
 
 <style>
   .db { background: linear-gradient(180deg, var(--calcaire-2), var(--pierre)); min-height: 60vh; }
   .db__meta { margin-top: var(--space-2xs); }
-  .db__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-l); margin-top: var(--space-l); }
+  .db__trend { margin-top: var(--space-l); padding: var(--space-l); border: var(--hairline) solid var(--rule); border-top: 2px solid var(--sang); border-radius: var(--radius-s); background: var(--calcaire); }
+  .db__controls { display: flex; flex-wrap: wrap; gap: var(--space-m); justify-content: space-between; align-items: flex-start; }
+  .db__legend { display: flex; flex-wrap: wrap; gap: var(--space-2xs); }
+  .db__chip { display: inline-flex; align-items: center; gap: 0.4rem; appearance: none; border: var(--hairline) solid var(--rule); background: var(--calcaire-2); padding: 0.3rem 0.7rem; border-radius: 99px; font: inherit; font-size: var(--step--1); color: var(--text-muted); cursor: pointer; opacity: 0.6; }
+  .db__chip.is-on { opacity: 1; color: var(--text); border-color: var(--c); background: color-mix(in srgb, var(--c) 8%, var(--calcaire)); }
+  .db__swatch { width: 0.7rem; height: 0.7rem; border-radius: 50%; background: var(--c); flex: none; }
+  .db__lv { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--text); }
+  .db__chip:not(.is-on) .db__lv { color: var(--text-muted); font-weight: 400; }
+  .db__seg { display: inline-flex; border: var(--hairline) solid var(--rule); border-radius: 99px; overflow: hidden; flex: none; }
+  .db__seg button { appearance: none; border: 0; background: transparent; padding: 0.4rem 0.9rem; font: inherit; font-size: var(--step--1); color: var(--text-muted); cursor: pointer; border-right: var(--hairline) solid var(--rule); }
+  .db__seg button:last-child { border-right: 0; }
+  .db__seg button.is-on { background: var(--laiton-deep); color: #fff; }
+  .db__seg button:hover:not(.is-on) { background: var(--calcaire-2); }
+  .db__sum { margin: var(--space-m) 0 var(--space-s); font-size: var(--step-1); }
+  .db__sum .up { color: #2e7d52; } .db__sum .down { color: var(--sang); }
+  .db__chart { width: 100%; }
+  .db-svg { width: 100%; height: auto; display: block; }
+  .db-area { stroke: none; }
+  .db-line { fill: none; stroke-width: 2; vector-effect: non-scaling-stroke; }
+  .db-x { fill: var(--text-muted); font-size: 11px; }
+  .db-last { font-size: 13px; font-weight: 600; }
+  .db__hint { margin: var(--space-s) 0 0; font-size: var(--step--2); max-width: 62ch; }
+  .db__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-l); margin-top: var(--space-l); }
   .db__card { padding: var(--space-l); border: var(--hairline) solid var(--rule); border-top: 2px solid var(--laiton); border-radius: var(--radius-s); background: var(--calcaire); }
-  .db__card--hero { border-top-color: var(--sang); }
   .db__k { font-size: var(--step--1); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin: 0 0 var(--space-s); }
-  .db__v { font-family: var(--font-display); font-size: var(--step-4); line-height: 1; margin: 0; }
-  .db__delta { font-size: var(--step--1); margin: var(--space-2xs) 0 0; }
-  .db__delta.up { color: #2e7d52; } .db__delta.down { color: var(--sang); }
-  .db__sub { margin: var(--space-2xs) 0 0; font-size: var(--step--1); }
   .db__bars, .db__conv, .db__pages { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-2xs); }
-  .db__bars li { display: grid; grid-template-columns: 8rem 1fr 2.5rem; align-items: center; gap: var(--space-2xs); font-size: var(--step--1); }
+  .db__bars li { display: grid; grid-template-columns: 7rem 1fr 2.5rem; align-items: center; gap: var(--space-2xs); font-size: var(--step--1); }
   .db__bar { background: var(--rule); border-radius: 99px; height: 0.5rem; overflow: hidden; }
   .db__bar span { display: block; height: 100%; background: var(--laiton-deep); }
   .db__bar-n { text-align: right; }
@@ -126,5 +304,5 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
   .db__flag { color: var(--laiton-deep); margin-left: 0.25rem; cursor: help; }
   .db__note { margin: var(--space-s) 0 0; font-size: var(--step--2); }
   .db__pages code { font-size: var(--step--2); }
-  @media (max-width: 700px) { .db__grid { grid-template-columns: 1fr; } .db__bars li { grid-template-columns: 6rem 1fr 2.5rem; } }
+  @media (max-width: 800px) { .db__grid { grid-template-columns: 1fr; } .db__bars li { grid-template-columns: 6rem 1fr 2.5rem; } }
 </style>

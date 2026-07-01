@@ -24,5 +24,19 @@
     "sejour":     { "merci": 5, "confirmed": null },
     "boutique":   { "merci": 2, "confirmed": null },
     "cadeau":     { "merci": 1, "confirmed": null }
-  }
+  },
+  "history": [
+    { "month": "2025-07", "visits": 720,  "conversions": { "mariage": 4, "entreprise": 1, "sejour": 2, "boutique": 1, "cadeau": 0 } },
+    { "month": "2025-08", "visits": 680,  "conversions": { "mariage": 5, "entreprise": 1, "sejour": 3, "boutique": 0, "cadeau": 1 } },
+    { "month": "2025-09", "visits": 810,  "conversions": { "mariage": 6, "entreprise": 2, "sejour": 2, "boutique": 1, "cadeau": 0 } },
+    { "month": "2025-10", "visits": 880,  "conversions": { "mariage": 5, "entreprise": 3, "sejour": 3, "boutique": 2, "cadeau": 1 } },
+    { "month": "2025-11", "visits": 760,  "conversions": { "mariage": 4, "entreprise": 2, "sejour": 4, "boutique": 1, "cadeau": 2 } },
+    { "month": "2025-12", "visits": 690,  "conversions": { "mariage": 3, "entreprise": 1, "sejour": 3, "boutique": 3, "cadeau": 4 } },
+    { "month": "2026-01", "visits": 940,  "conversions": { "mariage": 8, "entreprise": 2, "sejour": 4, "boutique": 1, "cadeau": 1 } },
+    { "month": "2026-02", "visits": 1010, "conversions": { "mariage": 9, "entreprise": 3, "sejour": 4, "boutique": 2, "cadeau": 0 } },
+    { "month": "2026-03", "visits": 1080, "conversions": { "mariage": 10, "entreprise": 4, "sejour": 5, "boutique": 2, "cadeau": 1 } },
+    { "month": "2026-04", "visits": 1150, "conversions": { "mariage": 11, "entreprise": 3, "sejour": 6, "boutique": 3, "cadeau": 1 } },
+    { "month": "2026-05", "visits": 1120, "conversions": { "mariage": 8, "entreprise": 4, "sejour": 5, "boutique": 2, "cadeau": 2 } },
+    { "month": "2026-06", "visits": 1240, "conversions": { "mariage": 9, "entreprise": 3, "sejour": 5, "boutique": 2, "cadeau": 1 } }
+  ]
 }
