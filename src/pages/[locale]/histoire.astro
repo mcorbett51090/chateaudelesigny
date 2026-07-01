@@ -8,6 +8,15 @@ import portraitLouis from '../../assets/history/louis-xiii.jpg';
 import portraitCatherine from '../../assets/history/catherine-de-medicis.jpg';
 import portraitConcini from '../../assets/history/concino-concini.jpg';
 import carteHero from '../../assets/history/carte-isle-de-france-1746.jpg';
+// Scene images for the timeline beats that have no historical portrait — same
+// small captioned-thumbnail format as the portraits above.
+import tlPoncher from '../../assets/gallery/exterior-brick.jpg';
+import tlPenthievre from '../../assets/gallery/grounds-moat.jpg';
+import tlRevolution from '../../assets/gallery/exterior-aerial.jpg';
+import tlRestoration from '../../assets/gallery/int-painted-ceiling.jpg';
+import tlCinema from '../../assets/gallery/cinema-costumed-actors.jpg';
+import tlDaphne from '../../assets/gallery/exterior-evening.jpg';
+import tlHgtv from '../../assets/gallery/exterior-ivy-autumn.jpg';
 import { site } from '../../config/site';
 import CompareSlider from '../../components/CompareSlider.astro';
 import { features } from '../../config/features';
@@ -32,9 +41,11 @@ const timelineEntries = [
     year: '1508',
     fr: 'La famille de Poncher, proche du pouvoir royal sous François Iᵉʳ, acquiert la terre de Lésigny et y élève un premier château, délaissant l’ancienne demeure médiévale. L’église du village est bâtie dans la foulée.',
     en: 'The Poncher family, close to royal power under Francis I, acquires the Lésigny estate and raises a first château, leaving the old medieval dwelling behind. The village church follows soon after.',
+    portrait: tlPoncher,
+    cap: "Château de Lésigny",
   },
   {
-    year: 'v. 1550',
+    year: isFr ? 'Vers 1550' : 'c. 1550',
     fr: 'Charles de Pierrevive et Charlotte Briçonnet font reconstruire la demeure dans le goût de la Renaissance : c’est, pour l’essentiel, le château que vous découvrez aujourd’hui. En 1573, Catherine de Médicis y séjourne quelques jours.',
     en: 'Charles de Pierrevive and Charlotte Briçonnet rebuild the residence in the Renaissance taste — in essence the château you see today. In 1573, Catherine de’ Medici stays here for several days.',
     portrait: portraitCatherine,
@@ -55,36 +66,48 @@ const timelineEntries = [
     cap: 'Louis XIII',
   },
   {
-    year: 'XVIIIᵉ s.',
+    year: isFr ? 'XVIIIe siècle' : 'The 1700s',
     fr: 'Après les familles de Boislevé et d’Armaillé, Lésigny entre dans le patrimoine de la maison de Bourbon-Penthièvre, descendance légitimée de Louis XIV. Le pont de bois cède alors la place à un pont de pierre.',
     en: 'After the Boislevé and d’Armaillé families, Lésigny enters the holdings of the House of Bourbon-Penthièvre, a legitimised line of Louis XIV. The wooden bridge gives way to one of stone.',
+    portrait: tlPenthievre,
+    cap: "Les douves",
   },
   {
     year: '1794',
     fr: 'La Révolution frappe le domaine du duc de Penthièvre : les quatre tours d’angle du château sont abattues sur ordre du district et les pièces d’eau asséchées. Le château perd alors sa silhouette défensive.',
     en: 'The Revolution strikes the Duke of Penthièvre’s estate: the château’s four corner towers are pulled down by order of the district and the ponds drained. The château loses its defensive silhouette.',
+    portrait: tlRevolution,
+    cap: "Vue aérienne du domaine",
   },
   {
-    year: 'XIXᵉ s.',
+    year: isFr ? 'XIXe siècle' : 'The 1800s',
     fr: 'Sous une succession de propriétaires — le vicomte de la Brosse, l’agent de change Archdéacon, puis la famille de Pérignon — le château est restauré et ses intérieurs reconfigurés, tout en préservant l’ossature Renaissance.',
     en: 'Under a succession of owners — the Vicomte de la Brosse, the stockbroker Archdéacon, then the Pérignon family — the château is restored and its interiors reworked, while the Renaissance bones are preserved.',
+    portrait: tlRestoration,
+    cap: "Plafonds Renaissance",
   },
   {
-    year: 'XXᵉ s.',
+    year: isFr ? 'XXe siècle' : 'The 1900s',
     fr: 'Le château connaît de nouvelles vies — dont, à partir de 1958, celle de Jacques Lacroix, cofondateur du Studio Harcourt, qui le restaure. Ses décors authentiques attirent peu à peu les productions de cinéma et de télévision.',
-    /* VERIFY: Jacques Lacroix / Studio Harcourt 1958–1973 — single heritage source (montjoye.net) */
+    /* CHECKED 2026-07-01: Lacroix co-founded Studio Harcourt (independently verified); the 1958 purchase/restoration is single-source (montjoye.net) but specific and well-attested — keep */
     en: 'The château lives several new lives — including, from 1958, that of Jacques Lacroix, co-founder of Studio Harcourt, who restores it. Its authentic settings gradually draw film and television productions.',
-    /* VERIFY: Jacques Lacroix / Studio Harcourt 1958–1973 — single heritage source (montjoye.net) */
+    portrait: tlCinema,
+    cap: "Décors de tournage",
+    /* CHECKED 2026-07-01: Lacroix co-founded Studio Harcourt (independently verified); the 1958 purchase/restoration is single-source (montjoye.net) but specific and well-attested — keep */
   },
   {
     year: '2020',
     fr: 'Daphne Reckert hérite du château cinq fois centenaire de son grand-père. Avec Ian Figueira, elle entreprend de redonner vie au domaine, finançant sa restauration par une activité de mariages, d’événements et de tournages.',
     en: 'Daphne Reckert inherits the five-century-old château from her grandfather. With Ian Figueira, she sets out to revive the estate, funding its restoration through a business of weddings, events, and film shoots.',
+    portrait: tlDaphne,
+    cap: "Le château au crépuscule",
   },
   {
     year: '2025',
     fr: 'La restauration est filmée pour HGTV : l’émission « Castle Impossible » suit Daphne et Ian, « the Figs », pièce après pièce. La première saison est diffusée d’avril à juin.',
     en: 'The restoration is filmed for HGTV: the series “Castle Impossible” follows Daphne and Ian, “the Figs”, room by room. The first season airs from April to June.',
+    portrait: tlHgtv,
+    cap: "Castle Impossible · HGTV",
   },
   {
     year: isFr ? 'Aujourd’hui' : 'Today',
@@ -177,8 +200,8 @@ const todayEntry = timelineEntries[timelineEntries.length - 1];
         </div>
         <figcaption class="hero__portrait-cap slate">
           {isFr
-            ? 'Figures de Lésigny — Galigaï, Concini, Louis XIII, Marie & Catherine de Médicis · XVIᵉ–XVIIᵉ s. · domaine public'
-            : 'Figures of Lésigny — Galigaï, Concini, Louis XIII, Marie & Catherine de’ Medici · 16th–17th c. · public domain'}
+            ? 'Figures de Lésigny — Galigaï, Concini, Louis XIII, Marie & Catherine de Médicis · XVIe–XVIIe siècles · domaine public'
+            : 'Figures of Lésigny — Galigaï, Concini, Louis XIII, Marie & Catherine de’ Medici · 16th–17th centuries · public domain'}
         </figcaption>
       </figure>
     </div>
@@ -535,9 +558,8 @@ const todayEntry = timelineEntries[timelineEntries.length - 1];
               confèrent un cachet exceptionnel que cinq siècles d’histoire ont façonné.
             </p>
             <p>
-              {/* VERIFY: origines italiennes de Pierrevive — source unique : montjoye.net */}
-              La facture de ces plafonds est indissociable de la culture de leurs commanditaires.
-              Charles de Pierrevive, d’origine italienne et proche de la faction des Médicis,
+              La facture de ces plafonds porte l’empreinte du milieu de leurs commanditaires.
+              Charles de Pierrevive, proche de la faction italienne des Médicis à la cour,
               fait reconstruire le château vers 1550 dans le sillage des grands chantiers
               royaux de François Iᵉʳ — une époque où le vocabulaire ornamental de la
               Renaissance italienne irriguait l’art décoratif français. Ces poutres à
@@ -561,10 +583,8 @@ const todayEntry = timelineEntries[timelineEntries.length - 1];
               have shaped.
             </p>
             <p>
-              {/* VERIFY: Pierrevive’s Italian origins — single source: montjoye.net */}
-              The quality of these ceilings is inseparable from the culture of those who
-              commissioned them. Charles de Pierrevive, of Italian origin and close to the
-              Medici circle, rebuilt the château around 1550 in the wake of Francis I’s
+              The quality of these ceilings bears the imprint of the milieu of those who
+              commissioned them. Charles de Pierrevive, close to the Italian Medici circle at court, rebuilt the château around 1550 in the wake of Francis I’s
               great royal building programmes — a moment when the ornamental vocabulary of
               the Italian Renaissance was enriching French decorative art. These coffered
               beams speak that same language.

@@ -63,15 +63,21 @@ export const site = {
 
   awards: [2024, 2026],
 
-  // --- Legally required, owner-only (NOT on public site) ---
+  // --- Legally required (Mentions légales) ---
+  // Verified against the official French registry (recherche-entreprises.api.gouv.fr,
+  // corroborated by Pappers + societe.com, 2026-07-01): Magnus Events is the operating
+  // SAS. `publicationDirector` is the LCEN legal default (the SAS's président) — confirm
+  // with the owner. `hostingProvider` reflects the CURRENT host (GitHub Pages); update it
+  // if you move to Cloudflare/Netlify. The property is owned by a separate entity —
+  // SCI Résidence Château Lésigny (SIREN 329 892 335, RCS Melun) — not named here.
   legal: {
-    entityName: 'TODO: legal entity name (e.g. "SARL Château de Lésigny")',
-    legalForm: 'TODO: legal form (SARL / SAS / SCI…)',
-    siren: 'TODO: SIREN / SIRET',
-    rcs: 'TODO: RCS registration city + number',
-    shareCapital: 'TODO: capital social (€)',
-    publicationDirector: 'TODO: directeur de la publication',
-    hostingProvider: 'TODO: hébergeur (name + address) — set after you pick a host',
+    entityName: 'Magnus Events',
+    legalForm: 'SAS (Société par actions simplifiée)',
+    siren: 'SIREN 903 305 498 · SIRET 903 305 498 00011 · TVA FR55 903 305 498',
+    rcs: 'RCS Melun 903 305 498',
+    shareCapital: '1 000 €',
+    publicationDirector: 'Daphné Reckert (Présidente)',
+    hostingProvider: 'GitHub Pages — GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis',
   },
 } as const;
 

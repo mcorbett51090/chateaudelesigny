@@ -430,12 +430,8 @@ const decorLightbox: (LightboxTarget | null)[] = await Promise.all(
           <span class="t-filmo__type">{isFr ? 'Long métrage' : 'Feature film'}</span>
         </li>
 
-        {/* VERIFY: L2TC.com lists Napoléon (2002) in Lésigny (77) but marks address "à préciser" — Château de Lésigny not confirmed; Wikipedia générique cites Lésigny, Seine-et-Marne */}
-        <li class="t-filmo__item">
-          <span class="t-filmo__year">2002</span>
-          <em class="t-filmo__title">Napoléon</em>
-          <span class="t-filmo__type">{isFr ? 'Mini-série TV' : 'TV mini-series'}</span>
-        </li>
+        {/* Napoléon (2002) removed: research (2026-07-01) found it credits the COMMUNE of
+            Lésigny, not the château — Film France CNC + IMDb tag only Versailles here. */}
 
         <li class="t-filmo__item">
           <span class="t-filmo__year">2007</span>

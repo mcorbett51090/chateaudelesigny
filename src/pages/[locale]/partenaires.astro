@@ -266,17 +266,30 @@ const telHref = (p: string) => `tel:${p.replace(/[^\d+]/g, '')}`;
       <p class="eyebrow" data-reveal>{isFr ? 'Organisation' : 'Organisation'}</p>
       <h2 id="pt-org-h2" class="pt-group__title" data-reveal>{organiser.name}</h2>
       <div class="pt-organiser" data-reveal>
-        <p class="pt-organiser__role">{isFr ? organiser.fr : organiser.en}</p>
-        <p class="pt-organiser__desc">{isFr ? organiser.frDesc : organiser.enDesc}</p>
-        <div class="pt-organiser__contacts">
-          <a class="pt-contact" href={telHref(organiser.phone)}>
-            <span class="pt-contact__k slate">{isFr ? 'Téléphone' : 'Phone'}</span>
-            <span class="pt-contact__v">{organiser.phone}</span>
-          </a>
-          <a class="pt-contact" href={`mailto:${organiser.email}`}>
-            <span class="pt-contact__k slate">{isFr ? 'Courriel' : 'Email'}</span>
-            <span class="pt-contact__v">{organiser.email}</span>
-          </a>
+        <div class="pt-organiser__visual">
+          <Photo
+            name="event-banquet-sparklers"
+            alt={isFr
+              ? 'Dîner de gala orchestré par Magnus Events au Château de Lésigny'
+              : 'Gala dinner orchestrated by Magnus Events at Château de Lésigny'}
+            ratio="4/3"
+            sizes="(max-width: 760px) 100vw, 45vw"
+            widths={[600, 1000, 1400]}
+          />
+        </div>
+        <div class="pt-organiser__body">
+          <p class="pt-organiser__role">{isFr ? organiser.fr : organiser.en}</p>
+          <p class="pt-organiser__desc">{isFr ? organiser.frDesc : organiser.enDesc}</p>
+          <div class="pt-organiser__contacts">
+            <a class="pt-contact" href={telHref(organiser.phone)}>
+              <span class="pt-contact__k slate">{isFr ? 'Téléphone' : 'Phone'}</span>
+              <span class="pt-contact__v">{organiser.phone}</span>
+            </a>
+            <a class="pt-contact" href={`mailto:${organiser.email}`}>
+              <span class="pt-contact__k slate">{isFr ? 'Courriel' : 'Email'}</span>
+              <span class="pt-contact__v">{organiser.email}</span>
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -403,10 +416,22 @@ const telHref = (p: string) => `tel:${p.replace(/[^\d+]/g, '')}`;
 
   /* --- ② Organiser --------------------------------------------------------- */
   .pt-organiser {
-    max-width: 62ch;
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: var(--space-2xl);
+    align-items: center;
     margin-top: var(--space-m);
-    padding-top: var(--space-m);
+    padding-top: var(--space-l);
     border-top: var(--hairline) solid var(--rule);
+  }
+  .pt-organiser__visual {
+    overflow: hidden;
+    border-radius: var(--radius-s);
+    border: var(--hairline) solid var(--rule);
+  }
+  .pt-organiser__body { max-width: 56ch; }
+  @media (max-width: 760px) {
+    .pt-organiser { grid-template-columns: 1fr; gap: var(--space-l); }
   }
   .pt-organiser__role {
     font-family: var(--font-ui);
