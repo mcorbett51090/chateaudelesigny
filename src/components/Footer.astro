@@ -72,28 +72,17 @@ const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${site.address.
       href="https://ravenpower.net"
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="RavenClaude — Raven Power"
+      aria-label="Raven Power"
     >
-      <svg class="ft__rc-mark" viewBox="0 0 76 52" width="30" height="21" aria-hidden="true" focusable="false">
-        <g fill="currentColor" stroke="currentColor">
-          <!-- beak -->
-          <path d="M2 21 L21 17.5 L20 24 Z" stroke="none" />
-          <!-- head + back + wedge tail + belly -->
-          <path
-            d="M18 17 C14 10 21 5 29 7 C33 3 41 4 43 10 C55 8 66 14 67 26 L60 51 L45 35 C43 41 37 44 30 43 C24 42 19 38 16 32 C13 27 13 21 16 17 C16.7 16.4 17.3 16.7 18 17 Z"
-            stroke="none"
-          />
-          <!-- legs -->
-          <path d="M31 43 L30 51 M37 43 L38 51" fill="none" stroke-width="2.1" stroke-linecap="round" />
-          <!-- eye + folded-wing hint (cut out to the footer surface) -->
-          <circle cx="26" cy="13.5" r="1.8" fill="var(--suie)" stroke="none" />
-          <path d="M30 22 C40 21 50 24 58 31" fill="none" stroke="var(--suie)" stroke-width="1.5" stroke-linecap="round" />
-        </g>
-      </svg>
-      <span class="ft__rc-text">
-        <span class="ft__rc-name">RavenClaude</span>
-        <span class="ft__rc-by">{locale === 'fr' ? 'par Raven Power' : 'by Raven Power'}</span>
-      </span>
+      <img
+        class="ft__rc-mark"
+        src={withBase('/ravenpower-mark.png')}
+        width="40"
+        height="41"
+        alt="Raven Power"
+        loading="lazy"
+        decoding="async"
+      />
     </a>
   </div>
 </footer>
@@ -122,7 +111,7 @@ const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${site.address.
   .ft__credit { color: var(--text-muted); }
   .ft__credit a { color: var(--text-muted); text-decoration: underline; text-underline-offset: 0.2em; }
 
-  /* Built-by RavenClaude credit */
+  /* Raven Power logo credit */
   .ft__built {
     display: flex;
     justify-content: center;
@@ -130,31 +119,13 @@ const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${site.address.
   }
   .ft__rc {
     display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    text-decoration: none;
-    color: var(--text-muted);
-    padding: 0.4rem 0.2rem;
-    transition: color var(--dur-fast) var(--ease-soft);
+    padding: 0.4rem;
+    border-radius: var(--radius-s);
+    opacity: 0.75;
+    transition: opacity var(--dur-fast) var(--ease-soft);
   }
-  .ft__rc:hover { color: var(--laiton-soft); }
-  .ft__rc-mark { display: block; flex-shrink: 0; }
-  .ft__rc-text { display: flex; flex-direction: column; line-height: 1.15; }
-  .ft__rc-name {
-    font-family: var(--font-ui);
-    font-size: var(--step--1);
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    color: var(--ivoire);
-  }
-  .ft__rc:hover .ft__rc-name { color: var(--laiton-soft); }
-  .ft__rc-by {
-    font-family: var(--font-ui);
-    font-size: var(--step--2);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-  }
+  .ft__rc:hover { opacity: 1; }
+  .ft__rc-mark { display: block; width: 40px; height: auto; }
   @media (max-width: 760px) {
     .ft__inner { grid-template-columns: 1fr 1fr; gap: var(--space-l); }
   }
