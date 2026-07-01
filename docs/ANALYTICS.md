@@ -72,6 +72,21 @@ which would reintroduce a consent banner.)*
 4. Repo secrets `BREVO_API_KEY` (reuse newsletter) + `DIGEST_RECIPIENTS` (owner email).
 5. Paste the four `/go/…` links into Instagram / newsletter / Google Business / mariages.net.
 
+## Timeline events (milestones on the chart)
+The dashboard's right-hand **Événements / Events** panel marks significant dates (renovations,
+launches, a site update…) as labeled vertical lines on the trend chart, each toggleable.
+
+- **Shared/durable events** live in [`reports/analytics/events.json`](../reports/analytics/events.json)
+  (`[{ "date": "2026-04", "label": "Ballroom renovated" }]`). Edit that file — or use the in-page
+  **"⚙ Save to the site"** flow — and everyone sees them.
+- **Save-to-the-site flow (no backend needed):** the owner pastes a **fine-grained GitHub token**
+  once; the page then commits new/removed events straight to `events.json` via the GitHub Contents
+  API, GitHub Pages redeploys, and it's live for everyone (~1 min). To create the token:
+  GitHub → *Settings → Developer settings → Fine-grained tokens* → **Repository access:** only
+  `mcorbett51090/chateaudelesigny` → **Permissions:** *Contents: Read and write* → generate, paste
+  into the panel. **The token is stored only in that browser's localStorage — never in the code or
+  the deployed site.** Without a token, added events are remembered per-browser only.
+
 ## Snapshot schema (contract shared by generator + dashboard)
 `reports/analytics/YYYY-MM.json`:
 ```json

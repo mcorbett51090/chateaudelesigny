@@ -108,6 +108,19 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
                 <input type="text" id="db-ev-label" required maxlength="40" placeholder={isFr ? 'Ex : Salle de bal rénovée' : 'e.g. Ballroom renovated'} aria-label={isFr ? 'Intitulé' : 'Label'} />
                 <button type="submit">{isFr ? '+ Ajouter' : '+ Add'}</button>
               </form>
+              <p class="db__ev-status slate" id="db-ev-status" aria-live="polite"></p>
+              <details class="db__ev-sync">
+                <summary>{isFr ? '⚙ Enregistrer sur le site' : '⚙ Save to the site'}</summary>
+                <p class="db__ev-syncnote slate">
+                  {isFr
+                    ? 'Collez un jeton GitHub « fine-grained » (autorisation Contents : lecture/écriture, sur ce dépôt uniquement). Il reste dans CE navigateur — jamais publié. Les événements deviennent alors visibles par tous (~1 min après enregistrement).'
+                    : 'Paste a fine-grained GitHub token (Contents: read/write, this repo only). It stays in THIS browser — never published. Events then become visible to everyone (~1 min after saving).'}
+                </p>
+                <div class="db__ev-tok">
+                  <input type="password" id="db-gh-token" placeholder="github_pat_…" autocomplete="off" aria-label="GitHub token" />
+                  <button type="button" id="db-gh-save">OK</button>
+                </div>
+              </details>
             </aside>
           </div>
         </div>
@@ -179,15 +192,43 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
       const selected = new Set(['visits']);
       let tf = 0;
 
-      // ---- Events (seed from file + user-added in localStorage) ----
-      const LS_ADD = 'db-events-add', LS_OFF = 'db-events-off';
+      // ---- Events (seed from committed file + local additions; optional commit back to repo) ----
+      const LS_ADD = 'db-events-add', LS_OFF = 'db-events-off', LS_TOK = 'db-gh-token';
       const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch { return d; } };
       const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
       const seed = JSON.parse($('db-events-seed')?.textContent || '[]').map((e) => ({ ...e, user: false }));
-      let userEv = load(LS_ADD, []).map((e) => ({ ...e, user: true }));
-      let off = new Set(load(LS_OFF, []));
       const evId = (e) => e.date + '|' + e.label;
+      // Prune local additions that have since been committed to the file (now in seed).
+      const seedIds = new Set(seed.map(evId));
+      let userEv = load(LS_ADD, []).filter((e) => !seedIds.has(evId(e))).map((e) => ({ ...e, user: true }));
+      save(LS_ADD, userEv.map(({ user, ...r }) => r));
+      let off = new Set(load(LS_OFF, []));
       const allEvents = () => [...seed, ...userEv].sort((a, b) => a.date.localeCompare(b.date));
+
+      // Commit events.json back to the repo via the GitHub Contents API. The owner supplies a
+      // fine-grained token (Contents: read/write, this repo only) stored ONLY in this browser —
+      // never in the code. Absent token → local-only. GitHub Pages redeploys → live for everyone.
+      const GH = { owner: 'mcorbett51090', repo: 'chateaudelesigny', branch: 'main', path: 'reports/analytics/events.json' };
+      const hasToken = () => !!localStorage.getItem(LS_TOK);
+      const b64enc = (s) => btoa(unescape(encodeURIComponent(s)));
+      const b64dec = (s) => decodeURIComponent(escape(atob(s.replace(/\s/g, ''))));
+      const setStatus = (msg, ok) => { const el = $('db-ev-status'); if (el) { el.textContent = msg; el.style.color = ok === false ? 'var(--sang)' : ok ? '#2e7d52' : ''; } };
+      async function ghCommit(mutate, message) {
+        const token = localStorage.getItem(LS_TOK);
+        if (!token) return { ok: false, reason: 'no-token' };
+        const base = `https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}`;
+        const h = { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+        try {
+          const g = await fetch(`${base}?ref=${GH.branch}`, { headers: h });
+          if (!g.ok) return { ok: false, reason: 'read ' + g.status };
+          const cur = await g.json();
+          let list; try { list = JSON.parse(b64dec(cur.content)); } catch { list = []; }
+          const next = mutate(list).sort((a, b) => a.date.localeCompare(b.date));
+          const body = { message, content: b64enc(JSON.stringify(next, null, 2) + '\n'), sha: cur.sha, branch: GH.branch };
+          const p = await fetch(base, { method: 'PUT', headers: h, body: JSON.stringify(body) });
+          return { ok: p.ok, reason: p.ok ? '' : 'write ' + p.status };
+        } catch { return { ok: false, reason: 'network' }; }
+      }
 
       const mLabel = (m) => m.slice(5) + '/' + m.slice(2, 4);
       const mNum = (d) => { const [y, mo] = d.split('-').map(Number); return y * 12 + (mo - 1); };
@@ -241,14 +282,26 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
             <label><input type="checkbox" data-id="${esc(id)}" ${on ? 'checked' : ''}>
             <span class="db__ev-d">${esc(e.date)}</span>
             <span class="db__ev-t" title="${esc(e.label)}">${esc(e.label)}</span></label>
-            ${e.user ? `<button type="button" class="db__ev-x" data-del="${esc(id)}" aria-label="${isFr ? 'Supprimer' : 'Remove'}">×</button>` : ''}
+            ${(e.user || hasToken()) ? `<button type="button" class="db__ev-x" data-del="${esc(id)}" aria-label="${isFr ? 'Supprimer' : 'Remove'}">×</button>` : ''}
           </li>`;
         }).join('') || `<li class="db__ev-empty slate">${isFr ? 'Aucun événement.' : 'No events.'}</li>`;
         list.querySelectorAll('input[type=checkbox]').forEach((c) =>
           c.addEventListener('change', () => { const id = c.dataset.id; if (c.checked) off.delete(id); else off.add(id); save(LS_OFF, [...off]); render(); })
         );
         list.querySelectorAll('[data-del]').forEach((b) =>
-          b.addEventListener('click', () => { const id = b.dataset.del; userEv = userEv.filter((e) => evId(e) !== id); save(LS_ADD, userEv.map(({ user, ...r }) => r)); renderEventList(); render(); })
+          b.addEventListener('click', async () => {
+            const id = b.dataset.del;
+            const wasUser = userEv.some((e) => evId(e) === id);
+            userEv = userEv.filter((e) => evId(e) !== id);
+            save(LS_ADD, userEv.map(({ user, ...r }) => r));
+            if (!wasUser) { off.add(id); save(LS_OFF, [...off]); } // committed event: hide locally until redeploy
+            renderEventList(); render();
+            if (hasToken()) {
+              setStatus(isFr ? 'Suppression…' : 'Removing…');
+              const r = await ghCommit((l) => l.filter((e) => evId(e) !== id), 'Remove analytics event: ' + id.replace('|', ' '));
+              setStatus(r.ok ? (isFr ? 'Supprimé du site ✓' : 'Removed from the site ✓') : (isFr ? 'Échec de la suppression (' + r.reason + ')' : 'Remove failed (' + r.reason + ')'), r.ok);
+            }
+          })
         );
       }
 
@@ -282,14 +335,28 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
         tf = parseInt(b.getAttribute('data-tf'), 10);
         b.parentElement.querySelectorAll('button').forEach((x) => x.classList.toggle('is-on', x === b)); render();
       }));
-      $('db-ev-add').addEventListener('submit', (e) => {
+      $('db-ev-add').addEventListener('submit', async (e) => {
         e.preventDefault();
         const date = $('db-ev-date').value, lab = $('db-ev-label').value.trim();
         if (!date || !lab) return;
-        userEv.push({ date, label: lab, user: true });
+        const nv = { date, label: lab };
+        if (allEvents().some((x) => evId(x) === evId(nv))) { setStatus(isFr ? 'Cet événement existe déjà.' : 'That event already exists.', false); return; }
+        userEv.push({ ...nv, user: true });
         save(LS_ADD, userEv.map(({ user, ...r }) => r));
-        $('db-ev-label').value = '';
+        $('db-ev-label').value = ''; $('db-ev-date').value = '';
         renderEventList(); render();
+        if (hasToken()) {
+          setStatus(isFr ? 'Enregistrement sur le site…' : 'Saving to the site…');
+          const r = await ghCommit((l) => (l.some((x) => evId(x) === evId(nv)) ? l : [...l, nv]), `Add analytics event: ${nv.date} ${nv.label}`);
+          setStatus(
+            r.ok
+              ? (isFr ? 'Enregistré sur le site ✓ — visible par tous dans ~1 min.' : 'Saved to the site ✓ — live for everyone in ~1 min.')
+              : (isFr ? 'Ajouté ici seulement — échec de l’enregistrement (' + r.reason + ').' : 'Added locally only — save failed (' + r.reason + ').'),
+            r.ok
+          );
+        } else {
+          setStatus(isFr ? 'Ajouté (ce navigateur uniquement). Activez « Enregistrer sur le site » pour le partager.' : 'Added (this browser only). Enable “Save to the site” to share it.');
+        }
       });
       $('db-ev-all').addEventListener('click', () => {
         const ids = allEvents().map(evId);
@@ -297,6 +364,19 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
         save(LS_OFF, [...off]); renderEventList(); render();
       });
 
+      // Token save / clear (stored raw, only in this browser).
+      function updateSyncUI() {
+        const s = document.querySelector('.db__ev-sync summary');
+        if (s) s.textContent = hasToken() ? (isFr ? '⚙ Enregistrement activé ✓' : '⚙ Saving enabled ✓') : (isFr ? '⚙ Enregistrer sur le site' : '⚙ Save to the site');
+      }
+      $('db-gh-save').addEventListener('click', () => {
+        const v = $('db-gh-token').value.trim();
+        if (v) { localStorage.setItem(LS_TOK, v); $('db-gh-token').value = ''; setStatus(isFr ? 'Jeton enregistré dans ce navigateur ✓' : 'Token saved in this browser ✓', true); }
+        else { localStorage.removeItem(LS_TOK); setStatus(isFr ? 'Jeton effacé.' : 'Token cleared.'); }
+        updateSyncUI(); renderEventList();
+      });
+
+      updateSyncUI();
       renderEventList();
       render();
     })();
@@ -339,6 +419,13 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
   .db__ev-add { display: grid; gap: 0.3rem; border-top: var(--hairline) solid var(--rule); padding-top: var(--space-s); }
   .db__ev-add input { font: inherit; font-size: var(--step--1); padding: 0.35rem 0.5rem; border: var(--hairline) solid var(--rule); border-radius: var(--radius-s); background: var(--calcaire); color: var(--text); }
   .db__ev-add button { appearance: none; border: 0; background: var(--laiton-deep); color: #fff; font: inherit; font-size: var(--step--1); padding: 0.4rem; border-radius: var(--radius-s); cursor: pointer; }
+  .db__ev-status { margin: var(--space-2xs) 0 0; font-size: var(--step--2); min-height: 1.1em; }
+  .db__ev-sync { margin-top: var(--space-2xs); font-size: var(--step--2); }
+  .db__ev-sync summary { cursor: pointer; color: var(--text-muted); }
+  .db__ev-syncnote { margin: var(--space-2xs) 0; font-size: var(--step--2); line-height: 1.4; }
+  .db__ev-tok { display: flex; gap: 0.3rem; }
+  .db__ev-tok input { flex: 1; min-width: 0; font: inherit; font-size: var(--step--2); padding: 0.3rem 0.4rem; border: var(--hairline) solid var(--rule); border-radius: var(--radius-s); background: var(--calcaire); color: var(--text); }
+  .db__ev-tok button { appearance: none; border: 0; background: var(--laiton-deep); color: #fff; font: inherit; font-size: var(--step--2); padding: 0.3rem 0.7rem; border-radius: var(--radius-s); cursor: pointer; }
   .db__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-l); margin-top: var(--space-l); }
   .db__card { padding: var(--space-l); border: var(--hairline) solid var(--rule); border-top: 2px solid var(--laiton); border-radius: var(--radius-s); background: var(--calcaire); }
   .db__k { font-size: var(--step--1); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin: 0 0 var(--space-s); }
