@@ -193,7 +193,7 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
       let tf = 0;
 
       // ---- Events (seed from committed file + local additions; optional commit back to repo) ----
-      const LS_ADD = 'db-events-add', LS_OFF = 'db-events-off', LS_TOK = 'db-gh-token';
+      const LS_ADD = 'db-events-add', LS_OFF = 'db-events-off', LS_DEL = 'db-events-del', LS_TOK = 'db-gh-token';
       const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch { return d; } };
       const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
       const seed = JSON.parse($('db-events-seed')?.textContent || '[]').map((e) => ({ ...e, user: false }));
@@ -203,7 +203,9 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
       let userEv = load(LS_ADD, []).filter((e) => !seedIds.has(evId(e))).map((e) => ({ ...e, user: true }));
       save(LS_ADD, userEv.map(({ user, ...r }) => r));
       let off = new Set(load(LS_OFF, []));
-      const allEvents = () => [...seed, ...userEv].sort((a, b) => a.date.localeCompare(b.date));
+      let deleted = new Set(load(LS_DEL, [])); // seed events deleted locally (no token to commit yet)
+      // Seed events the user deleted locally are hidden from the list; user events are removed outright.
+      const allEvents = () => [...seed.filter((e) => !deleted.has(evId(e))), ...userEv].sort((a, b) => a.date.localeCompare(b.date));
 
       // Commit events.json back to the repo via the GitHub Contents API. The owner supplies a
       // fine-grained token (Contents: read/write, this repo only) stored ONLY in this browser —
@@ -282,7 +284,7 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
             <label><input type="checkbox" data-id="${esc(id)}" ${on ? 'checked' : ''}>
             <span class="db__ev-d">${esc(e.date)}</span>
             <span class="db__ev-t" title="${esc(e.label)}">${esc(e.label)}</span></label>
-            ${(e.user || hasToken()) ? `<button type="button" class="db__ev-x" data-del="${esc(id)}" aria-label="${isFr ? 'Supprimer' : 'Remove'}">×</button>` : ''}
+            <button type="button" class="db__ev-x" data-del="${esc(id)}" aria-label="${isFr ? 'Supprimer' : 'Remove'}">×</button>
           </li>`;
         }).join('') || `<li class="db__ev-empty slate">${isFr ? 'Aucun événement.' : 'No events.'}</li>`;
         list.querySelectorAll('input[type=checkbox]').forEach((c) =>
@@ -292,14 +294,21 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
           b.addEventListener('click', async () => {
             const id = b.dataset.del;
             const wasUser = userEv.some((e) => evId(e) === id);
-            userEv = userEv.filter((e) => evId(e) !== id);
-            save(LS_ADD, userEv.map(({ user, ...r }) => r));
-            if (!wasUser) { off.add(id); save(LS_OFF, [...off]); } // committed event: hide locally until redeploy
+            if (wasUser) {
+              userEv = userEv.filter((e) => evId(e) !== id);
+              save(LS_ADD, userEv.map(({ user, ...r }) => r));
+            } else {
+              deleted.add(id); save(LS_DEL, [...deleted]); // seed event: delete it locally (persisted)
+            }
+            off.delete(id); save(LS_OFF, [...off]);
             renderEventList(); render();
             if (hasToken()) {
               setStatus(isFr ? 'Suppression…' : 'Removing…');
               const r = await ghCommit((l) => l.filter((e) => evId(e) !== id), 'Remove analytics event: ' + id.replace('|', ' '));
+              if (r.ok) { deleted.delete(id); save(LS_DEL, [...deleted]); } // now removed from the file itself
               setStatus(r.ok ? (isFr ? 'Supprimé du site ✓' : 'Removed from the site ✓') : (isFr ? 'Échec de la suppression (' + r.reason + ')' : 'Remove failed (' + r.reason + ')'), r.ok);
+            } else if (!wasUser) {
+              setStatus(isFr ? 'Supprimé (ce navigateur uniquement).' : 'Deleted (this browser only).');
             }
           })
         );
