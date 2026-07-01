@@ -16,7 +16,13 @@ const t = useT(locale);
 const base = localeBase(locale);
 const isFr = locale === 'fr';
 
+// The shop lives on a separate Shopify storefront (store.chateaudelesigny.com).
+// This page mirrors its catalogue; the purchase / secure checkout happens there.
+const STORE = 'https://store.chateaudelesigny.com';
+const PRODUCT_URL = `${STORE}/products/beau-chateau-cap-in-olive-green`;
+
 // Structured data: the one shop product (real price + image, no fabricated rating).
+// The Offer resolves to the purchasable Shopify page, not this mirror page.
 const origin = siteOrigin(Astro.site, import.meta.env.BASE_URL);
 const hatImg = await getImage({ src: photos['hat-main'], width: 1200, format: 'jpg' });
 const hatImgUrl = new URL(hatImg.src, Astro.site).href;
@@ -31,13 +37,9 @@ const ld = [
     availability: 'https://schema.org/PreOrder',
     image: hatImgUrl,
     priceValidUntil: '2027-12-31',
+    offerUrl: PRODUCT_URL,
   }),
 ];
-
-// The shop lives on a separate Shopify storefront (store.chateaudelesigny.com).
-// This page mirrors its catalogue; the purchase / secure checkout happens there.
-const STORE = 'https://store.chateaudelesigny.com';
-const PRODUCT_URL = `${STORE}/products/beau-chateau-cap-in-olive-green`;
 
 const priceStr = isFr ? '39,99 €' : '€39.99';
 

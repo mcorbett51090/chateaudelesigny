@@ -42,10 +42,13 @@ if (!image && ogImageKey && photos[ogImageKey]) {
 // One canonical LocalBusiness+EventVenue entity (stable @id) + any per-page nodes,
 // serialized into a single <script> @graph. Replaces the old TouristAttraction-only block.
 const origin = siteOrigin(Astro.site, import.meta.env.BASE_URL);
-// The venue node carries a FIXED site-level description (not this page's meta
-// description) so its single @id never holds conflicting values across the graph.
+// The venue node carries a FIXED site-level description AND a FIXED château image
+// (NOT this page's meta description / og:image) so its single @id is byte-identical
+// across the graph — otherwise /boutique would describe the venue with a hat photo.
 const venueDescription = locale === 'fr' ? site.tagline.fr : site.tagline.en;
-const ldScript = jsonLdScript([venueNode(origin, venueDescription, ogImage), ...jsonLd]);
+const venueImg = await getImage({ src: photos['exterior-facade'], width: 1200, format: 'jpg' });
+const venueImageUrl = new URL(venueImg.src, Astro.site).href;
+const ldScript = jsonLdScript([venueNode(origin, venueDescription, venueImageUrl), ...jsonLd]);
 ---
 
 <!doctype html>

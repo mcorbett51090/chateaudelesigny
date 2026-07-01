@@ -106,6 +106,8 @@ export function productNode(opts: {
   availability?: string;
   image?: string | string[];
   priceValidUntil?: string;
+  /** The purchasable page (e.g. the Shopify buy URL); defaults to `url`. */
+  offerUrl?: string;
 }) {
   return {
     '@type': 'Product',
@@ -119,7 +121,7 @@ export function productNode(opts: {
       price: String(opts.priceEUR),
       priceCurrency: 'EUR',
       availability: opts.availability ?? 'https://schema.org/PreOrder',
-      url: opts.url,
+      url: opts.offerUrl ?? opts.url,
       ...(opts.priceValidUntil ? { priceValidUntil: opts.priceValidUntil } : {}),
     },
   };
@@ -139,8 +141,8 @@ export function faqNode(items: { q: string; a: string }[]) {
 
 /**
  * Serialize a set of nodes to one <script type="application/ld+json"> string.
- * Escapes `<` (so a literal </script> in any value can't close the tag early)
- * and the JSON-legal-but-JS-illegal line separators U+2028 / U+2029.
+ * Escapes `<` so a literal </script> in any value can't close the tag early.
+ * (No further escaping needed: ld+json is parsed as JSON, where U+2028/2029 are legal.)
  */
 export function jsonLdScript(nodes: object[]): string {
   const graph = { "@context": "https://schema.org", "@graph": nodes };

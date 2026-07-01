@@ -261,7 +261,7 @@ const anyThirdParty = analyticsOn || Boolean(formProcessor) || newsletterOn || v
         </h2>
         {isFr && (
           <Fragment>
-            {!embedsOn && !vouchersOn && !newsletterOn && (
+            {!analyticsOn && !embedsOn && !vouchersOn && !newsletterOn && (
               <p class="legal-para">
                 Ce site n&rsquo;intègre <strong>aucun cookie provenant de services tiers</strong> &mdash; réseaux sociaux, régies publicitaires ou outils de mesure d&rsquo;audience. Aucun bandeau de consentement aux cookies n&rsquo;est donc requis.
               </p>
@@ -288,7 +288,7 @@ const anyThirdParty = analyticsOn || Boolean(formProcessor) || newsletterOn || v
         )}
         {!isFr && (
           <Fragment>
-            {!embedsOn && !vouchersOn && !newsletterOn && (
+            {!analyticsOn && !embedsOn && !vouchersOn && !newsletterOn && (
               <p class="legal-para">
                 This website integrates <strong>no third-party cookies</strong> &mdash; no social networks, advertising networks, or audience measurement tools. No cookie-consent banner is therefore required.
               </p>

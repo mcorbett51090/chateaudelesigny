@@ -49,7 +49,7 @@ const t = useT(locale);
     // Key by provider AND src so two same-provider embeds don't share consent.
     const key = `consent:${provider}:${src}`;
 
-    const load = () => {
+    const load = (fromClick = false) => {
       const iframe = document.createElement('iframe');
       iframe.src = src;
       iframe.title = title;
@@ -59,18 +59,19 @@ const t = useT(locale);
       iframe.className = 'consent-embed__frame';
       iframe.tabIndex = -1;
       box.replaceChildren(iframe);
-      // The focused "load" button was just removed; move focus onto the iframe so
-      // keyboard/AT focus isn't dropped to <body> (WCAG 2.4.3).
-      iframe.focus();
+      // Only move focus when the user just clicked "load" (the focused button was
+      // removed — WCAG 2.4.3). On auto-load for a returning consented visitor,
+      // focusing would steal focus + scroll the page to the embed on every load.
+      if (fromClick) iframe.focus();
       try { localStorage.setItem(key, '1'); } catch { /* private mode — ignore */ }
     };
 
     let consented = false;
     try { consented = localStorage.getItem(key) === '1'; } catch { /* ignore */ }
     if (consented) {
-      load();
+      load(false);
     } else {
-      box.querySelector('[data-consent-load]')?.addEventListener('click', load);
+      box.querySelector('[data-consent-load]')?.addEventListener('click', () => load(true));
     }
   }
 </script>
