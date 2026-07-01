@@ -201,6 +201,10 @@ const weddingPlates = [
   { photo: 'exterior-vintage-car', frAlt: 'Voiture de collection dans la cour d’honneur', enAlt: 'Vintage car in the cour d’honneur' },
   { photo: 'event-cocktail', frAlt: 'Cocktail de réception dans les salons', enAlt: 'Reception cocktail in the salons' },
   { photo: 'couple-salon', frAlt: 'Les mariés dans un salon d’apparat', enAlt: 'The couple in a state salon' },
+  { photo: 'couple-portrait', frAlt: 'Portrait des mariés dans le parc', enAlt: 'Portrait of the couple in the grounds' },
+  { photo: 'couple-kiss', frAlt: 'Un baiser sous les arbres du domaine', enAlt: 'A kiss beneath the estate’s trees' },
+  { photo: 'bride-staircase', frAlt: 'La mariée sur le grand escalier', enAlt: 'The bride on the grand staircase' },
+  { photo: 'wedding-confetti-bw', frAlt: 'Sortie sous les confettis, en noir et blanc', enAlt: 'Confetti exit, in black and white' },
 ];
 const weddingLightbox: (LightboxTarget | null)[] = await Promise.all(
   weddingPlates.map(async (plate) => {
@@ -222,6 +226,7 @@ const weddingLightbox: (LightboxTarget | null)[] = await Promise.all(
     : 'Plan your wedding at Château de Lésigny — Renaissance interiors, up to 350 guests, 24 km from Paris. From €3,350.'}
   locale={locale}
   path="mariages/"
+  ogImageKey="exterior-ceremony-lawn"
 >
 
   <!-- ① Hero ---------------------------------------------------------------- -->

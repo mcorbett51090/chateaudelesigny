@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
+import { getImage } from 'astro:assets';
 import { site } from '../config/site';
+import { photos } from '../assets/images';
 import { type Locale, useT, withLocale, withBase } from '../i18n/ui';
 import { siteOrigin, venueNode, jsonLdScript } from '../lib/schema';
 import { features } from '../config/features';
@@ -18,16 +20,24 @@ interface Props {
   jsonLd?: object[];
   /** Emit robots noindex (e.g. legal pages carrying unfilled TODO placeholders). */
   noindex?: boolean;
+  /** Image key (from images.ts) to use as this page's og:image, so social shares
+   *  differ per page. Resolved to an absolute JPG. `image` (a full URL) overrides it. */
+  ogImageKey?: string;
 }
 
-const { title, description, locale, path = '', dark = false, image, jsonLd = [], noindex = false } = Astro.props;
+const { title, description, locale, path = '', dark = false, image, jsonLd = [], noindex = false, ogImageKey } = Astro.props;
 const t = useT(locale);
 
 // withLocale() already includes the deployment base; canonical/og must add it explicitly.
 const canonical = new URL(withBase(`${locale}/${path}`), Astro.site).href;
 const altFr = new URL(withLocale(`/${locale}/${path}`, 'fr'), Astro.site).href;
 const altEn = new URL(withLocale(`/${locale}/${path}`, 'en'), Astro.site).href;
-const ogImage = image ?? new URL(withBase('/og/default.png'), Astro.site).href;
+// og:image priority: explicit `image` URL → resolved `ogImageKey` photo → site default.
+let ogImage = image ?? new URL(withBase('/og/default.png'), Astro.site).href;
+if (!image && ogImageKey && photos[ogImageKey]) {
+  const og = await getImage({ src: photos[ogImageKey], width: 1200, format: 'jpg' });
+  ogImage = new URL(og.src, Astro.site).href;
+}
 
 // One canonical LocalBusiness+EventVenue entity (stable @id) + any per-page nodes,
 // serialized into a single <script> @graph. Replaces the old TouristAttraction-only block.
