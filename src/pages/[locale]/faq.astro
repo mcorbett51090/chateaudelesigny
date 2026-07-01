@@ -112,7 +112,7 @@ const ld = [faqNode(faqs.map((f) => ({ q: isFr ? f.qFr : f.qEn, a: isFr ? f.aFr 
           <li class="faq-item" data-reveal>
             <details open={i === 0}>
               <summary class="faq-q">
-                <h3 class="faq-q__text">{isFr ? f.qFr : f.qEn}</h3>
+                <h2 class="faq-q__text">{isFr ? f.qFr : f.qEn}</h2>
                 <span class="faq-q__mark" aria-hidden="true"></span>
               </summary>
               <p class="faq-a">{isFr ? f.aFr : f.aEn}</p>

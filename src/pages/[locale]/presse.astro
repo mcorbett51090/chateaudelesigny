@@ -152,9 +152,9 @@ const estateHighlights = [
         {isFr ? 'Reconnus par les meilleurs' : 'Recognised by the best'}
       </h2>
 
-      <div class="awards__grid" role="list">
+      <div class="awards__grid">
         {awards.map((award) => (
-          <article class:list={['award-card', award.isAlt && 'award-card--alt']} role="listitem" data-reveal>
+          <article class:list={['award-card', award.isAlt && 'award-card--alt']} data-reveal>
             <div class="award-card__badge">
               <Photo
                 name={award.badge}
