@@ -247,7 +247,7 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
       const activeKeys = () => order.filter((k) => selected.has(k));
 
       function draw(data, keys, evts) {
-        const W = 760, H = 264, pl = 12, pr = 12, pt = 34, pb = 26;
+        const W = 760, H = 208, pl = 12, pr = 12, pt = 30, pb = 22;
         const n = data.length;
         const X = (i) => pl + (n <= 1 ? (W - pl - pr) / 2 : (i * (W - pl - pr)) / (n - 1));
         const single = keys.length === 1;
@@ -283,7 +283,7 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
             evLabels += `<text x="${x.toFixed(1)}" y="${ly}" text-anchor="${anchor}" fill="#5a5048" font-size="10">${esc(short)}<title>${esc(e.date + ' — ' + e.label)}</title></text>`;
           });
         }
-        return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" preserveAspectRatio="xMidYMid meet">${areas}${lines}${dots}${evLines}${evLabels}${vlabels}${xlabels}</svg>`;
+        return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;max-height:min(30vh,260px);display:block" preserveAspectRatio="xMidYMid meet">${areas}${lines}${dots}${evLines}${evLabels}${vlabels}${xlabels}</svg>`;
       }
 
       function renderEventList() {
@@ -406,8 +406,11 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
 
 <style>
   .db { background: linear-gradient(180deg, var(--calcaire-2), var(--pierre)); min-height: 60vh; }
-  .db__meta { margin-top: var(--space-2xs); }
-  .db__trend { margin-top: var(--space-l); padding: var(--space-l); border: var(--hairline) solid var(--rule); border-top: 2px solid var(--sang); border-radius: var(--radius-s); background: var(--calcaire); }
+  /* Compact header — it's an internal tool, not a marketing hero. Keeps the detail cards near the fold. */
+  .db.section { padding-block: var(--space-m) var(--space-xl); }
+  .db h1 { font-size: var(--step-2); margin: var(--space-3xs) 0 0; }
+  .db__meta { margin-top: var(--space-3xs); }
+  .db__trend { margin-top: var(--space-s); padding: var(--space-s) var(--space-m); border: var(--hairline) solid var(--rule); border-top: 2px solid var(--sang); border-radius: var(--radius-s); background: var(--calcaire); }
   .db__controls { display: flex; flex-wrap: wrap; gap: var(--space-m); justify-content: space-between; align-items: flex-start; }
   .db__legend { display: flex; flex-wrap: wrap; gap: var(--space-2xs); }
   .db__chip { display: inline-flex; align-items: center; gap: 0.4rem; appearance: none; border: var(--hairline) solid var(--rule); background: var(--calcaire-2); padding: 0.3rem 0.7rem; border-radius: 99px; font: inherit; font-size: var(--step--1); color: var(--text-muted); cursor: pointer; opacity: 0.6; }
@@ -420,14 +423,14 @@ const title = `${isFr ? 'Tableau de bord' : 'Dashboard'} · Château de Lésigny
   .db__seg button:last-child { border-right: 0; }
   .db__seg button.is-on { background: var(--laiton-deep); color: #fff; }
   .db__seg button:hover:not(.is-on) { background: var(--calcaire-2); }
-  .db__sum { margin: var(--space-m) 0 var(--space-s); font-size: var(--step-1); }
+  .db__sum { margin: var(--space-s) 0 var(--space-xs); font-size: var(--step-0); }
   .db__sum .up { color: #2e7d52; } .db__sum .down { color: var(--sang); }
   .db__main { display: block; }
   .db__chart { width: 100%; min-width: 0; }
   .db__hint { margin: var(--space-s) 0 0; font-size: var(--step--2); max-width: 62ch; }
   /* Events panel — full width below the chart, list in a multi-column grid */
   /* Collapsible events panel: collapses to a single small pill button (the <summary>). */
-  .db__events { margin-top: var(--space-l); font-size: var(--step--1); }
+  .db__events { margin-top: var(--space-s); font-size: var(--step--1); }
   .db__ev-toggle {
     display: inline-flex; align-items: center; gap: 0.45rem; width: max-content;
     cursor: pointer; list-style: none; user-select: none;
